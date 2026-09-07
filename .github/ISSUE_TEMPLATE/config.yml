@@ -1,5 +1,5 @@
 blank_issues_enabled: true
 contact_links:
-  - name: Documentation
-    url: https://docs.auktiva.org
-    about: Check the documentation for guides and reference
+  - name: Bug reports
+    url: https://github.com/m73lab/subastaya/issues
+    about: Reporta un bug abriendo un issue

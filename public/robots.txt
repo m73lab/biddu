@@ -8,4 +8,4 @@ Disallow: /auctions/
 Disallow: /api/
 
 # Sitemap
-Sitemap: https://auktiva.org/sitemap.xml
+Sitemap: https://subastaya.cl/sitemap.xml

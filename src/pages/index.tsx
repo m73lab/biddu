@@ -33,6 +33,11 @@ const UseCases = dynamic(
   { ssr: true },
 );
 
+const FaqSection = dynamic(
+  () => import("@/components/landing/FaqSection").then((mod) => mod.FaqSection),
+  { ssr: true },
+);
+
 const CallToAction = dynamic(
   () =>
     import("@/components/landing/CallToAction").then((mod) => mod.CallToAction),
@@ -49,27 +54,27 @@ const ImpactVisualization = dynamic(
 );
 
 export default function LandingPage() {
-  // Homepage-specific structured data with FAQ schema for better SEO
+  // Homepage-specific structured data for better SEO
   const homepageStructuredData = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: "Auktiva - Free Auction Platform for Charity Fundraisers",
+    name: "SubastaYa - Plataforma de Subastas Gratuita",
     alternateName: [
-      "Auktiva Charity Auction Platform",
-      "Auktiva Fundraiser Platform",
-      "Free Open Source Auction Software",
+      "Plataforma de Subastas SubastaYa",
+      "Software de Remates Gratis",
+      "Software de Subastas Gratis de Código Abierto",
     ],
     applicationCategory: "BusinessApplication",
-    applicationSubCategory: "Charity Auction Software",
+    applicationSubCategory: "Software de Subastas Comunitarias",
     operatingSystem: "Web Browser",
     offers: {
       "@type": "Offer",
       price: "0",
-      priceCurrency: "USD",
+      priceCurrency: "CLP",
       availability: "https://schema.org/InStock",
       priceValidUntil: "2030-12-31",
       description:
-        "Completely free - no fees, no limits, no credit card required",
+        "Completamente gratis y de código abierto - sin comisiones, sin tarjeta de crédito",
     },
     description: SITE_DESCRIPTION,
     url: SITE_URL,
@@ -95,23 +100,23 @@ export default function LandingPage() {
       worstRating: "1",
     },
     featureList: [
-      "Free charity auction platform",
-      "Free fundraiser auction software",
-      "Real-time bidding for nonprofits",
-      "Silent auction mode for galas",
-      "Private auctions with invite-only access",
-      "Member management with role-based permissions",
-      "Multi-currency support for international fundraisers",
-      "Image uploads with S3 or local storage",
-      "Email notifications for outbids and auction endings",
-      "Mobile responsive design",
-      "Self-hosting option with Docker",
-      "Open source MIT license",
-      "No payment processing fees",
-      "Unlimited auctions and items",
+      "Plataforma de subastas gratuita",
+      "Software de remates gratis",
+      "Pujas en tiempo real",
+      "Modo subasta silenciosa",
+      "Subastas privadas solo por invitación",
+      "Gestión de miembros con permisos por roles",
+      "Soporte multi-moneda con Peso Chileno (CLP)",
+      "Carga de imágenes",
+      "Notificaciones por correo en español",
+      "Diseño responsive",
+      "Auto-alojamiento con Docker",
+      "Licencia MIT de código abierto",
+      "Sin comisiones de pago",
+      "Subastas y lotes ilimitados",
     ],
     keywords:
-      "auction platform free, charity auction, fundraiser auction, open source auction platform charity, nonprofit auction software",
+      "plataforma subastas chile, remate online, subasta gratis, subastas beneficencia",
   };
 
   // FAQ structured data for common questions
@@ -121,34 +126,42 @@ export default function LandingPage() {
     mainEntity: [
       {
         "@type": "Question",
-        name: "Is Auktiva really free?",
+        name: "¿SubastaYa es realmente gratis?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Yes, Auktiva is 100% free and open source. There are no fees, no limits on auctions or items, and no credit card required. You can self-host it for free or use our cloud service.",
+          text: "Sí, SubastaYa es 100% gratis y de código abierto bajo licencia MIT. Sin comisiones ni límites: autoalójala en tu propio servidor.",
         },
       },
       {
         "@type": "Question",
-        name: "Can I use Auktiva for charity fundraisers?",
+        name: "¿Cómo se cobra si alguien gana una puja?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Absolutely! Auktiva is specifically designed for charity fundraisers, nonprofit events, school auctions, church fundraisers, and gala events. It supports silent auctions with real-time bidding.",
+          text: "El pago es 100% offline: el ganador coordina directamente con el dueño del artículo. La plataforma no procesa pagos ni cobra comisiones; solo lleva el registro: pendiente de pago, pagado y entregado.",
         },
       },
       {
         "@type": "Question",
-        name: "Is Auktiva open source?",
+        name: "¿Necesito RUT para registrarme?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Yes, Auktiva is fully open source under the MIT license. You can view the source code on GitHub, contribute to development, or self-host your own instance.",
+          text: "No, el RUT es opcional. Solo necesitas nombre, correo y contraseña.",
         },
       },
       {
         "@type": "Question",
-        name: "Do I need technical skills to use Auktiva?",
+        name: "¿En qué moneda son las pujas?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "No technical skills required to use our cloud service. Simply create an account and start your auction. For self-hosting, basic Docker knowledge is helpful but our documentation guides you through the process.",
+          text: "Por defecto en pesos chilenos ($ CLP), sin decimales y con hora de Chile.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "¿Puedo tener SubastaYa en mi propio servidor?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Sí, es autoalojable con Docker y licencia MIT.",
         },
       },
     ],
@@ -176,9 +189,10 @@ export default function LandingPage() {
         <main>
           <Hero />
           <FeatureGrid />
-          <UseCases />
           <HowItWorks />
+          <UseCases />
           <ImpactVisualization />
+          <FaqSection />
           <CallToAction />
         </main>
 

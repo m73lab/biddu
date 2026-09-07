@@ -6,17 +6,24 @@ import {
   ReactNode,
 } from "react";
 
+export interface ToastAction {
+  label: string;
+  url: string;
+}
+
 interface Toast {
   id: string;
   message: string;
   type: "success" | "error" | "info" | "warning";
+  action?: ToastAction;
 }
 
 interface ToastContextType {
   toasts: Toast[];
-  showToast: (message: string, type?: Toast["type"]) => void;
+  showToast: (message: string, type?: Toast["type"], action?: ToastAction) => void;
   removeToast: (id: string) => void;
 }
+
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
@@ -24,9 +31,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const showToast = useCallback(
-    (message: string, type: Toast["type"] = "success") => {
+    (message: string, type: Toast["type"] = "success", action?: ToastAction) => {
       const id = Math.random().toString(36).substring(2, 9);
-      setToasts((prev) => [...prev, { id, message, type }]);
+      setToasts((prev) => [...prev, { id, message, type, action }]);
 
       // Auto-remove after 4 seconds
       setTimeout(() => {
@@ -104,7 +111,16 @@ function ToastContainer({
           onClick={() => removeToast(toast.id)}
         >
           <span className={`${getIcon(toast.type)} size-5`}></span>
-          <span>{toast.message}</span>
+          <span className="flex-1">{toast.message}</span>
+          {toast.action && (
+            <a
+              href={toast.action.url}
+              className="btn btn-xs btn-ghost underline shrink-0"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {toast.action.label}
+            </a>
+          )}
         </div>
       ))}
     </div>

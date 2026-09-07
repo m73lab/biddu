@@ -17,7 +17,7 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-const STORAGE_KEY = "auktiva-theme";
+const STORAGE_KEY = "subastaya-theme";
 
 // Get initial theme - only called once on client
 function getInitialTheme(): Theme {

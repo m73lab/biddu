@@ -97,12 +97,11 @@ export default function MaintenancePage() {
                 {t("tryAgain")}
               </button>
               <Link
-                href="https://github.com/thomsa/auktiva"
-                target="_blank"
+                href="/"
                 className="btn btn-ghost btn-lg h-14 px-8 rounded-full border border-base-content/10 hover:bg-base-200 hover:border-base-content/20 transition-all duration-300"
               >
-                <span className="icon-[tabler--brand-github] size-6"></span>
-                {t("viewStatus")}
+                <span className="icon-[tabler--home] size-6"></span>
+                {t("backToHome")}
               </Link>
             </div>
 

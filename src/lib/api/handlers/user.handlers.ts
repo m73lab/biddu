@@ -3,6 +3,7 @@ import type { ValidatedRequest } from "@/lib/api/middleware";
 import { BadRequestError } from "@/lib/api/errors";
 import * as userService from "@/lib/services/user.service";
 import { z } from "zod";
+import { isValidPhone } from "@/utils/phone";
 
 // ============================================================================
 // Schemas
@@ -10,6 +11,13 @@ import { z } from "zod";
 
 export const updateProfileSchema = z.object({
   name: z.string().min(1, "Name is required").max(100),
+  phone: z
+    .string()
+    .max(20)
+    .optional()
+    .refine((p) => !p || isValidPhone(p), {
+      message: "Invalid phone",
+    }),
 });
 
 export const updatePasswordSchema = z.object({

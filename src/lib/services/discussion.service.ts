@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import * as notificationService from "./notification.service";
 import type { AuctionMember } from "@/generated/prisma/client";
 import { publish, Events, Channels } from "@/lib/realtime";
 import type {
@@ -149,6 +150,58 @@ export async function getItemDiscussionsEnabled(
 /**
  * Create a new discussion (top-level or reply)
  */
+/**
+ * Notify every auction member (except the author) about a new comment.
+ * Fire and forget - must never break commenting.
+ */
+async function notifyMembersOfNewComment(
+  auctionId: string,
+  itemId: string,
+  authorId: string,
+  authorName: string | null,
+  content: string,
+): Promise<void> {
+  try {
+    const [item, members] = await Promise.all([
+      prisma.auctionItem.findUnique({
+        where: { id: itemId },
+        select: { name: true },
+      }),
+      prisma.auctionMember.findMany({
+        where: { auctionId },
+        select: { userId: true },
+      }),
+    ]);
+    const plain = content
+      .replace(/<[^>]*>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    const snippet =
+      plain.length > 120 ? plain.substring(0, 120) + "..." : plain;
+    await Promise.all(
+      members
+        .map((m) => m.userId)
+        .filter((id) => id !== authorId)
+        .map((id) =>
+          notificationService
+            .notifyNewComment(
+              id,
+              authorName || "Alguien",
+              item?.name || "un artículo",
+              auctionId,
+              itemId,
+              snippet || "Nuevo comentario",
+            )
+            .catch(() => {
+              // One failed notification shouldn't block the rest
+            }),
+        ),
+    );
+  } catch {
+    // Fan-out must never break commenting
+  }
+}
+
 export async function createDiscussion(
   itemId: string,
   userId: string,
@@ -189,6 +242,15 @@ export async function createDiscussion(
     parentId: discussion.parentId,
   };
   publish(Channels.item(itemId), Events.DISCUSSION_NEW, discussionEvent);
+
+  // Notify all auction members except the author (fire and forget)
+  notifyMembersOfNewComment(
+    discussion.auctionItem.auctionId,
+    itemId,
+    userId,
+    discussion.user.name,
+    discussion.content,
+  );
 
   return {
     id: discussion.id,

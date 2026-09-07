@@ -4,8 +4,16 @@ import { useTheme } from "@/components/providers/theme-provider";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { useTranslations } from "next-intl";
 
+const SECTION_LINKS = [
+  { href: "#caracteristicas", key: "features" },
+  { href: "#como-funciona", key: "howItWorks" },
+  { href: "#casos", key: "useCases" },
+  { href: "#faq", key: "faq" },
+] as const;
+
 export function Navbar() {
-  const t = useTranslations("nav");
+  const t = useTranslations("landing.nav");
+  const tNav = useTranslations("nav");
   const tCommon = useTranslations("common");
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -56,28 +64,17 @@ export function Navbar() {
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-4">
-          <div className="flex items-center gap-6 text-sm font-medium text-base-content/80">
-            <Link
-              href="#features"
-              className="hover:text-primary transition-colors"
-            >
-              {t("features")}
-            </Link>
-            <Link
-              href="#how-it-works"
-              className="hover:text-primary transition-colors"
-            >
-              {t("howItWorks")}
-            </Link>
-            <a
-              href="https://docs.auktiva.org"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-primary transition-colors"
-            >
-              {t("docs")}
-            </a>
+        <div className="hidden lg:flex items-center gap-4">
+          <div className="flex items-center gap-5 text-sm font-medium text-base-content/80">
+            {SECTION_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="hover:text-primary transition-colors"
+              >
+                {t(link.key)}
+              </Link>
+            ))}
           </div>
 
           <div className="flex items-center gap-3 pl-4 border-l border-base-content/10">
@@ -99,19 +96,19 @@ export function Navbar() {
               href="/login"
               className="btn btn-ghost btn-sm hover:bg-base-content/5"
             >
-              {t("signIn")}
+              {tNav("signIn")}
             </Link>
             <Link
               href="/register"
               className="btn btn-primary btn-sm shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all hover:-translate-y-0.5"
             >
-              {t("getStarted")}
+              {tNav("getStarted")}
             </Link>
           </div>
         </div>
 
         {/* Mobile Menu Button */}
-        <div className="flex md:hidden items-center gap-2">
+        <div className="flex lg:hidden items-center gap-2">
           <LanguageSwitcher compact />
           {mounted && (
             <button
@@ -142,44 +139,32 @@ export function Navbar() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-base-100/95 backdrop-blur-lg border-b border-base-content/10 shadow-lg">
+        <div className="lg:hidden absolute top-full left-0 right-0 bg-base-100/95 backdrop-blur-lg border-b border-base-content/10 shadow-lg">
           <div className="container mx-auto px-4 py-4 flex flex-col gap-2">
-            <Link
-              href="#features"
-              onClick={closeMobileMenu}
-              className="btn btn-ghost justify-start"
-            >
-              {t("features")}
-            </Link>
-            <Link
-              href="#how-it-works"
-              onClick={closeMobileMenu}
-              className="btn btn-ghost justify-start"
-            >
-              {t("howItWorks")}
-            </Link>
-            <a
-              href="https://docs.auktiva.org"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-ghost justify-start"
-            >
-              {t("docs")}
-            </a>
+            {SECTION_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={closeMobileMenu}
+                className="btn btn-ghost justify-start"
+              >
+                {t(link.key)}
+              </Link>
+            ))}
             <div className="divider my-1"></div>
             <Link
               href="/login"
               onClick={closeMobileMenu}
               className="btn btn-ghost justify-start"
             >
-              {t("signIn")}
+              {tNav("signIn")}
             </Link>
             <Link
               href="/register"
               onClick={closeMobileMenu}
               className="btn btn-primary"
             >
-              {t("getStarted")}
+              {tNav("getStarted")}
             </Link>
           </div>
         </div>

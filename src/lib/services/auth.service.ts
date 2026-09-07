@@ -16,6 +16,8 @@ export interface RegisterInput {
   name: string;
   email: string;
   password: string;
+  rut?: string;
+  phone?: string;
 }
 
 export interface ResetPasswordInput {
@@ -84,7 +86,7 @@ export async function getPasswordResetToken(rawToken: string) {
  * If the email already exists, we send an "account exists" email instead.
  */
 export async function registerUser(input: RegisterInput) {
-  const { name, email, password } = input;
+  const { name, email, password, rut, phone } = input;
   const normalizedEmail = email.toLowerCase();
 
   // Check if user already exists
@@ -107,7 +109,7 @@ export async function registerUser(input: RegisterInput) {
     await sendEmail({
       to: existingUser.email,
       toName: existingUser.name || undefined,
-      subject: "Account Already Exists - Auktiva",
+      subject: "La cuenta ya existe - SubastaYa",
       mjmlTemplate: templateData.template,
       replacements: templateData.replacements,
       type: "ACCOUNT_EXISTS",
@@ -126,6 +128,8 @@ export async function registerUser(input: RegisterInput) {
       name,
       email: normalizedEmail,
       passwordHash,
+      rut: rut || undefined,
+      phone: phone || undefined,
     },
   });
 
@@ -208,7 +212,7 @@ export async function requestPasswordReset(email: string): Promise<{
   await sendEmail({
     to: user.email,
     toName: user.name || undefined,
-    subject: "Reset Your Password - Auktiva",
+    subject: "Restablece tu contraseña - SubastaYa",
     mjmlTemplate: templateData.template,
     replacements: templateData.replacements,
     type: "PASSWORD_RESET",
@@ -338,7 +342,7 @@ export async function sendEmailVerification(
   await sendEmail({
     to: email,
     toName: name || undefined,
-    subject: "Verify Your Email - Auktiva",
+    subject: "Verifica tu correo - SubastaYa",
     mjmlTemplate: templateData.template,
     replacements: templateData.replacements,
     type: "EMAIL_VERIFICATION",

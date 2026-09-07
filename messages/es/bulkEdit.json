@@ -40,6 +40,18 @@
     "filterHasBids": "Con pujas",
     "filterNoBids": "Sin pujas",
     "clearFilter": "Limpiar",
-    "showing": "Mostrando {count} de {total}"
+    "showing": "Mostrando {count} de {total}",
+    "adminEditable": "Editable por Admin",
+    "adminEditableDisabled": "Desactivar Edición por Admin",
+    "adminEditableEnabled": "Activar Edición por Admin",
+    "bulkErrors": "Algunos artículos no se pudieron actualizar",
+    "cannotChangeAdminEditable": "Solo el propietario del artículo puede cambiar este ajuste",
+    "createdAt": "Creado",
+    "endsAt": "Termina",
+    "errorHasBids": "No se pueden modificar artículos con pujas",
+    "errorNotOwner": "Solo el propietario del artículo puede cambiar la edición por admin",
+    "errorUnknown": "Error desconocido",
+    "owner": "Propietario",
+    "updatedAt": "Actualizado"
   }
 }

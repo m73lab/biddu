@@ -1,6 +1,5 @@
 /**
  * HTML-encode a string to prevent XSS in email templates
- * This should be used for all user-provided content in email templates
  */
 export function escapeHtml(unsafe: string): string {
   return unsafe
@@ -11,29 +10,27 @@ export function escapeHtml(unsafe: string): string {
     .replace(/'/g, "&#039;");
 }
 
-// DaisyUI 5 light theme colors (converted from oklch)
+// DaisyUI 5 light theme colors
 export const theme = {
   colors: {
-    primary: "#422ad5", // DaisyUI primary: oklch(45% 0.24 277.023)
-    primaryContent: "#e0e7ff", // DaisyUI primary-content
-    background: "#fafafa", // DaisyUI base-200
-    surface: "#ffffff", // DaisyUI base-100
+    primary: "#422ad5",
+    primaryContent: "#e0e7ff",
+    background: "#fafafa",
+    surface: "#ffffff",
     text: {
-      main: "#1f2937", // DaisyUI base-content
-      muted: "#6b7280", // Gray 500
-      light: "#9ca3af", // Gray 400
+      main: "#1f2937",
+      muted: "#6b7280",
+      light: "#9ca3af",
     },
-    border: "#e5e5e5", // DaisyUI base-300
-    error: "#f87272", // DaisyUI error
+    border: "#e5e5e5",
+    error: "#f87272",
   },
-  // Border-radius values in px (MJML only supports px/%)
   borderRadius: {
-    sm: "4px", // rounded-sm
-    md: "6px", // rounded-md (buttons)
-    lg: "8px", // rounded-lg (cards, inputs)
-    xl: "12px", // rounded-xl (larger cards)
+    sm: "4px",
+    md: "6px",
+    lg: "8px",
+    xl: "12px",
   },
-  // System font stack similar to Tailwind/DaisyUI default
   fontFamily:
     "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
 };
@@ -48,7 +45,7 @@ interface LayoutProps {
 export function renderLayout({
   content,
   previewText,
-  title = "Auktiva",
+  title = "SubastaYa",
   year = "{{YEAR}}",
 }: LayoutProps) {
   return `
@@ -58,9 +55,7 @@ export function renderLayout({
         <mj-preview>${previewText || title}</mj-preview>
         <mj-attributes>
           <mj-all font-family="${theme.fontFamily}" />
-          <mj-text font-size="16px" color="${
-            theme.colors.text.main
-          }" line-height="1.6" />
+          <mj-text font-size="16px" color="${theme.colors.text.main}" line-height="1.6" />
           <mj-button 
             background-color="${theme.colors.primary}" 
             color="#ffffff" 
@@ -71,23 +66,13 @@ export function renderLayout({
             inner-padding="12px 24px"
           />
           <mj-section padding="0px" />
-          <mj-class name="heading" font-size="24px" font-weight="700" color="${
-            theme.colors.text.main
-          }" />
-          <mj-class name="subheading" font-size="18px" font-weight="600" color="${
-            theme.colors.text.main
-          }" />
-          <mj-class name="muted" color="${
-            theme.colors.text.muted
-          }" font-size="14px" />
+          <mj-class name="heading" font-size="24px" font-weight="700" color="${theme.colors.text.main}" />
+          <mj-class name="subheading" font-size="18px" font-weight="600" color="${theme.colors.text.main}" />
+          <mj-class name="muted" color="${theme.colors.text.muted}" font-size="14px" />
         </mj-attributes>
         <mj-style>
-          .header-link { text-decoration: none; color: ${
-            theme.colors.primary
-          }; font-weight: 700; font-size: 24px; }
-          .footer-link { color: ${
-            theme.colors.text.muted
-          }; text-decoration: underline; }
+          .header-link { text-decoration: none; color: ${theme.colors.primary}; font-weight: 700; font-size: 24px; }
+          .footer-link { color: ${theme.colors.text.muted}; text-decoration: underline; }
         </mj-style>
       </mj-head>
       <mj-body background-color="${theme.colors.background}" width="600px">
@@ -96,10 +81,8 @@ export function renderLayout({
         <mj-section padding="40px 0 24px">
           <mj-column>
             <mj-text align="center">
-              <a href="{{APP_URL}}" style="text-decoration: none; font-size: 24px; font-weight: 800; color: ${
-                theme.colors.primary
-              }; letter-spacing: -0.5px;">
-                Auktiva
+              <a href="{{APP_URL}}" style="text-decoration: none; font-size: 24px; font-weight: 800; color: ${theme.colors.primary}; letter-spacing: -0.5px;">
+                SubastaYa
               </a>
             </mj-text>
           </mj-column>
@@ -107,11 +90,7 @@ export function renderLayout({
         
         <!-- Main Content Card -->
         <mj-section padding="0 16px">
-          <mj-column background-color="${
-            theme.colors.surface
-          }" border-radius="${
-            theme.borderRadius.xl
-          }" padding="32px" border="1px solid ${theme.colors.border}">
+          <mj-column background-color="${theme.colors.surface}" border-radius="${theme.borderRadius.xl}" padding="32px" border="1px solid ${theme.colors.border}">
             ${content}
           </mj-column>
         </mj-section>
@@ -119,22 +98,14 @@ export function renderLayout({
         <!-- Footer -->
         <mj-section padding="32px 0 48px">
           <mj-column>
-            <mj-text align="center" color="${
-              theme.colors.text.light
-            }" font-size="12px">
-              © ${year} Auktiva.org<br/>
-              Your Private Auction Platform
+            <mj-text align="center" color="${theme.colors.text.light}" font-size="12px">
+              © ${year} SubastaYa.cl<br/>
+              Tu Plataforma de Subastas Privadas
             </mj-text>
-            <mj-text align="center" color="${
-              theme.colors.text.light
-            }" font-size="12px" padding-top="8px">
-              <a href="#" class="footer-link" style="color: ${
-                theme.colors.text.light
-              }; text-decoration: none;">Privacy Policy</a>
+            <mj-text align="center" color="${theme.colors.text.light}" font-size="12px" padding-top="8px">
+              <a href="#" class="footer-link" style="color: ${theme.colors.text.light}; text-decoration: none;">Política de Privacidad</a>
               &nbsp;&nbsp;•&nbsp;&nbsp;
-              <a href="#" class="footer-link" style="color: ${
-                theme.colors.text.light
-              }; text-decoration: none;">Terms of Service</a>
+              <a href="#" class="footer-link" style="color: ${theme.colors.text.light}; text-decoration: none;">Términos de Servicio</a>
             </mj-text>
           </mj-column>
         </mj-section>

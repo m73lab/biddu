@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { decimalsForCurrency } from "@/utils/formatters";
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 
@@ -141,7 +142,9 @@ export function CurrencyStatsCard({
               <div className="flex items-baseline gap-1 flex-col sm:flex-row">
                 <span className="text-2xl font-bold">
                   {currencyTotals[0].symbol}
-                  {currencyTotals[0].total.toFixed(decimals)}
+                  {currencyTotals[0].total.toFixed(
+                    decimals ?? decimalsForCurrency(currencyTotals[0].code),
+                  )}
                 </span>
                 {currencyTotals.length > 1 && (
                   <>
@@ -174,7 +177,9 @@ export function CurrencyStatsCard({
                                 </span>
                                 <span className="font-medium">
                                   {ct.symbol}
-                                  {ct.total.toFixed(decimals)}
+                                  {ct.total.toFixed(
+                                    decimals ?? decimalsForCurrency(ct.code),
+                                  )}
                                 </span>
                               </div>
                             ))}

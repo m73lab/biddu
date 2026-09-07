@@ -2,31 +2,31 @@ import { renderLayout, theme, escapeHtml } from "../layout";
 
 const content = `
     <mj-text font-size="22px" font-weight="600" color="${theme.colors.text.main}">
-      Welcome to Auktiva, {{NAME}}! 🎉
+      Bienvenido a SubastaYa, {{NAME}}! 🎉
     </mj-text>
     <mj-text>
-      Thank you for joining Auktiva - your private auction platform. We're excited to have you on board!
+      ¡Gracias por unirte a SubastaYa, tu plataforma de subastas privadas. Estamos emocionados de tenerte con nosotros!
     </mj-text>
     <mj-text>
-      With Auktiva, you can:
+      Con SubastaYa puedes:
     </mj-text>
     <mj-text padding-left="20px">
-      • Create and manage private auctions<br/>
-      • Invite friends and colleagues to bid<br/>
-      • Track your bids in real-time<br/>
-      • Customize auction settings to your needs
+      • Crear y gestionar subastas privadas<br/>
+      • Invitar a amigos y colegas a pujar<br/>
+      • Seguir tus pujas en tiempo real<br/>
+      • Personalizar la configuración de tus subastas
     </mj-text>
     <mj-text>
-      Ready to get started? Click the button below to explore your dashboard.
+      ¿Listo para comenzar? Haz clic en el botón de abajo para explorar tu panel.
     </mj-text>
     <mj-button href="{{APP_URL}}/dashboard">
-      Go to Dashboard
+      Ir al Panel
     </mj-button>
 `;
 
 export const welcomeTemplate = renderLayout({
-  title: "Welcome to Auktiva",
-  previewText: "Welcome to Auktiva - Your Private Auction Platform",
+  title: "Bienvenido a SubastaYa",
+  previewText: "Bienvenido a SubastaYa - Tu Plataforma de Subastas Privadas",
   content,
 });
 
@@ -34,8 +34,7 @@ export function getWelcomeTemplateData(data: { name: string; appUrl: string }) {
   return {
     template: welcomeTemplate,
     replacements: {
-      // HTML-encode user-provided content to prevent injection
-      "{{NAME}}": escapeHtml(data.name || "there"),
+      "{{NAME}}": escapeHtml(data.name || "ahí"),
       "{{APP_URL}}": data.appUrl,
       "{{YEAR}}": new Date().getFullYear().toString(),
     },

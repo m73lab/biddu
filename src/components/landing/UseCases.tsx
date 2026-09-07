@@ -33,7 +33,7 @@ export function UseCases() {
   const t = useTranslations("landing.useCases");
 
   return (
-    <section className="py-24 bg-base-200/50">
+    <section id="casos" className="py-24 bg-base-200/50">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-16">

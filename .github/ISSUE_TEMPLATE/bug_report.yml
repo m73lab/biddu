@@ -54,7 +54,7 @@ body:
       label: Environment
       description: Are you using the hosted version or self-hosting?
       options:
-        - Hosted (auktiva.org)
+        - Hosted (subastaya.cl)
         - Self-hosted
     validations:
       required: true

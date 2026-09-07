@@ -11,8 +11,8 @@ import type { EmailProvider, EmailMessage, EmailSendResult } from "./types";
 
 const logger = createLogger("email:ses");
 
-const MAIL_FROM = process.env.MAIL_FROM || "noreply@auktiva.org";
-const MAIL_FROM_NAME = process.env.MAIL_FROM_NAME || "Auktiva.org";
+const MAIL_FROM = process.env.MAIL_FROM || "noreply@subastaya.cl";
+const MAIL_FROM_NAME = process.env.MAIL_FROM_NAME || "SubastaYa";
 
 export class SesProvider implements EmailProvider {
   private client: SESClient;
@@ -144,12 +144,12 @@ export async function testSesConnection(config: {
       },
       Message: {
         Subject: {
-          Data: "Auktiva SES Test",
+          Data: "SubastaYa SES Test",
           Charset: "UTF-8",
         },
         Body: {
           Text: {
-            Data: "This is a test email from Auktiva to verify SES configuration.",
+            Data: "This is a test email from SubastaYa to verify SES configuration.",
             Charset: "UTF-8",
           },
         },

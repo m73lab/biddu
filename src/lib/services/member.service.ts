@@ -435,8 +435,8 @@ function publishBidUpdatesAndNotify(
         .createNotification({
           userId: item.newHighestBidderId,
           type: "OUTBID",
-          title: "You're back in the lead!",
-          message: `Your bid of ${item.currencySymbol}${item.newHighestBid.toFixed(2)} on "${item.itemName}" is now the highest again`,
+          title: "¡Volviste a liderar!",
+          message: `Tu puja de ${item.currencySymbol}${item.newHighestBid.toFixed(2)} por "${item.itemName}" vuelve a ser la más alta`,
           auctionId,
           itemId: item.itemId,
         })

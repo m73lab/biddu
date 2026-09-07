@@ -145,7 +145,14 @@
       "noBids": "No bids yet. Be the first to bid!",
       "anonymous": "Anonymous",
       "you": "You",
-      "highest": "Highest"
+      "highest": "Highest",
+      "subtitle": "Track your bidding activity and results",
+      "recentBids": "Recent Bids",
+      "browseAuctions": "Browse Auctions",
+      "item": "Item",
+      "auction": "Auction",
+      "status": "Status",
+      "date": "Date"
     },
     "status": {
       "active": "Active",
@@ -164,6 +171,51 @@
       "title": "No items yet",
       "description": "This auction doesn't have any items listed yet.",
       "createFirst": "Add First Item"
+    },
+    "detail": {
+      "winnerContact": "Winner Contact",
+      "cannotBid": "You cannot bid on this item.",
+      "currency": "Currency",
+      "minIncrement": "Min Increment",
+      "totalBids": "Total Bids",
+      "fulfillment": {
+        "title": "Payment & delivery",
+        "offlineNote": "Payment and delivery are arranged in person, outside the platform. This tracks the agreed state.",
+        "ownerHint": "Update the status as you receive payment and deliver the item. The winner will be notified.",
+        "winnerHint": "Coordinate payment and delivery directly with the item owner.",
+        "noStatus": "Not tracked",
+        "pendingPayment": "Pending payment",
+        "paid": "Paid",
+        "delivered": "Delivered",
+        "markPaid": "Mark as paid",
+        "markDelivered": "Mark as delivered",
+        "markPending": "Back to pending",
+        "updating": "Saving...",
+        "updateFailed": "Could not update status",
+        "amountToPay": "Amount to pay"
+      },
+      "contact": {
+        "title": "Contact the winner",
+        "subtitle": "Prepare the message for {item}",
+        "winner": "Winner",
+        "winningBid": "Winning bid",
+        "copyEmail": "Copy email",
+        "copied": "Copied!",
+        "messageLabel": "Message",
+        "copyMessage": "Copy message",
+        "openMail": "Open in my mail app",
+        "mailHint": "Your mail app will open with recipient, subject and message ready.",
+        "backToItem": "Back to the item",
+        "mailSubject": "You won \"{item}\"!",
+        "template": "Hi {winner}:\n\nCongratulations! You won \"{item}\" with a bid of {amount} in the auction \"{auction}\".\n\nTo coordinate payment and delivery (done in person), just reply to this email.\nThanks for participating!\n\n{owner}",
+        "whatsapp": "WhatsApp",
+        "openWhatsapp": "Open WhatsApp",
+        "noPhoneOwner": "The winner hasn't added WhatsApp yet. When they do, it will appear here.",
+        "noPhoneTitle": "Missing your WhatsApp",
+        "noPhoneText": "Add your WhatsApp number in Settings so the item owner can contact you.",
+        "goSettings": "Go to Settings"
+      },
+      "contactWinner": "Contact the winner"
     }
   }
 }

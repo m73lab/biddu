@@ -300,7 +300,7 @@ export function RichTextEditor({
           />
           <circle r="6" cx="10" cy="10" className="fill-base-100" />
         </svg>
-        {characterCount} / {maxLength} characters
+        {characterCount} / {maxLength} {t("characters")}
       </div>
 
       {/* Link Modal - rendered in portal */}

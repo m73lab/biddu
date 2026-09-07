@@ -128,6 +128,18 @@ export function MobileNotificationSheet({
             <span className="icon-[tabler--mail] size-6 text-primary" />
           </div>
         );
+      case "NEW_BID":
+        return (
+          <div className="size-12 rounded-xl bg-secondary/10 flex items-center justify-center">
+            <span className="icon-[tabler--gavel] size-6 text-secondary" />
+          </div>
+        );
+      case "NEW_COMMENT":
+        return (
+          <div className="size-12 rounded-xl bg-info/10 flex items-center justify-center">
+            <span className="icon-[tabler--message] size-6 text-info" />
+          </div>
+        );
       default:
         return (
           <div className="size-12 rounded-xl bg-base-200 flex items-center justify-center">

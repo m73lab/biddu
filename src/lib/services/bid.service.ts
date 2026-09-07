@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { queueOutbidEmail } from "@/lib/email/service";
 import * as notificationService from "./notification.service";
+import { formatCurrency, decimalsForCurrency } from "@/utils/formatters";
 import { publish, Events, Channels } from "@/lib/realtime";
 import type { BidNewEvent, BidOutbidEvent } from "@/lib/realtime/events";
 import type { Bid } from "@/generated/prisma/client";
@@ -189,7 +190,9 @@ export async function getUserBidHistory(userId: string) {
         name: b.auctionItem.name,
         currentBid: b.auctionItem.currentBid,
         endDate: b.auctionItem.endDate?.toISOString() || null,
+        fulfillmentStatus: b.auctionItem.fulfillmentStatus,
         currency: {
+          code: b.auctionItem.currency.code,
           symbol: b.auctionItem.currency.symbol,
         },
       },
@@ -395,12 +398,79 @@ export async function placeBid(
     );
   }
 
+  // Notify all other auction members about the new bid (fire and forget)
+  notifyMembersOfNewBid({
+    auctionId: item.auction.id,
+    itemId,
+    itemName: item.name,
+    bidderId: userId,
+    displayName: shouldBeAnonymous
+      ? "Un pujador anónimo"
+      : bidder?.name || "Alguien",
+    amount: input.amount,
+    currencySymbol: item.currency.symbol,
+    currencyCode: item.currency.code,
+    excludeUserIds: previousBidderId ? [previousBidderId] : [],
+  });
+
   return bid;
 }
 
 /**
  * Notify outbid user (fire and forget)
  */
+interface NewBidFanout {
+  auctionId: string;
+  itemId: string;
+  itemName: string;
+  bidderId: string;
+  displayName: string;
+  amount: number;
+  currencySymbol: string;
+  currencyCode: string;
+  excludeUserIds: string[];
+}
+
+/**
+ * Notify every auction member (except the bidder and already-notified
+ * users) about a new bid. Fire and forget - must never break bidding.
+ */
+async function notifyMembersOfNewBid(f: NewBidFanout): Promise<void> {
+  try {
+    const members = await prisma.auctionMember.findMany({
+      where: { auctionId: f.auctionId },
+      select: { userId: true },
+    });
+    const displayAmount = formatCurrency(
+      f.amount,
+      f.currencySymbol,
+      decimalsForCurrency(f.currencyCode),
+    );
+    const excluded = new Set([f.bidderId, ...f.excludeUserIds]);
+    await Promise.all(
+      members
+        .map((m) => m.userId)
+        .filter((id) => !excluded.has(id))
+        .map((id) =>
+          notificationService
+            .notifyNewBid(
+              id,
+              f.displayName,
+              f.itemName,
+              f.auctionId,
+              f.itemId,
+              displayAmount,
+            )
+            .catch(() => {
+              // One failed notification shouldn't block the rest
+            }),
+        ),
+    );
+  } catch {
+    // Fan-out must never break bidding
+  }
+}
+
 async function notifyOutbidUser(
   previousBidderId: string,
   itemName: string,

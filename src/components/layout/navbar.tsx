@@ -199,26 +199,13 @@ export function Navbar({ user }: NavbarProps) {
               )}
               <div className="divider my-1 opacity-50"></div>
               <li>
-                <a
-                  href="https://docs.auktiva.org/users"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href="/ayuda"
                   className="active:bg-primary/10 active:text-primary"
                 >
-                  <span className="icon-[tabler--book] size-4 opacity-70"></span>
-                  {t("documentation")}
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://github.com/thomsa/auktiva/issues/new/choose"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="active:bg-primary/10 active:text-primary"
-                >
-                  <span className="icon-[tabler--message-report] size-4 opacity-70"></span>
-                  {t("feedback")}
-                </a>
+                  <span className="icon-[tabler--lifebuoy] size-4 opacity-70"></span>
+                  {t("help")}
+                </Link>
               </li>
               <div className="divider my-1 opacity-50"></div>
               <li>

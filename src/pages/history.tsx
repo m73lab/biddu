@@ -4,7 +4,12 @@ import { fetcher } from "@/lib/fetcher";
 import { PageLayout, EmptyState } from "@/components/common";
 import { StatsCard, CurrencyStatsCard } from "@/components/ui/stats-card";
 import { SkeletonHistoryPage } from "@/components/ui/skeleton";
-import { formatDate } from "@/utils/formatters";
+import {
+  formatDate,
+  formatCurrency,
+  decimalsForCurrency,
+} from "@/utils/formatters";
+import { FulfillmentBadge } from "@/components/item/FulfillmentCard";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 import { withAuth } from "@/lib/auth/withAuth";
@@ -20,8 +25,10 @@ interface BidHistory {
     currentBid: number | null;
     endDate: string | null;
     currency: {
+      code: string;
       symbol: string;
     };
+    fulfillmentStatus: string | null;
   };
   auction: {
     id: string;
@@ -91,7 +98,7 @@ export default function HistoryPage({ user }: HistoryPageProps) {
             <div>
               <h1 className="text-2xl font-bold">{t("bidHistory")}</h1>
               <p className="text-base-content/60">
-                Track your bidding activity and results
+                {tHistory("subtitle")}
               </p>
             </div>
           </div>
@@ -111,7 +118,7 @@ export default function HistoryPage({ user }: HistoryPageProps) {
           <div>
             <h1 className="text-2xl font-bold">{t("bidHistory")}</h1>
             <p className="text-base-content/60">
-              Track your bidding activity and results
+              {tHistory("subtitle")}
             </p>
           </div>
         </div>
@@ -135,8 +142,7 @@ export default function HistoryPage({ user }: HistoryPageProps) {
           icon="icon-[tabler--currency-dollar]"
           iconColor="secondary"
           currencyTotals={stats.winningTotals}
-          label="Total Value (Winning)"
-          decimals={2}
+          label={tStats("totalValueWinning")}
         />
       </div>
 
@@ -145,7 +151,9 @@ export default function HistoryPage({ user }: HistoryPageProps) {
         <div className="card-body p-0 sm:p-6">
           <div className="flex items-center gap-2 px-6 pt-6 sm:px-0 sm:pt-0 mb-6">
             <span className="w-1 h-6 rounded-full bg-secondary"></span>
-            <h2 className="text-xl font-bold text-base-content">Recent Bids</h2>
+            <h2 className="text-xl font-bold text-base-content">
+              {tHistory("recentBids")}
+            </h2>
           </div>
 
           {bids.length === 0 ? (
@@ -158,7 +166,7 @@ export default function HistoryPage({ user }: HistoryPageProps) {
                     href="/dashboard"
                     className="btn btn-primary shadow-lg shadow-primary/20"
                   >
-                    Browse Auctions
+                    {tHistory("browseAuctions")}
                   </Link>
                 }
               />
@@ -190,6 +198,11 @@ export default function HistoryPage({ user }: HistoryPageProps) {
                             {isEnded ? tStatus("lost") : tStatus("outbid")}
                           </span>
                         )}
+                        {bid.isWinning && bid.item.fulfillmentStatus && (
+                          <FulfillmentBadge
+                            status={bid.item.fulfillmentStatus}
+                          />
+                        )}
                       </div>
                       <div className="text-sm text-base-content/60 mb-3 flex items-center gap-1">
                         <span className="icon-[tabler--gavel] size-3"></span>
@@ -201,8 +214,11 @@ export default function HistoryPage({ user }: HistoryPageProps) {
                             {tItem("bid.yourBid")}
                           </span>
                           <span className="font-mono font-bold text-primary">
-                            {bid.item.currency.symbol}
-                            {bid.amount.toFixed(2)}
+                            {formatCurrency(
+                              bid.amount,
+                              bid.item.currency.symbol,
+                              decimalsForCurrency(bid.item.currency.code),
+                            )}
                           </span>
                         </div>
                         <div className="flex flex-col items-end">
@@ -211,7 +227,11 @@ export default function HistoryPage({ user }: HistoryPageProps) {
                           </span>
                           <span className="font-mono font-medium">
                             {bid.item.currency.symbol}
-                            {(bid.item.currentBid || 0).toFixed(2)}
+                            {formatCurrency(
+                              bid.item.currentBid || 0,
+                              bid.item.currency.symbol,
+                              decimalsForCurrency(bid.item.currency.code),
+                            )}
                           </span>
                         </div>
                       </div>
@@ -229,10 +249,10 @@ export default function HistoryPage({ user }: HistoryPageProps) {
                   <thead>
                     <tr className="border-b-base-content/5">
                       <th className="bg-transparent text-base-content/60 font-semibold">
-                        Item
+                        {tHistory("item")}
                       </th>
                       <th className="bg-transparent text-base-content/60 font-semibold">
-                        Auction
+                        {tHistory("auction")}
                       </th>
                       <th className="text-right bg-transparent text-base-content/60 font-semibold">
                         {tItem("bid.yourBid")}
@@ -241,10 +261,10 @@ export default function HistoryPage({ user }: HistoryPageProps) {
                         {tItem("bid.currentBid")}
                       </th>
                       <th className="bg-transparent text-base-content/60 font-semibold text-center">
-                        Status
+                        {tHistory("status")}
                       </th>
                       <th className="text-right bg-transparent text-base-content/60 font-semibold">
-                        Date
+                        {tHistory("date")}
                       </th>
                     </tr>
                   </thead>
@@ -277,12 +297,19 @@ export default function HistoryPage({ user }: HistoryPageProps) {
                             </Link>
                           </td>
                           <td className="text-right font-mono font-bold text-primary">
-                            {bid.item.currency.symbol}
-                            {bid.amount.toFixed(2)}
+                            {formatCurrency(
+                              bid.amount,
+                              bid.item.currency.symbol,
+                              decimalsForCurrency(bid.item.currency.code),
+                            )}
                           </td>
                           <td className="text-right font-mono text-base-content/70">
                             {bid.item.currency.symbol}
-                            {(bid.item.currentBid || 0).toFixed(2)}
+                            {formatCurrency(
+                              bid.item.currentBid || 0,
+                              bid.item.currency.symbol,
+                              decimalsForCurrency(bid.item.currency.code),
+                            )}
                           </td>
                           <td className="text-center">
                             {bid.isWinning ? (
@@ -294,6 +321,13 @@ export default function HistoryPage({ user }: HistoryPageProps) {
                               <span className="badge badge-ghost bg-base-content/5 font-medium">
                                 {isEnded ? tStatus("lost") : tStatus("outbid")}
                               </span>
+                            )}
+                            {bid.isWinning && bid.item.fulfillmentStatus && (
+                              <div className="mt-1 flex justify-center">
+                                <FulfillmentBadge
+                                  status={bid.item.fulfillmentStatus}
+                                />
+                              </div>
                             )}
                           </td>
                           <td className="text-right text-sm text-base-content/50 tabular-nums">

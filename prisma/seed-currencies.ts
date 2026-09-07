@@ -4,58 +4,57 @@ import { createPrismaClient } from "../src/lib/prisma";
 
 const prisma = createPrismaClient();
 
-// ISO 4217 currencies - comprehensive list
+// ISO 4217 currencies — Chile first, then rest
 export const currencies = [
-  { code: "USD", name: "US Dollar", symbol: "$" },
+  { code: "CLP", name: "Peso Chileno", symbol: "$" },
+  { code: "USD", name: "Dólar Estadounidense", symbol: "US$" },
   { code: "EUR", name: "Euro", symbol: "€" },
-  { code: "GBP", name: "British Pound", symbol: "£" },
-  { code: "JPY", name: "Japanese Yen", symbol: "¥" },
-  { code: "CHF", name: "Swiss Franc", symbol: "CHF" },
-  { code: "CAD", name: "Canadian Dollar", symbol: "C$" },
-  { code: "AUD", name: "Australian Dollar", symbol: "A$" },
-  { code: "NZD", name: "New Zealand Dollar", symbol: "NZ$" },
-  { code: "CNY", name: "Chinese Yuan", symbol: "¥" },
-  { code: "HKD", name: "Hong Kong Dollar", symbol: "HK$" },
-  { code: "SGD", name: "Singapore Dollar", symbol: "S$" },
-  { code: "SEK", name: "Swedish Krona", symbol: "kr" },
-  { code: "NOK", name: "Norwegian Krone", symbol: "kr" },
-  { code: "DKK", name: "Danish Krone", symbol: "kr" },
-  { code: "KRW", name: "South Korean Won", symbol: "₩" },
-  { code: "INR", name: "Indian Rupee", symbol: "₹" },
-  { code: "RUB", name: "Russian Ruble", symbol: "₽" },
-  { code: "BRL", name: "Brazilian Real", symbol: "R$" },
-  { code: "ZAR", name: "South African Rand", symbol: "R" },
-  { code: "MXN", name: "Mexican Peso", symbol: "$" },
-  { code: "PLN", name: "Polish Zloty", symbol: "zł" },
-  { code: "TRY", name: "Turkish Lira", symbol: "₺" },
-  { code: "THB", name: "Thai Baht", symbol: "฿" },
-  { code: "IDR", name: "Indonesian Rupiah", symbol: "Rp" },
-  { code: "MYR", name: "Malaysian Ringgit", symbol: "RM" },
-  { code: "PHP", name: "Philippine Peso", symbol: "₱" },
-  { code: "CZK", name: "Czech Koruna", symbol: "Kč" },
-  { code: "HUF", name: "Hungarian Forint", symbol: "Ft" },
-  { code: "ILS", name: "Israeli Shekel", symbol: "₪" },
-  { code: "CLP", name: "Chilean Peso", symbol: "$" },
-  { code: "TWD", name: "Taiwan Dollar", symbol: "NT$" },
-  { code: "AED", name: "UAE Dirham", symbol: "د.إ" },
-  { code: "SAR", name: "Saudi Riyal", symbol: "﷼" },
-  { code: "RON", name: "Romanian Leu", symbol: "lei" },
-  { code: "BGN", name: "Bulgarian Lev", symbol: "лв" },
-  { code: "HRK", name: "Croatian Kuna", symbol: "kn" },
-  { code: "UAH", name: "Ukrainian Hryvnia", symbol: "₴" },
-  { code: "VND", name: "Vietnamese Dong", symbol: "₫" },
-  { code: "EGP", name: "Egyptian Pound", symbol: "£" },
-  { code: "PKR", name: "Pakistani Rupee", symbol: "₨" },
-  { code: "BDT", name: "Bangladeshi Taka", symbol: "৳" },
-  { code: "NGN", name: "Nigerian Naira", symbol: "₦" },
-  { code: "KES", name: "Kenyan Shilling", symbol: "KSh" },
-  { code: "ARS", name: "Argentine Peso", symbol: "$" },
-  { code: "COP", name: "Colombian Peso", symbol: "$" },
-  { code: "PEN", name: "Peruvian Sol", symbol: "S/" },
+  { code: "GBP", name: "Libra Esterlina", symbol: "£" },
+  { code: "JPY", name: "Yen Japonés", symbol: "¥" },
+  { code: "CHF", name: "Franco Suizo", symbol: "CHF" },
+  { code: "CAD", name: "Dólar Canadiense", symbol: "C$" },
+  { code: "AUD", name: "Dólar Australiano", symbol: "A$" },
+  { code: "NZD", name: "Dólar Neozelandés", symbol: "NZ$" },
+  { code: "CNY", name: "Yuan Chino", symbol: "¥" },
+  { code: "HKD", name: "Dólar de Hong Kong", symbol: "HK$" },
+  { code: "SGD", name: "Dólar de Singapur", symbol: "S$" },
+  { code: "SEK", name: "Corona Sueca", symbol: "kr" },
+  { code: "NOK", name: "Corona Noruega", symbol: "kr" },
+  { code: "DKK", name: "Corona Danesa", symbol: "kr" },
+  { code: "KRW", name: "Won Surcoreano", symbol: "₩" },
+  { code: "INR", name: "Rupia India", symbol: "₹" },
+  { code: "RUB", name: "Rublo Ruso", symbol: "₽" },
+  { code: "BRL", name: "Real Brasileño", symbol: "R$" },
+  { code: "ZAR", name: "Rand Sudafricano", symbol: "R" },
+  { code: "MXN", name: "Peso Mexicano", symbol: "MX$" },
+  { code: "ARS", name: "Peso Argentino", symbol: "AR$" },
+  { code: "COP", name: "Peso Colombiano", symbol: "CO$" },
+  { code: "PEN", name: "Sol Peruano", symbol: "S/" },
+  { code: "PLN", name: "Zloty Polaco", symbol: "zł" },
+  { code: "TRY", name: "Lira Turca", symbol: "₺" },
+  { code: "THB", name: "Baht Tailandés", symbol: "฿" },
+  { code: "IDR", name: "Rupia Indonesia", symbol: "Rp" },
+  { code: "MYR", name: "Ringgit Malayo", symbol: "RM" },
+  { code: "PHP", name: "Peso Filipino", symbol: "₱" },
+  { code: "CZK", name: "Corona Checa", symbol: "Kč" },
+  { code: "HUF", name: "Forinto Húngaro", symbol: "Ft" },
+  { code: "ILS", name: "Shekel Israelí", symbol: "₪" },
+  { code: "TWD", name: "Dólar Taiwanés", symbol: "NT$" },
+  { code: "AED", name: "Dírham de los EAU", symbol: "د.إ" },
+  { code: "SAR", name: "Riyal Saudí", symbol: "﷼" },
+  { code: "RON", name: "Leu Rumano", symbol: "lei" },
+  { code: "BGN", name: "Lev Búlgaro", symbol: "лв" },
+  { code: "HRK", name: "Kuna Croata", symbol: "kn" },
+  { code: "UAH", name: "Hryvnia Ucraniana", symbol: "₴" },
+  { code: "VND", name: "Dong Vietnamita", symbol: "₫" },
+  { code: "EGP", name: "Libra Egipcia", symbol: "E£" },
+  { code: "PKR", name: "Rupia Pakistaní", symbol: "₨" },
+  { code: "BDT", name: "Taka Bangladesí", symbol: "৳" },
+  { code: "NGN", name: "Naira Nigeriana", symbol: "₦" },
+  { code: "KES", name: "Chelín Keniano", symbol: "KSh" },
 ];
 
 export async function seedCurrencies(prismaClient: PrismaClient = prisma) {
-  // Check if currencies already exist
   const existingCount = await prismaClient.currency.count();
   if (existingCount > 0) {
     console.log(
@@ -75,7 +74,6 @@ export async function seedCurrencies(prismaClient: PrismaClient = prisma) {
   console.log(`✅ Seeded ${currencies.length} currencies`);
 }
 
-// Only run main() if this file is executed directly (not imported)
 const isMainModule = import.meta.url === `file://${process.argv[1]}`;
 
 if (isMainModule) {

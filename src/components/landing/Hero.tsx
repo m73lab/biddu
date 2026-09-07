@@ -1,22 +1,13 @@
 import Link from "next/link";
-import { useRef } from "react";
 import { useTranslations } from "next-intl";
-import packageJson from "../../../package.json";
 
 export function Hero() {
   const t = useTranslations("landing.hero");
-  const modalRef = useRef<HTMLDialogElement>(null);
 
-  const openModal = () => {
-    modalRef.current?.showModal();
-  };
-
-  const closeModal = () => {
-    modalRef.current?.close();
-  };
+  const stats = t.raw("stats") as Array<{ value: string; label: string }>;
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center pt-28 pb-16 overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px] animate-pulse"></div>
@@ -26,16 +17,6 @@ export function Hero() {
 
       <div className="container mx-auto px-4 text-center relative z-10">
         <div className="animate-fade-in-up">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-base-200/50 border border-base-content/10 backdrop-blur-sm mb-8 hover:border-primary/50 transition-colors cursor-default">
-            <span className="relative flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
-            </span>
-            <span className="text-sm font-medium text-base-content/80">
-              {t("badge", { version: packageJson.version })}
-            </span>
-          </div>
-
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-tight">
             {t("title")} <br />
             <span className="bg-linear-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
@@ -43,7 +24,7 @@ export function Hero() {
             </span>
           </h1>
 
-          <p className="text-xl md:text-2xl text-base-content/60 max-w-2xl mx-auto mb-12 leading-relaxed">
+          <p className="text-xl md:text-2xl text-base-content/60 max-w-3xl mx-auto mb-12 leading-relaxed">
             {t("description")}
           </p>
 
@@ -56,96 +37,67 @@ export function Hero() {
               {t("startAuction")}
             </Link>
             <Link
-              href="https://github.com/thomsa/auktiva"
-              target="_blank"
+              href="#como-funciona"
               className="btn btn-ghost btn-lg h-14 px-8 rounded-full border border-base-content/10 hover:bg-base-200 hover:border-base-content/20 transition-all duration-300"
             >
-              <span className="icon-[tabler--brand-github] size-6"></span>
-              {t("viewOnGithub")}
+              <span className="icon-[tabler--player-play] size-6"></span>
+              {t("secondaryCta")}
             </Link>
           </div>
 
-          <div className="mt-16 p-4 mb-18 rounded-2xl bg-base-200/30 border border-base-content/5 backdrop-blur-sm max-w-4xl mx-auto shadow-2xl transform hover:scale-[1.01] transition-transform duration-500">
-            {/* Demo Preview Card */}
-            <div className="aspect-video rounded-xl overflow-hidden relative group bg-base-200">
-              {/* Static preview with play button overlay */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-primary/10 via-base-200 to-secondary/10">
-                <button
-                  onClick={openModal}
-                  className="btn btn-primary btn-lg gap-3 rounded-full shadow-xl shadow-primary/30 hover:shadow-primary/50 hover:scale-105 transition-all duration-300"
-                >
-                  <span className="icon-[tabler--player-play-filled] size-6"></span>
-                  {t("showDemo")}
-                </button>
-                <p className="mt-4 text-base-content/50 text-sm">
-                  {t("demoHint")}
-                </p>
-              </div>
-
-              {/* Floating Cards Animation */}
-              <div className="absolute top-10 left-10 w-64 h-40 bg-base-100 rounded-lg shadow-lg border border-base-content/5 p-4 transform -rotate-6 group-hover:-rotate-3 transition-transform duration-500 hidden sm:block">
-                <div className="flex gap-3 mb-3">
-                  <div className="w-12 h-12 rounded bg-primary/20"></div>
-                  <div className="space-y-2">
-                    <div className="w-32 h-4 rounded bg-base-content/10"></div>
-                    <div className="w-20 h-3 rounded bg-base-content/5"></div>
-                  </div>
+          {/* Stats */}
+          <div className="mt-14 flex flex-col sm:flex-row gap-4 justify-center items-stretch max-w-3xl mx-auto">
+            {stats.map((stat) => (
+              <div
+                key={stat.label}
+                className="flex-1 rounded-2xl bg-base-100/60 border border-base-content/5 backdrop-blur-sm px-6 py-5 shadow-sm"
+              >
+                <div className="text-3xl font-extrabold text-primary">
+                  {stat.value}
                 </div>
-                <div className="flex justify-between items-end">
-                  <div className="w-16 h-6 rounded bg-secondary/20"></div>
-                  <div className="w-20 h-8 rounded bg-primary text-primary-content text-xs flex items-center justify-center">
-                    {t("bidNow")}
-                  </div>
+                <div className="text-sm text-base-content/60 font-medium mt-1">
+                  {stat.label}
                 </div>
               </div>
+            ))}
+          </div>
 
-              <div className="absolute bottom-10 right-10 w-64 h-40 bg-base-100 rounded-lg shadow-lg border border-base-content/5 p-4 transform rotate-3 group-hover:rotate-1 transition-transform duration-500 z-10 hidden sm:block">
-                <div className="flex gap-3 mb-3">
-                  <div className="w-12 h-12 rounded bg-secondary/20"></div>
-                  <div className="space-y-2">
-                    <div className="w-32 h-4 rounded bg-base-content/10"></div>
-                    <div className="w-20 h-3 rounded bg-base-content/5"></div>
+          {/* Live preview mock */}
+          <div className="mt-12 p-4 rounded-2xl bg-base-200/30 border border-base-content/5 backdrop-blur-sm max-w-4xl mx-auto shadow-2xl">
+            <div className="rounded-xl overflow-hidden relative bg-base-100 border border-base-content/5 p-6 text-left">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <div className="text-xs uppercase tracking-widest text-base-content/50 font-bold">
+                    {t("previewBidders")}
+                  </div>
+                  <div className="text-2xl font-extrabold">
+                    {t("previewTitle")}
                   </div>
                 </div>
-                <div className="flex justify-between items-end">
-                  <div className="w-16 h-6 rounded bg-primary/20"></div>
-                  <div className="w-20 h-8 rounded bg-primary text-primary-content text-xs flex items-center justify-center">
-                    {t("bidNow")}
+                <span className="badge badge-success gap-2">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success-content opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-success-content"></span>
+                  </span>
+                  EN VIVO
+                </span>
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 bg-base-200/50 rounded-xl p-5">
+                <div>
+                  <div className="text-sm text-base-content/60">
+                    {t("previewBid")}
                   </div>
+                  <div className="text-4xl font-mono font-extrabold text-primary">
+                    $125.000
+                  </div>
+                </div>
+                <div className="btn btn-primary rounded-full px-8">
+                  <span className="icon-[tabler--gavel] size-5"></span>
+                  {t("previewButton")}
                 </div>
               </div>
             </div>
           </div>
-
-          {/* Fullscreen Demo Modal */}
-          <dialog ref={modalRef} className="modal">
-            <div className="modal-box w-full max-w-7xl h-[90vh] p-0 bg-base-300">
-              <div className="sticky top-0 z-10 flex justify-between items-center p-4 bg-base-300/80 backdrop-blur-sm border-b border-base-content/10">
-                <h3 className="font-bold text-lg">{t("demoTitle")}</h3>
-                <button
-                  onClick={closeModal}
-                  className="btn btn-sm btn-circle btn-ghost"
-                >
-                  <span className="icon-[tabler--x] size-5"></span>
-                </button>
-              </div>
-              <div className="p-4 h-[calc(100%-4rem)] flex items-center justify-center">
-                <video
-                  className="max-w-full max-h-full rounded-lg shadow-2xl"
-                  controls
-                  autoPlay
-                  loop
-                >
-                  <source src="/pictures/demo.mov" type="video/quicktime" />
-                  <source src="/pictures/recording.gif" type="image/gif" />
-                  {t("videoNotSupported")}
-                </video>
-              </div>
-            </div>
-            <form method="dialog" className="modal-backdrop">
-              <button>{t("close")}</button>
-            </form>
-          </dialog>
         </div>
       </div>
     </section>

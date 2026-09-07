@@ -488,6 +488,7 @@ export async function autoJoinAuction(
     return null;
   }
 
+
   return prisma.auctionMember.create({
     data: {
       auctionId,

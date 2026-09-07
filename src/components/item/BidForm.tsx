@@ -28,6 +28,7 @@ interface BidFormProps {
       symbol: string;
       name: string;
     };
+    fractionMode?: string;
   };
   auctionId: string;
   bidderVisibility: string;
@@ -35,6 +36,14 @@ interface BidFormProps {
   isItemOwner: boolean;
   isEnded: boolean;
   onBidPlaced: () => Promise<void>;
+}
+
+function formatBidAmount(amount: number, symbol: string, fractionMode?: string): string {
+  const decimals = fractionMode === "INTEGER_ONLY" ? 0 : 2;
+  return `${symbol}${amount.toLocaleString("es-CL", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  })}`;
 }
 
 export function BidForm({
@@ -60,6 +69,7 @@ export function BidForm({
     setError,
   } = useForm<BidFormData>();
 
+  const decimals = item.fractionMode === "INTEGER_ONLY" ? 0 : 2;
   const minBid = calculateMinBid(
     item.currentBid,
     item.startingBid,
@@ -73,7 +83,7 @@ export function BidForm({
       setError("amount", {
         message: tErrors("validation.minBid", {
           symbol: item.currency.symbol,
-          amount: minBid.toFixed(2),
+          amount: formatBidAmount(minBid, item.currency.symbol, item.fractionMode),
         }),
       });
       return;
@@ -142,13 +152,11 @@ export function BidForm({
             )}
           </div>
           <div className="text-3xl font-bold text-primary">
-            {item.currency.symbol}
-            {(item.currentBid || item.startingBid).toFixed(2)}
+            {formatBidAmount(item.currentBid || item.startingBid, item.currency.symbol, item.fractionMode)}
           </div>
           {item.currentBid && (
             <div className="text-sm text-base-content/60 mt-1">
-              {t("startingBid")}: {item.currency.symbol}
-              {item.startingBid.toFixed(2)}
+              {t("startingBid")}: {formatBidAmount(item.startingBid, item.currency.symbol, item.fractionMode)}
             </div>
           )}
         </div>
@@ -179,17 +187,16 @@ export function BidForm({
               <label className="label">
                 <span className="label-text">{t("yourBid")}</span>
                 <span className="label-text-alt">
-                  {t("minBid")}: {item.currency.symbol}
-                  {minBid.toFixed(2)}
+                  {t("minBid")}: {formatBidAmount(minBid, item.currency.symbol, item.fractionMode)}
                 </span>
               </label>
               <div className="input">
                 <input
                   type="number"
                   {...register("amount", { valueAsNumber: true })}
-                  placeholder={minBid.toFixed(2)}
+                  placeholder={minBid.toFixed(decimals)}
                   min={minBid}
-                  step="0.01"
+                  step={decimals === 0 ? "1" : "0.01"}
                   required
                 />
                 <span className="label">{item.currency.symbol}</span>
@@ -254,10 +261,7 @@ export function BidForm({
           </div>
           <div className="flex justify-between">
             <span className="text-base-content/60">{t("minIncrement")}</span>
-            <span>
-              {item.currency.symbol}
-              {item.minBidIncrement.toFixed(2)}
-            </span>
+            <span>{formatBidAmount(item.minBidIncrement, item.currency.symbol, item.fractionMode)}</span>
           </div>
         </div>
       </div>

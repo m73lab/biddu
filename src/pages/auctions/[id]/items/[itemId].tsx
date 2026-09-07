@@ -20,6 +20,11 @@ import { withAuth } from "@/lib/auth/withAuth";
 import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
 import { useTranslations } from "next-intl";
+import {
+  formatCurrency,
+  decimalsForCurrency,
+} from "@/utils/formatters";
+import { FulfillmentCard } from "@/components/item/FulfillmentCard";
 import * as auctionService from "@/lib/services/auction.service";
 import * as itemService from "@/lib/services/item.service";
 import * as userService from "@/lib/services/user.service";
@@ -88,6 +93,7 @@ interface ItemDetailProps {
     minBidIncrement: number;
     currentBid: number | null;
     highestBidderId: string | null;
+    fulfillmentStatus: string | null;
     bidderAnonymous: boolean;
     endDate: string | null;
     createdAt: string;
@@ -110,6 +116,7 @@ interface ItemDetailProps {
   isItemOwner: boolean;
   isOwnerOrAdmin: boolean;
   winnerEmail: string | null;
+  viewerPhone: string | null;
   images: Array<{
     id: string;
     url: string;
@@ -154,6 +161,7 @@ export default function ItemDetailPage({
   isItemOwner,
   isOwnerOrAdmin,
   winnerEmail,
+  viewerPhone,
   images,
 }: ItemDetailProps) {
   const t = useTranslations("item");
@@ -330,13 +338,14 @@ export default function ItemDetailPage({
     : item.startingBid;
 
   const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return "No end date";
-    return new Date(dateStr).toLocaleDateString("en-US", {
+    if (!dateStr) return "Sin fecha de cierre";
+    return new Date(dateStr).toLocaleDateString("es-CL", {
       year: "numeric",
       month: "long",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
+      timeZone: "America/Santiago",
     });
   };
 
@@ -378,7 +387,11 @@ export default function ItemDetailPage({
       setError(
         tErrors("validation.minBid", {
           symbol: item.currency.symbol,
-          amount: minBid.toFixed(2),
+          amount: formatCurrency(
+            minBid,
+            "",
+            decimalsForCurrency(item.currency.code),
+          ),
         }),
       );
       setIsLoading(false);
@@ -1039,18 +1052,13 @@ export default function ItemDetailPage({
                             </div>
                           </div>
                           {winnerEmail && (
-                            <div className="alert alert-info shadow-sm">
-                              <span className="icon-[tabler--trophy] size-5"></span>
-                              <div>
-                                <div className="font-bold">Winner Contact</div>
-                                <a
-                                  href={`mailto:${winnerEmail}`}
-                                  className="text-sm text-info-content underline underline-offset-2 hover:opacity-80 transition-opacity"
-                                >
-                                  {winnerEmail}
-                                </a>
-                              </div>
-                            </div>
+                            <Link
+                              href={`/auctions/${auction.id}/items/${item.id}/contact`}
+                              className="btn btn-info btn-block gap-2 shadow-sm"
+                            >
+                              <span className="icon-[tabler--mail] size-5"></span>
+                              {t("detail.contactWinner")}
+                            </Link>
                           )}
                         </div>
                       ) : isItemOwner ? (
@@ -1071,9 +1079,50 @@ export default function ItemDetailPage({
                         </div>
                       ) : (
                         <div className="text-center py-6 bg-base-200/30 rounded-xl border border-base-content/5 text-base-content/60">
-                          You cannot bid on this item.
+                          {t("detail.cannotBid")}
                         </div>
                       )}
+
+                      {isEnded && isHighestBidder && !viewerPhone && (
+                        <div className="alert alert-warning shadow-sm mt-6">
+                          <span className="icon-[tabler--brand-whatsapp] size-5"></span>
+                          <div className="flex-1">
+                            <div className="font-bold">
+                              {t("detail.contact.noPhoneTitle")}
+                            </div>
+                            <div className="text-sm">
+                              {t("detail.contact.noPhoneText")}
+                            </div>
+                            <Link
+                              href="/settings"
+                              className="btn btn-sm btn-warning mt-2"
+                            >
+                              {t("detail.contact.goSettings")}
+                            </Link>
+                          </div>
+                        </div>
+                      )}
+
+                      {isEnded &&
+                        item.highestBidderId &&
+                        (isItemOwner ||
+                          isOwnerOrAdmin ||
+                          isHighestBidder) && (
+                          <div className="mt-6">
+                            <FulfillmentCard
+                              auctionId={auction.id}
+                              itemId={item.id}
+                              initialStatus={item.fulfillmentStatus}
+                              canManage={isItemOwner || isOwnerOrAdmin}
+                              isWinnerView={isHighestBidder}
+                              amount={formatCurrency(
+                                item.currentBid ?? 0,
+                                item.currency.symbol,
+                                decimalsForCurrency(item.currency.code),
+                              )}
+                            />
+                          </div>
+                        )}
 
                       <div className="divider opacity-50 my-6"></div>
 
@@ -1081,7 +1130,7 @@ export default function ItemDetailPage({
                         <div className="flex justify-between items-center">
                           <span className="text-base-content/60 flex items-center gap-2">
                             <span className="icon-[tabler--currency-dollar] size-4"></span>
-                            Currency
+                            {t("detail.currency")}
                           </span>
                           <span className="font-medium">
                             {item.currency.name}
@@ -1090,17 +1139,20 @@ export default function ItemDetailPage({
                         <div className="flex justify-between items-center">
                           <span className="text-base-content/60 flex items-center gap-2">
                             <span className="icon-[tabler--chart-bar] size-4"></span>
-                            Min Increment
+                            {t("detail.minIncrement")}
                           </span>
                           <span className="font-medium">
-                            {item.currency.symbol}
-                            {item.minBidIncrement.toFixed(2)}
+                            {formatCurrency(
+                              item.minBidIncrement,
+                              item.currency.symbol,
+                              decimalsForCurrency(item.currency.code),
+                            )}
                           </span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-base-content/60 flex items-center gap-2">
                             <span className="icon-[tabler--users] size-4"></span>
-                            Total Bids
+                            {t("detail.totalBids")}
                           </span>
                           <span className="badge badge-ghost font-medium">
                             {bids.length}
@@ -1211,6 +1263,9 @@ export const getServerSideProps = withAuth(async (context) => {
     context.session.user.id,
   );
 
+  // Viewer phone for the winner WhatsApp banner
+  const viewer = await userService.getUserById(context.session.user.id);
+
   return {
     props: {
       user: {
@@ -1234,6 +1289,7 @@ export const getServerSideProps = withAuth(async (context) => {
       isItemOwner: itemData.isItemOwner,
       isOwnerOrAdmin: auctionService.isAdmin(membership),
       winnerEmail: itemData.winnerEmail,
+      viewerPhone: viewer?.phone || null,
       images: itemData.images,
       messages: await getMessages(context.locale as Locale),
     },

@@ -10,6 +10,9 @@ import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { MicrosoftSignInButton } from "@/components/auth/microsoft-sign-in-button";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
+import { formatRutOnInput, isValidRut } from "@/utils/rut";
+import { isValidPhone } from "@/utils/phone";
+import { getSafeRedirectUrl } from "@/utils/auth-redirect";
 
 const LazyReCAPTCHA = lazy(() => import("react-google-recaptcha"));
 
@@ -17,12 +20,16 @@ interface RegisterPageProps {
   recaptchaSiteKey: string | null;
   googleOAuthEnabled: boolean;
   microsoftOAuthEnabled: boolean;
+  callbackUrl: string | null;
+  invitedEmail: string | null;
 }
 
 export default function RegisterPage({
   recaptchaSiteKey,
   googleOAuthEnabled,
   microsoftOAuthEnabled,
+  callbackUrl,
+  invitedEmail,
 }: RegisterPageProps) {
   const t = useTranslations("auth.register");
   const tCommon = useTranslations("common");
@@ -34,7 +41,16 @@ export default function RegisterPage({
   const [loadCaptcha, setLoadCaptcha] = useState(false);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState<string>("");
+  const [rutValue, setRutValue] = useState("");
   const recaptchaRef = useRef<ReCAPTCHA>(null);
+
+  // Preserve invite/auth flow params when linking to login
+  const authParams = new URLSearchParams();
+  if (callbackUrl) authParams.set("callbackUrl", callbackUrl);
+  if (invitedEmail) authParams.set("email", invitedEmail);
+  const loginHref = authParams.toString()
+    ? `/login?${authParams.toString()}`
+    : "/login";
 
   // Delay loading reCAPTCHA slightly for better UX
   useEffect(() => {
@@ -91,6 +107,8 @@ export default function RegisterPage({
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const confirmPassword = formData.get("confirmPassword") as string;
+    const rut = formData.get("rut") as string;
+    const phone = formData.get("phone") as string;
 
     // Client-side validation
     if (password !== confirmPassword) {
@@ -109,6 +127,19 @@ export default function RegisterPage({
       return;
     }
 
+    // Validate RUT if provided
+    if (rut && !isValidRut(rut)) {
+      setFieldErrors({ rut: "RUT inválido. Ejemplo: 12.345.678-9" });
+      setIsLoading(false);
+      return;
+    }
+
+    if (phone && !isValidPhone(phone)) {
+      setFieldErrors({ phone: "Teléfono inválido. Ejemplo: +56 9 1234 5678" });
+      setIsLoading(false);
+      return;
+    }
+
     // Check reCAPTCHA verification status
     if (recaptchaSiteKey && !isVerified) {
       setError(t("recaptchaRequired"));
@@ -120,7 +151,13 @@ export default function RegisterPage({
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          rut: rut || undefined,
+          phone: phone || undefined,
+        }),
       });
 
       const data = await res.json();
@@ -208,7 +245,7 @@ export default function RegisterPage({
                 </div>
                 <div className="pt-4">
                   <Link
-                    href="/login"
+                    href={loginHref}
                     className="btn btn-outline btn-primary w-full"
                   >
                     {t("backToLogin")}
@@ -271,6 +308,7 @@ export default function RegisterPage({
                         type="email"
                         placeholder={t("emailPlaceholder")}
                         autoComplete="email"
+                        defaultValue={invitedEmail ?? undefined}
                         className={`input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors ${
                           fieldErrors.email ? "input-error" : ""
                         }`}
@@ -286,7 +324,68 @@ export default function RegisterPage({
                     )}
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="form-control">
+                    <label className="label pl-0" htmlFor="rut">
+                      <span className="label-text font-medium text-base-content/80">
+                        RUT <span className="text-base-content/40 text-xs">(opcional)</span>
+                      </span>
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 icon-[tabler--id] size-5"></span>
+                      <input
+                        id="rut"
+                        name="rut"
+                        type="text"
+                        placeholder="12.345.678-9"
+                        autoComplete="rut"
+                        value={rutValue}
+                        onChange={(e) => setRutValue(formatRutOnInput(e.target.value))}
+                        maxLength={12}
+                        className={`input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors ${
+                          fieldErrors.rut ? "input-error" : ""
+                        }`}
+                      />
+                    </div>
+                    {fieldErrors.rut && (
+                      <label className="label">
+                        <span className="label-text-alt text-error">
+                          {fieldErrors.rut}
+                        </span>
+                      </label>
+                    )}
+                  </div>
+
+                  <div className="form-control">
+                    <label className="label pl-0" htmlFor="phone">
+                      <span className="label-text font-medium text-base-content/80">
+                        WhatsApp <span className="text-base-content/40 text-xs">(opcional)</span>
+                      </span>
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 icon-[tabler--brand-whatsapp] size-5"></span>
+                      <input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        placeholder="+56 9 1234 5678"
+                        autoComplete="tel"
+                        maxLength={20}
+                        className={`input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors ${
+                          fieldErrors.phone ? "input-error" : ""
+                        }`}
+                      />
+                    </div>
+                    {fieldErrors.phone && (
+                      <label className="label">
+                        <span className="label-text-alt text-error">
+                          {fieldErrors.phone}
+                        </span>
+                      </label>
+                    )}
+                  </div>
+
+
+                                    <div className="grid grid-cols-2 gap-4">
                     <div className="form-control">
                       <label className="label pl-0" htmlFor="password">
                         <span className="label-text font-medium text-base-content/80">
@@ -405,8 +504,16 @@ export default function RegisterPage({
                       {t("orContinueWith")}
                     </div>
                     <div className="flex flex-col gap-3">
-                      {googleOAuthEnabled && <GoogleSignInButton />}
-                      {microsoftOAuthEnabled && <MicrosoftSignInButton />}
+                      {googleOAuthEnabled && (
+                        <GoogleSignInButton
+                          callbackUrl={callbackUrl ?? undefined}
+                        />
+                      )}
+                      {microsoftOAuthEnabled && (
+                        <MicrosoftSignInButton
+                          callbackUrl={callbackUrl ?? undefined}
+                        />
+                      )}
                     </div>
                   </>
                 )}
@@ -415,7 +522,7 @@ export default function RegisterPage({
                   <p className="text-sm text-base-content/60">
                     {t("hasAccount")}{" "}
                     <Link
-                      href="/login"
+                      href={loginHref}
                       className="link link-primary font-bold hover:text-primary/80 transition-colors"
                     >
                       {t("signIn")}
@@ -436,10 +543,22 @@ export const getServerSideProps: GetServerSideProps<RegisterPageProps> = async (
 ) => {
   const session = await getServerSession(context.req, context.res, authOptions);
 
+  // Preserve invite/auth flow: callbackUrl (invite links) or redirectUrl
+  let callbackUrl: string | null = null;
+  const rawCallback = context.query.callbackUrl ?? context.query.redirectUrl;
+  if (typeof rawCallback === "string") {
+    const safe = getSafeRedirectUrl(rawCallback, "");
+    if (safe) callbackUrl = safe;
+  }
+  const invitedEmail =
+    typeof context.query.email === "string" && context.query.email.includes("@")
+      ? context.query.email
+      : null;
+
   if (session) {
     return {
       redirect: {
-        destination: "/dashboard",
+        destination: callbackUrl ?? "/dashboard",
         permanent: false,
       },
     };
@@ -463,6 +582,8 @@ export const getServerSideProps: GetServerSideProps<RegisterPageProps> = async (
       messages,
       googleOAuthEnabled,
       microsoftOAuthEnabled,
+      callbackUrl,
+      invitedEmail,
     },
   };
 };

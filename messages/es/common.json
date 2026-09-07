@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Auktiva",
+    "appName": "SubastaYa",
     "loading": "Cargando...",
     "save": "Guardar",
     "cancel": "Cancelar",
@@ -36,6 +36,7 @@
     "optional": "Opcional"
   },
   "nav": {
+    "adminPanel": "Admin de Subasta",
     "dashboard": "Panel",
     "createAuction": "Crear Subasta",
     "myBids": "Mis Pujas",
@@ -52,7 +53,21 @@
     "signedInAs": "Sesión iniciada como",
     "features": "Funcionalidades",
     "howItWorks": "Cómo funciona",
-    "docs": "Docs"
+    "docs": "Docs",
+    "help": "Ayuda"
+  },
+  "admin": {
+    "title": "Admin de Subasta",
+    "subtitle": "Gestiona los artículos de tus subastas",
+    "selectAuction": "Seleccionar Subasta",
+    "selectAuctionPlaceholder": "Elige una subasta...",
+    "selectAuctionPrompt": "Selecciona una Subasta",
+    "selectAuctionPromptDescription": "Elige una subasta del menú de arriba para ver y editar los artículos que tienes permiso de gestionar.",
+    "viewAuction": "Ver Subasta",
+    "auctionSettings": "Ajustes",
+    "itemCount": "{count, plural, =0 {Sin artículos} =1 {1 artículo} other {# artículos}} disponibles para editar",
+    "noEditableItems": "Sin Artículos Editables",
+    "noEditableItemsDescription": "No hay artículos en esta subasta que puedas editar. Los artículos deben tener habilitada la edición por admin por su propietario, o debes ser el creador del artículo."
   },
   "sort": {
     "newestFirst": "Más recientes primero",
@@ -138,15 +153,15 @@
   },
   "notifications": {
     "title": "Notificaciones",
-    "markAllRead": "Marcar todo como leído",
-    "new": "Nuevo",
-    "read": "Leído",
-    "noNew": "No hay notificaciones nuevas",
-    "noRead": "No hay notificaciones leídas",
-    "justNow": "Justo ahora",
-    "minutesAgo": "hace {count}m",
-    "hoursAgo": "hace {count}h",
-    "daysAgo": "hace {count}d"
+    "markAllRead": "Marcar todas como leídas",
+    "new": "Nuevas",
+    "read": "Leídas",
+    "noNew": "Sin notificaciones nuevas",
+    "noRead": "Sin notificaciones leídas",
+    "justNow": "Ahora mismo",
+    "minutesAgo": "{count, plural, =1 {hace 1 minuto} other {hace # minutos}}",
+    "hoursAgo": "{count, plural, =1 {hace 1 hora} other {hace # horas}}",
+    "daysAgo": "{count, plural, =1 {hace 1 día} other {hace # días}}"
   },
   "stats": {
     "more": "+{count} más",
@@ -183,11 +198,12 @@
     "urlHint": "Dejar vacío para eliminar el enlace",
     "cancel": "Cancelar",
     "applyLink": "Aplicar enlace",
-    "removeLink": "Eliminar enlace"
+    "removeLink": "Eliminar enlace",
+    "characters": "caracteres"
   },
   "changelog": {
     "title": "Registro de cambios y versiones",
-    "description": "Descubre las novedades de Auktiva y sigue nuestro progreso de desarrollo",
+    "description": "Descubre las novedades de SubastaYa y sigue nuestro progreso",
     "currentVersion": "Versión actual",
     "latest": "Última",
     "installed": "Instalada",

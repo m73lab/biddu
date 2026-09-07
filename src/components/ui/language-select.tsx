@@ -12,6 +12,8 @@ export function LanguageSelect({ className = "" }: LanguageSelectProps) {
   const router = useRouter();
   const currentLocale = useLocale() as Locale;
 
+  if (locales.length <= 1) return null;
+
   const handleLocaleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newLocale = e.target.value as Locale;
     const { pathname, asPath, query } = router;

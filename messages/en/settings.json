@@ -10,7 +10,12 @@
       "displayNamePlaceholder": "Your name",
       "saveProfile": "Save Profile",
       "saving": "Saving...",
-      "profileUpdated": "Profile updated successfully"
+      "profileUpdated": "Profile updated successfully",
+      "phone": "WhatsApp / Phone",
+      "phonePlaceholder": "+56 9 1234 5678",
+      "phoneHint": "So they can contact you about your won bids",
+      "phoneInvalid": "Invalid phone. Example: +56 9 1234 5678",
+      "optional": "optional"
     },
     "password": {
       "title": "Change Password",
@@ -117,7 +122,9 @@
       "title": "Quick Links",
       "documentation": "Documentation",
       "feedback": "Send Feedback",
-      "signOut": "Sign Out"
+      "signOut": "Sign Out",
+      "helpTitle": "Help & contact",
+      "helpDesc": "FAQ and contact"
     }
   }
 }

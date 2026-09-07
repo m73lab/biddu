@@ -111,6 +111,7 @@ export interface ItemDetailForPage {
   minBidIncrement: number;
   currentBid: number | null;
   highestBidderId: string | null;
+  fulfillmentStatus: string | null;
   bidderAnonymous: boolean;
   endDate: string | null;
   createdAt: string;
@@ -226,6 +227,7 @@ export async function getItemForDetailPage(
     minBidIncrement: item.minBidIncrement,
     currentBid: item.currentBid,
     highestBidderId: item.highestBidderId,
+    fulfillmentStatus: item.fulfillmentStatus,
     bidderAnonymous: item.bidderAnonymous,
     endDate: item.endDate?.toISOString() || null,
     createdAt: item.createdAt.toISOString(),
@@ -420,6 +422,7 @@ export async function getItemDetailPageData(
       minBidIncrement: item.minBidIncrement,
       currentBid: item.currentBid,
       highestBidderId: item.highestBidderId,
+      fulfillmentStatus: item.fulfillmentStatus,
       bidderAnonymous: item.bidderAnonymous,
       endDate: item.endDate?.toISOString() || null,
       createdAt: item.createdAt.toISOString(),
@@ -854,7 +857,7 @@ export async function createItem(
   });
 
   // Get the first image URL for notifications
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.auktiva.org";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://subastaya.cl";
   const firstImageUrl =
     item.images.length > 0
       ? item.images[0].url.startsWith("http")

@@ -1,6 +1,6 @@
 {
-  "name": "Auktiva",
-  "short_name": "Auktiva",
+  "name": "SubastaYa",
+  "short_name": "SubastaYa",
   "description": "Free, open-source auction platform for fundraisers, charities, and internal events.",
   "start_url": "/",
   "display": "standalone",

@@ -11,8 +11,8 @@ import type { EmailProvider, EmailMessage, EmailSendResult } from "./types";
 
 const logger = createLogger("email:smtp");
 
-const MAIL_FROM = process.env.MAIL_FROM || "noreply@auktiva.org";
-const MAIL_FROM_NAME = process.env.MAIL_FROM_NAME || "Auktiva.org";
+const MAIL_FROM = process.env.MAIL_FROM || "noreply@subastaya.cl";
+const MAIL_FROM_NAME = process.env.MAIL_FROM_NAME || "SubastaYa";
 
 export class SmtpProvider implements EmailProvider {
   private transporter: Transporter;

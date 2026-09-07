@@ -6,7 +6,9 @@ import {
   BadRequestError,
 } from "@/lib/api/errors";
 import * as itemService from "@/lib/services/item.service";
+import * as notificationService from "@/lib/services/notification.service";
 import { prisma } from "@/lib/prisma";
+import { formatCurrency, decimalsForCurrency } from "@/utils/formatters";
 import { z } from "zod";
 
 // ============================================================================
@@ -281,4 +283,96 @@ export const deleteItem: ApiHandler = async (_req, res, ctx) => {
 
   await itemService.deleteItem(itemId);
   res.status(200).json({ message: "Item deleted successfully" });
+};
+
+// ============================================================================
+// Fulfillment (offline payment & delivery tracking)
+// ============================================================================
+
+export const fulfillmentSchema = z.object({
+  status: z.enum(["PENDING_PAYMENT", "PAID", "DELIVERED"]),
+});
+
+export type FulfillmentBody = z.infer<typeof fulfillmentSchema>;
+
+const ALLOWED_FULFILLMENT_TRANSITIONS: Record<string, string[]> = {
+  NONE: ["PENDING_PAYMENT", "PAID"],
+  PENDING_PAYMENT: ["PAID"],
+  PAID: ["DELIVERED", "PENDING_PAYMENT"],
+  DELIVERED: ["PAID"],
+};
+
+/**
+ * PATCH /api/auctions/[id]/items/[itemId]/fulfillment
+ * Track offline payment/delivery for an ended item with a winner.
+ * Only the item owner or auction OWNER/ADMIN can change it.
+ */
+export const setFulfillmentStatus: ApiHandler = async (req, res, ctx) => {
+  const auctionId = ctx.params.id;
+  const itemId = ctx.params.itemId;
+  const userId = ctx.session!.user.id;
+
+  const item = await prisma.auctionItem.findUnique({
+    where: { id: itemId },
+    include: { currency: { select: { code: true, symbol: true } } },
+  });
+
+  if (!item || item.auctionId !== auctionId) {
+    throw new NotFoundError("Item not found");
+  }
+
+  const now = new Date();
+  if (!item.endDate || item.endDate > now || !item.highestBidderId) {
+    throw new BadRequestError(
+      "El estado de pago solo aplica a artículos finalizados con ganador",
+    );
+  }
+
+  const role = ctx.membership?.role;
+  const canManage =
+    item.creatorId === userId || (role && ["OWNER", "ADMIN"].includes(role));
+  if (!canManage) {
+    throw new ForbiddenError(
+      "Solo el dueño del artículo o los administradores pueden actualizar el estado de pago",
+    );
+  }
+
+  const { validatedBody } = req as ValidatedRequest<FulfillmentBody>;
+
+  if (item.fulfillmentStatus === validatedBody.status) {
+    return res.status(200).json({ fulfillmentStatus: item.fulfillmentStatus });
+  }
+
+  const from = item.fulfillmentStatus ?? "NONE";
+  if (!ALLOWED_FULFILLMENT_TRANSITIONS[from]?.includes(validatedBody.status)) {
+    throw new BadRequestError("Transición de estado inválida");
+  }
+
+  const updated = await prisma.auctionItem.update({
+    where: { id: itemId },
+    data: { fulfillmentStatus: validatedBody.status },
+  });
+
+  // Notify the winner (fire and forget)
+  if (item.highestBidderId !== userId) {
+    const displayAmount = formatCurrency(
+      item.currentBid ?? 0,
+      item.currency.symbol,
+      decimalsForCurrency(item.currency.code),
+    );
+    notificationService
+      .notifyFulfillmentUpdated(
+        item.highestBidderId,
+        item.name,
+        auctionId,
+        itemId,
+        validatedBody.status,
+        displayAmount,
+      )
+      .catch(() => {
+        // Notification failure shouldn't break the update
+      });
+  }
+
+  res.status(200).json({ fulfillmentStatus: updated.fulfillmentStatus });
 };

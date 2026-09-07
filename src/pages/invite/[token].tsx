@@ -229,7 +229,7 @@ export default function AcceptInvitePage() {
               <Link
                 href={`/login?callbackUrl=${encodeURIComponent(
                   `/invite/${token}`,
-                )}`}
+                )}&email=${encodeURIComponent(invite.email)}`}
                 className="btn btn-primary w-full shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5"
               >
                 {t("loginToAccept")}
@@ -242,7 +242,7 @@ export default function AcceptInvitePage() {
               <Link
                 href={`/register?callbackUrl=${encodeURIComponent(
                   `/invite/${token}`,
-                )}`}
+                )}&email=${encodeURIComponent(invite.email)}`}
                 className="btn btn-outline w-full hover:bg-base-content/5"
               >
                 {t("createAccount")}

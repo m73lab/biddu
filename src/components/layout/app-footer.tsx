@@ -20,24 +20,7 @@ export function AppFooter() {
             © {currentYear} {t("common.appName")}
           </span>
         </div>
-        <div className="flex items-center gap-3">
-          <Link
-            href="https://docs.auktiva.org"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-primary transition-colors"
-          >
-            {t("nav.docs")}
-          </Link>
-          <Link
-            href="https://github.com/thomsa/auktiva/issues/new/choose"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-primary transition-colors"
-          >
-            {t("footer.reportIssue")}
-          </Link>
-        </div>
+
       </div>
     </footer>
   );

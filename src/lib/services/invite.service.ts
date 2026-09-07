@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { queueInviteEmail } from "@/lib/email/service";
+import * as notificationService from "./notification.service";
 import type { AuctionInvite } from "@/generated/prisma/client";
 
 // ============================================================================
@@ -200,6 +201,30 @@ export async function createInvite(
     role: invite.role,
   });
 
+  // In-app notification if the invited email already belongs to a user
+  const existingUser = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
+  if (existingUser) {
+    const roleLabels: Record<string, string> = {
+      ADMIN: "administrador",
+      CREATOR: "creador",
+      BIDDER: "pujador",
+    };
+    await notificationService
+      .createNotification({
+        userId: existingUser.id,
+        type: "INVITE_RECEIVED",
+        title: `Invitación a "${invite.auction.name}"`,
+        message: `${invite.sender.name || invite.sender.email} te invitó a unirte a la subasta "${invite.auction.name}" como ${roleLabels[invite.role] || invite.role.toLowerCase()}`,
+        auctionId: invite.auctionId,
+      })
+      .catch(() => {
+        // Notification failure shouldn't break invite creation
+      });
+  }
+
   return invite;
 }
 
@@ -217,6 +242,7 @@ export async function acceptInvite(
   if (!invite) {
     throw new Error("Invite not found");
   }
+
 
   // Check if already a member
   const existingMembership = await prisma.auctionMember.findUnique({
@@ -255,6 +281,39 @@ export async function acceptInvite(
       where: { auctionId: invite.auctionId, userId },
     }),
   ]);
+
+  // Notify all auction members that someone new joined (fire and forget)
+  const [auction, joiner, members] = await Promise.all([
+    prisma.auction.findUnique({
+      where: { id: invite.auctionId },
+      select: { name: true },
+    }),
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { name: true, email: true },
+    }),
+    prisma.auctionMember.findMany({
+      where: { auctionId: invite.auctionId },
+      select: { userId: true },
+    }),
+  ]);
+  const memberName = joiner?.name || joiner?.email || "Alguien";
+  await Promise.all(
+    members
+      .filter((m) => m.userId !== userId)
+      .map((o) =>
+        notificationService
+          .notifyMemberJoined(
+            o.userId,
+            memberName,
+            auction?.name || "tu subasta",
+            invite.auctionId,
+          )
+          .catch(() => {
+            // Notification failure shouldn't break invite acceptance
+          }),
+      ),
+  );
 
   return { auctionId: invite.auctionId, alreadyMember: false };
 }

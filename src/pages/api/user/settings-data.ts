@@ -42,36 +42,13 @@ const getSettingsData: ApiHandler = async (_req, res, ctx) => {
       const packageJson = await import("../../../../package.json");
       const currentVersion = packageJson.version;
 
-      const response = await fetch(
-        "https://api.github.com/repos/thomsa/auktiva/releases/latest",
-        {
-          headers: {
-            Accept: "application/vnd.github.v3+json",
-            "User-Agent": "Auktiva",
-          },
-        },
-      );
-
-      if (response.ok) {
-        const release = await response.json();
-        const latestVersion = release.tag_name?.replace(/^v/, "") || null;
-        const updateAvailable =
-          latestVersion && latestVersion !== currentVersion;
-
-        versionInfo = {
-          currentVersion,
-          latestVersion,
-          updateAvailable: !!updateAvailable,
-          releaseUrl: release.html_url || null,
-        };
-      } else {
-        versionInfo = {
-          currentVersion,
-          latestVersion: null,
-          updateAvailable: false,
-          releaseUrl: null,
-        };
-      }
+      // SubastaYa fork: no upstream version check (Auktiva releases don't apply here)
+      versionInfo = {
+        currentVersion,
+        latestVersion: null,
+        updateAvailable: false,
+        releaseUrl: null,
+      };
     } catch (error) {
       settingsLogger.error({ error }, "Error fetching version info");
       const packageJson = await import("../../../../package.json");

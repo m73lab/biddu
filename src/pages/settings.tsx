@@ -7,6 +7,7 @@ import { useTheme } from "@/components/providers/theme-provider";
 import { Button } from "@/components/ui/button";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
+import { isValidPhone } from "@/utils/phone";
 import { LanguageSelect } from "@/components/ui/language-select";
 import { createLogger } from "@/lib/logger";
 import { useToast } from "@/components/ui/toast";
@@ -36,6 +37,7 @@ interface SettingsPageProps {
     id: string;
     name: string | null;
     email: string;
+    phone: string | null;
   };
   initialSettings: UserSettings;
   connectedAccounts: ConnectedAccount[];
@@ -66,6 +68,7 @@ export default function SettingsPage({
 
   // Profile form state
   const [name, setName] = useState(user.name || "");
+  const [phone, setPhone] = useState(user.phone || "");
   const [profileError, setProfileError] = useState<string | null>(null);
   const [profileSuccess, setProfileSuccess] = useState<string | null>(null);
   const [profileLoading, setProfileLoading] = useState(false);
@@ -322,11 +325,17 @@ export default function SettingsPage({
     setProfileSuccess(null);
     setProfileLoading(true);
 
+    if (phone && !isValidPhone(phone)) {
+      setProfileError(t("profile.phoneInvalid"));
+      setProfileLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch("/api/user/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({ name, phone: phone || null }),
       });
 
       const result = await res.json();
@@ -530,6 +539,54 @@ export default function SettingsPage({
                 placeholder={t("profile.displayNamePlaceholder")}
                 className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
               />
+            </div>
+
+
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-medium">
+                  {t("profile.phone")}{" "}
+                  <span className="text-base-content/40 text-xs">
+                    ({t("profile.optional")})
+                  </span>
+                </span>
+              </label>
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder={t("profile.phonePlaceholder")}
+                autoComplete="tel"
+                maxLength={20}
+                className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+              />
+              <label className="label">
+                <span className="label-text-alt text-base-content/50 flex items-center gap-1">
+                  <span className="icon-[tabler--brand-whatsapp] size-3"></span>
+                  {t("profile.phoneHint")}
+                </span>
+              </label>
+            </div>
+
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-medium">
+                  RUT <span className="text-base-content/40 text-xs">(opcional)</span>
+                </span>
+              </label>
+              <input
+                type="text"
+                placeholder="12.345.678-9"
+                defaultValue={(user as any).rut || ""}
+                className="input input-bordered w-full bg-base-200/50 opacity-70"
+                disabled
+              />
+              <label className="label">
+                <span className="label-text-alt text-base-content/50 flex items-center gap-1">
+                  <span className="icon-[tabler--lock] size-3"></span>
+                  El RUT no se puede editar por seguridad
+                </span>
+              </label>
             </div>
 
             <div className="pt-2">
@@ -987,9 +1044,7 @@ export default function SettingsPage({
                     </div>
                     <div className="flex items-center gap-2 mt-4">
                       <a
-                        href="https://github.com/thomsa/auktiva/blob/main/CHANGELOG.md"
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        href="/changelog"
                         className="btn btn-ghost btn-sm"
                       >
                         <span className="icon-[tabler--file-text] size-4" />
@@ -1099,28 +1154,18 @@ export default function SettingsPage({
 
           <div className="space-y-2">
             <a
-              href="https://docs.auktiva.org/users"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/ayuda"
               className="flex items-center gap-3 p-3 rounded-xl bg-base-200/50 hover:bg-base-200 transition-colors"
             >
-              <span className="icon-[tabler--book] size-5 text-primary"></span>
+              <span className="icon-[tabler--lifebuoy] size-5 text-primary"></span>
               <span className="font-medium">
-                {t("quickLinks.documentation")}
+                {t("quickLinks.helpTitle")}
               </span>
-              <span className="icon-[tabler--external-link] size-4 ml-auto text-base-content/40"></span>
+              <span className="icon-[tabler--arrow-right] size-4 ml-auto text-base-content/40"></span>
             </a>
-
-            <a
-              href="https://github.com/thomsa/auktiva/issues/new/choose"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 p-3 rounded-xl bg-base-200/50 hover:bg-base-200 transition-colors"
-            >
-              <span className="icon-[tabler--message-report] size-5 text-secondary"></span>
-              <span className="font-medium">{t("quickLinks.feedback")}</span>
-              <span className="icon-[tabler--external-link] size-4 ml-auto text-base-content/40"></span>
-            </a>
+            <p className="text-xs text-base-content/50 px-1">
+              {t("quickLinks.helpDesc")}
+            </p>
           </div>
 
           <div className="divider my-4"></div>
@@ -1389,45 +1434,13 @@ export const getServerSideProps = withAuth(async (context) => {
         "Current version from package.json",
       );
 
-      // Fetch latest version from GitHub
-      const response = await fetch(
-        "https://api.github.com/repos/thomsa/auktiva/releases/latest",
-        {
-          headers: {
-            Accept: "application/vnd.github.v3+json",
-            "User-Agent": "Auktiva",
-          },
-        },
-      );
-
-      settingsLogger.debug({ status: response.status }, "GitHub API response");
-
-      if (response.ok) {
-        const release = await response.json();
-        const latestVersion = release.tag_name?.replace(/^v/, "") || null;
-        const updateAvailable =
-          latestVersion && latestVersion !== currentVersion;
-
-        settingsLogger.debug(
-          { latestVersion, updateAvailable },
-          "Version check result",
-        );
-
-        versionInfo = {
-          currentVersion,
-          latestVersion,
-          updateAvailable: !!updateAvailable,
-          releaseUrl: release.html_url || null,
-        };
-      } else {
-        settingsLogger.warn({ status: response.status }, "GitHub API failed");
-        versionInfo = {
-          currentVersion,
-          latestVersion: null,
-          updateAvailable: false,
-          releaseUrl: null,
-        };
-      }
+      // SubastaYa fork: no upstream version check (Auktiva releases don't apply here)
+      versionInfo = {
+        currentVersion,
+        latestVersion: null,
+        updateAvailable: false,
+        releaseUrl: null,
+      };
     } catch (error) {
       // If fetching fails, just show current version
       settingsLogger.error({ error }, "Error fetching version info");
@@ -1450,6 +1463,7 @@ export const getServerSideProps = withAuth(async (context) => {
         id: user.id,
         name: user.name,
         email: user.email,
+        phone: user.phone || null,
       },
       initialSettings: {
         emailOnNewItem: settings.emailOnNewItem,

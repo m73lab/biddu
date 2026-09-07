@@ -1,16 +1,16 @@
 name: Question / Support
-description: Ask a question or get help with Auktiva
+description: Ask a question or get help with SubastaYa
 title: "[Question]: "
 labels: ["question", "help wanted"]
 body:
   - type: markdown
     attributes:
       value: |
-        Have a question about Auktiva? We're happy to help!
+        Have a question about SubastaYa? We're happy to help!
 
         Before asking, please check:
-        - [Documentation](https://docs.auktiva.org)
-        - [Existing issues](https://github.com/thomsa/auktiva/issues)
+        - [README](https://github.com/m73lab/subastaya#readme)
+        - [Existing issues](https://github.com/m73lab/subastaya/issues)
 
   - type: textarea
     id: question
@@ -42,7 +42,7 @@ body:
       label: Environment
       description: Are you using the hosted version or self-hosting?
       options:
-        - Hosted (auktiva.org)
+        - Hosted (subastaya.cl)
         - Self-hosted
         - Not applicable
     validations:

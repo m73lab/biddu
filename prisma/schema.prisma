@@ -20,6 +20,8 @@ model User {
   passwordHash  String?   // Optional for OAuth users
   name          String?
   image         String?   // Profile image from OAuth provider
+  rut           String?   // RUT chileno (opcional)
+  phone         String?   // WhatsApp / teléfono (opcional)
   emailVerified DateTime? // When email was verified (null = unverified)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -82,7 +84,7 @@ model UserSettings {
   // Email Notification Preferences
   emailOnNewItem        Boolean  @default(false)  // Notify when new item added to auction
   emailOnOutbid         Boolean  @default(false)  // Notify when outbid
-  emailOnItemWon        Boolean  @default(false)  // Notify when user wins an item
+  emailOnItemWon        Boolean  @default(true)   // Notify when user wins an item (important: on by default)
   
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
@@ -357,6 +359,7 @@ model AuctionItem {
   antiSnipeExtensionSeconds Int       @default(300)  // Seconds to extend by (5-3600)
   
   // Notification tracking
+  fulfillmentStatus FulfillmentStatus?
   winnerNotified  Boolean   @default(false) // Track if winner notification sent
   
   // Metadata
@@ -434,6 +437,12 @@ model Bid {
 // NOTIFICATIONS
 // ============================================
 
+enum FulfillmentStatus {
+  PENDING_PAYMENT // Winner hasn't paid yet (offline)
+  PAID            // Winner paid (offline), pending delivery
+  DELIVERED       // Item delivered, flow complete
+}
+
 enum NotificationType {
   OUTBID          // Someone outbid you
   AUCTION_WON     // You won an auction item
@@ -441,6 +450,9 @@ enum NotificationType {
   INVITE_RECEIVED // You received an invite
   MEMBER_JOINED   // Someone joined your auction
   NEW_ITEM        // New item added to an auction you're in
+  NEW_BID         // Someone placed a bid in an auction you're in
+  NEW_COMMENT     // Someone commented on an item you're following
+  FULFILLMENT_UPDATED // Payment/delivery status changed on a won item
 }
 
 model Notification {

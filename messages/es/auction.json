@@ -129,7 +129,10 @@
       "defaultAntiSnipeExtension": "Duración de extensión predeterminada",
       "defaultAntiSnipeExtensionHint": "Cuánto tiempo añadir al fin. Entre 5 segundos y 60 minutos.",
       "seconds": "segundos",
-      "minutes": "minutos"
+      "minutes": "minutos",
+      "adminEditingDefaults": "Edición por Admin por Defecto",
+      "defaultItemsEditableByAdmin": "Permitir a los admins editar nuevos artículos por defecto",
+      "defaultItemsEditableByAdminDescription": "Cuando está activado, los nuevos artículos creados en esta subasta tendrán la edición por admin activada por defecto. Los propietarios aún pueden desactivarla."
     },
     "members": {
       "title": "Miembros",

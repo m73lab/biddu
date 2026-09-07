@@ -24,7 +24,8 @@ import {
 import { createLogger } from "@/lib/logger";
 
 const emailServiceLogger = createLogger("email-service");
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://www.auktiva.org";
+const APP_URL =
+  process.env.NEXT_PUBLIC_APP_URL || "https://subastaya.cl";
 
 /**
  * Environment info:
@@ -62,7 +63,7 @@ export async function queueWelcomeEmail(params: {
     const result = await sendEmail({
       to: email,
       toName: name,
-      subject: "Welcome to Auktiva! 🎉",
+      subject: "¡Bienvenido a SubastaYa! 🎉",
       mjmlTemplate: templateData.template,
       replacements: templateData.replacements,
       type: "WELCOME",
@@ -113,7 +114,7 @@ export async function queueInviteEmail(params: {
 
     const result = await sendEmail({
       to: email,
-      subject: `You're invited to "${auctionName}" on Auktiva`,
+      subject: `Te han invitado a "${auctionName}" en SubastaYa`,
       mjmlTemplate: templateData.template,
       replacements: templateData.replacements,
       type: "INVITE",
@@ -213,7 +214,7 @@ export async function queueNewItemEmails(params: {
         const result = await sendEmail({
           to: member.user.email,
           toName: member.user.name || undefined,
-          subject: `New item in "${auctionName}": ${itemName}`,
+          subject: `Nuevo artículo en "${auctionName}": ${itemName}`,
           mjmlTemplate: templateData.template,
           replacements: templateData.replacements,
           type: "NEW_ITEM",
@@ -308,7 +309,7 @@ export async function queueOutbidEmail(params: {
     const result = await sendEmail({
       to: previousBidderEmail,
       toName: previousBidderName,
-      subject: `You've been outbid on "${itemName}"`,
+      subject: `Han superado tu puja en "${itemName}"`,
       mjmlTemplate: templateData.template,
       replacements: templateData.replacements,
       type: "OUTBID",
@@ -391,7 +392,7 @@ export async function queueItemWonEmail(params: {
     const result = await sendEmail({
       to: winnerEmail,
       toName: winnerName || undefined,
-      subject: `Congratulations! You won "${itemName}"`,
+      subject: `¡Felicitaciones! Ganaste "${itemName}"`,
       mjmlTemplate: templateData.template,
       replacements: templateData.replacements,
       type: "ITEM_WON",

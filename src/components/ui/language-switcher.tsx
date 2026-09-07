@@ -16,6 +16,8 @@ export function LanguageSwitcher({
   const router = useRouter();
   const currentLocale = useLocale() as Locale;
 
+  if (locales.length <= 1) return null;
+
   const handleLocaleChange = (newLocale: Locale) => {
     const { pathname, asPath, query } = router;
     router.push({ pathname, query }, asPath, { locale: newLocale });

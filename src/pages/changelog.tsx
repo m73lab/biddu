@@ -114,17 +114,19 @@ export default function ChangelogPage({
                       </div>
                     )}
 
-                    <div className="card-actions justify-end mt-4">
-                      <a
-                        href={latestRelease.html_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn btn-primary btn-sm gap-2"
-                      >
-                        <span className="icon-[tabler--brand-github] size-4"></span>
-                        {t("viewOnGitHub")}
-                      </a>
-                    </div>
+                    {latestRelease.html_url && (
+                      <div className="card-actions justify-end mt-4">
+                        <a
+                          href={latestRelease.html_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn btn-primary btn-sm gap-2"
+                        >
+                          <span className="icon-[tabler--brand-github] size-4"></span>
+                          {t("viewOnGitHub")}
+                        </a>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -166,17 +168,19 @@ export default function ChangelogPage({
                               {t("noReleaseNotes")}
                             </p>
                           )}
-                          <div className="mt-4">
-                            <a
-                              href={release.html_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="btn btn-ghost btn-xs gap-1"
-                            >
-                              <span className="icon-[tabler--external-link] size-3"></span>
-                              {t("viewOnGitHub")}
-                            </a>
-                          </div>
+                          {release.html_url && (
+                            <div className="mt-4">
+                              <a
+                                href={release.html_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn btn-ghost btn-xs gap-1"
+                              >
+                                <span className="icon-[tabler--external-link] size-3"></span>
+                                {t("viewOnGitHub")}
+                              </a>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -204,25 +208,16 @@ export const getStaticProps: GetStaticProps<ChangelogPageProps> = async ({
 }) => {
   const messages = await getMessages(locale as Locale);
 
-  let releases: GitHubRelease[] = [];
-
-  try {
-    const response = await fetch(
-      "https://api.github.com/repos/thomsa/auktiva/releases?per_page=20",
-      {
-        headers: {
-          Accept: "application/vnd.github.v3+json",
-          "User-Agent": "Auktiva-Changelog",
-        },
-      },
-    );
-
-    if (response.ok) {
-      releases = await response.json();
-    }
-  } catch (error) {
-    console.error("Failed to fetch releases:", error);
-  }
+  // SubastaYa fork: local changelog (no upstream releases apply here)
+  const releases: GitHubRelease[] = [
+    {
+      tag_name: `v${packageJson.version}`,
+      name: "SubastaYa: fork chileno",
+      body: "Adaptación al contexto chileno: español, pesos chilenos, RUT opcional, hora de Chile, notificaciones en español, registro de pago y entrega offline, y landing rediseñada.",
+      published_at: new Date().toISOString(),
+      html_url: "",
+    },
+  ];
 
   return {
     props: {

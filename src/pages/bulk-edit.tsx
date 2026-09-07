@@ -24,7 +24,7 @@ interface BulkEditPageProps {
   currencies: Currency[];
 }
 
-const INSTRUCTIONS_DISMISSED_KEY = "auktiva-bulk-edit-instructions-dismissed";
+const INSTRUCTIONS_DISMISSED_KEY = "subastaya-bulk-edit-instructions-dismissed";
 
 function getInitialInstructionsState() {
   if (typeof window === "undefined") return true;

@@ -15,6 +15,7 @@ export interface UserProfile {
 
 export interface UpdateProfileInput {
   name?: string;
+  phone?: string | null;
 }
 
 export interface UpdatePasswordInput {
@@ -167,7 +168,10 @@ export async function updateUserProfile(
   const user = await prisma.user.update({
     where: { id: userId },
     data: {
-      name: input.name,
+      ...(input.name !== undefined && { name: input.name }),
+      ...(input.phone !== undefined && {
+        phone: input.phone ? input.phone.trim() : null,
+      }),
     },
     select: { id: true, name: true, email: true },
   });

@@ -2,6 +2,8 @@ import { z } from "zod";
 import { ApiHandler } from "../types";
 import { BadRequestError, ValidationError } from "../errors";
 import * as authService from "@/lib/services/auth.service";
+import { isValidRut } from "@/utils/rut";
+import { isValidPhone } from "@/utils/phone";
 
 // ============================================================================
 // Schemas
@@ -11,6 +13,12 @@ const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
+  rut: z.string().optional().refine((rut) => !rut || isValidRut(rut), {
+    message: "Invalid RUT",
+  }),
+  phone: z.string().optional().refine((p) => !p || isValidPhone(p), {
+    message: "Invalid phone",
+  }),
 });
 
 const forgotPasswordSchema = z.object({

@@ -2,13 +2,13 @@
 trigger: always_on
 ---
 
-# Auktiva - Project Context for Windsurf
+# SubastaYa - Project Context for Windsurf
 
 > This file provides complete context for Windsurf AI to understand the project architecture, tech stack, and current state.
 
 ## Project Overview
 
-**Auktiva** is a private auction platform where users can create auctions, invite participants, add items, and conduct bidding. The platform supports role-based permissions (Owner, Admin, Bidder) and multiple currencies.
+**SubastaYa** is a private auction platform where users can create auctions, invite participants, add items, and conduct bidding. The platform supports role-based permissions (Owner, Admin, Bidder) and multiple currencies.
 
 ## Tech Stack
 
@@ -49,7 +49,7 @@ trigger: always_on
 ## Project Structure
 
 ```
-auktiva/
+subastaya/
 ├── prisma/
 │   ├── schema.prisma          # Database models
 │   ├── seed.ts                # Database seeding (currencies)
@@ -130,7 +130,7 @@ auktiva/
 
 - Uses `data-theme` attribute on `<html>`
 - ThemeProvider manages state and localStorage
-- Storage key: `auktiva-theme`
+- Storage key: `subastaya-theme`
 - Values: `light`, `dark`, `system`
 
 ### FlyonUI Classes

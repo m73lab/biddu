@@ -16,16 +16,16 @@ import { z } from "zod";
 export const createDiscussionSchema = z.object({
   content: z
     .string()
-    .min(1, "Discussion cannot be empty")
-    .max(2000, "Discussion is too long (max 2000 characters)"),
+    .min(1, "La discusión no puede estar vacía")
+    .max(2000, "La discusión es muy larga (máx 2000 caracteres)"),
   parentId: z.string().optional().nullable(),
 });
 
 export const updateDiscussionSchema = z.object({
   content: z
     .string()
-    .min(1, "Discussion cannot be empty")
-    .max(2000, "Discussion is too long (max 2000 characters)"),
+    .min(1, "La discusión no puede estar vacía")
+    .max(2000, "La discusión es muy larga (máx 2000 caracteres)"),
 });
 
 export type CreateDiscussionBody = z.infer<typeof createDiscussionSchema>;

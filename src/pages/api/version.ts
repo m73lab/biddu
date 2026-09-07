@@ -26,36 +26,11 @@ let cacheTimestamp = 0;
 const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
 
 async function getLatestRelease(): Promise<GitHubRelease | null> {
-  const now = Date.now();
-
-  // Return cached response if still valid
-  if (cachedRelease && now - cacheTimestamp < CACHE_DURATION) {
-    return cachedRelease;
-  }
-
-  try {
-    const response = await fetch(
-      "https://api.github.com/repos/thomsa/auktiva/releases/latest",
-      {
-        headers: {
-          Accept: "application/vnd.github.v3+json",
-          "User-Agent": "Auktiva-Version-Check",
-        },
-      },
-    );
-
-    if (!response.ok) {
-      // If rate limited or not found, return null
-      return null;
-    }
-
-    const release = (await response.json()) as GitHubRelease;
-    cachedRelease = release;
-    cacheTimestamp = now;
-    return release;
-  } catch {
-    return null;
-  }
+  // SubastaYa fork: upstream version checks disabled (Auktiva releases don't apply here)
+  void cachedRelease;
+  void cacheTimestamp;
+  void CACHE_DURATION;
+  return null;
 }
 
 function compareVersions(current: string, latest: string): boolean {

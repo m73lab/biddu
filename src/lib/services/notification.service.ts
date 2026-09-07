@@ -197,10 +197,10 @@ export async function notifyOutbid(
   return createNotification({
     userId: previousBidderId,
     type: "OUTBID",
-    title: "You've been outbid!",
-    message: `Someone placed a higher bid of ${displayAmount} on "${itemName}"${
+    title: "¡Te superaron la puja!",
+    message: `Alguien ofertó ${displayAmount} por "${itemName}", superando tu puja${
       typeof normalizedAmount === "number"
-        ? ` (normalized: ${normalizedAmount})`
+        ? ` (normalizado: ${normalizedAmount})`
         : ""
     }`,
     auctionId,
@@ -229,10 +229,10 @@ export async function notifyAuctionWon(
   return createNotification({
     userId: winnerId,
     type: "AUCTION_WON",
-    title: "Congratulations! You won!",
-    message: `You won "${itemName}" with a bid of ${displayAmount}${
+    title: "¡Felicitaciones! ¡Ganaste!",
+    message: `Ganaste "${itemName}" con una puja de ${displayAmount}${
       typeof normalizedAmount === "number"
-        ? ` (normalized: ${normalizedAmount})`
+        ? ` (normalizado: ${normalizedAmount})`
         : ""
     }`,
     auctionId,
@@ -252,8 +252,8 @@ export async function notifyMemberJoined(
   return createNotification({
     userId: ownerId,
     type: "MEMBER_JOINED",
-    title: "New member joined",
-    message: `${memberName} joined your auction "${auctionName}"`,
+    title: "Nuevo miembro",
+    message: `${memberName} se unió a la subasta "${auctionName}"`,
     auctionId,
   });
 }
@@ -274,7 +274,7 @@ export async function notifyNewItem(
     ? itemDescription.length > 50
       ? itemDescription.substring(0, 50) + "..."
       : itemDescription
-    : "No description";
+    : "Sin descripción";
 
   return createNotification({
     userId,
@@ -282,6 +282,80 @@ export async function notifyNewItem(
     title: itemName,
     message: truncatedDescription,
     imageUrl: imageUrl || undefined,
+    auctionId,
+    itemId,
+  });
+}
+
+/**
+ * Notify user about a new bid on an item in an auction they're in
+ */
+export async function notifyNewBid(
+  userId: string,
+  bidderName: string,
+  itemName: string,
+  auctionId: string,
+  itemId: string,
+  displayAmount: string,
+): Promise<Notification> {
+  return createNotification({
+    userId,
+    type: "NEW_BID",
+    title: `Nueva puja en "${itemName}"`,
+    message: `${bidderName} ofertó ${displayAmount} en "${itemName}"`,
+    auctionId,
+    itemId,
+  });
+}
+
+/**
+ * Notify user about a new comment on an item in an auction they're in
+ */
+export async function notifyNewComment(
+  userId: string,
+  authorName: string,
+  itemName: string,
+  auctionId: string,
+  itemId: string,
+  snippet: string,
+): Promise<Notification> {
+  return createNotification({
+    userId,
+    type: "NEW_COMMENT",
+    title: `Nuevo comentario en "${itemName}"`,
+    message: `${authorName}: ${snippet}`,
+    auctionId,
+    itemId,
+  });
+}
+
+/**
+ * Notify the winner that the payment/delivery status of a won item changed.
+ * Everything is settled offline - this only tracks the agreed state.
+ */
+export async function notifyFulfillmentUpdated(
+  userId: string,
+  itemName: string,
+  auctionId: string,
+  itemId: string,
+  status: "PENDING_PAYMENT" | "PAID" | "DELIVERED",
+  displayAmount: string,
+): Promise<Notification> {
+  const titles: Record<string, string> = {
+    PENDING_PAYMENT: `Pago pendiente: "${itemName}"`,
+    PAID: `Pago registrado: "${itemName}"`,
+    DELIVERED: `Entrega registrada: "${itemName}"`,
+  };
+  const messages: Record<string, string> = {
+    PENDING_PAYMENT: `El estado de "${itemName}" (${displayAmount}) volvió a pendiente de pago. Coordina el pago con el dueño del artículo.`,
+    PAID: `El dueño registró el pago de "${itemName}" (${displayAmount}). Coordina la entrega.`,
+    DELIVERED: `El dueño registró la entrega de "${itemName}" (${displayAmount}). ¡Que lo disfrutes!`,
+  };
+  return createNotification({
+    userId,
+    type: "FULFILLMENT_UPDATED",
+    title: titles[status],
+    message: messages[status],
     auctionId,
     itemId,
   });

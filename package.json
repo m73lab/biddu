@@ -1,19 +1,19 @@
 {
-  "name": "auktiva",
+  "name": "subastaya",
   "version": "1.21.0",
   "description": "A comprehensive auction platform for hosting private and public auctions with real-time bidding, multi-currency support, and role-based member management.",
-  "author": "thomsa",
+  "author": "subastaya",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/m73lab/subastaya.git"
+  },
+  "homepage": "https://github.com/m73lab/subastaya#readme",
+  "bugs": {
+    "url": "https://github.com/m73lab/subastaya/issues"
+  },
   "license": "MIT",
   "engines": {
     "node": ">=20.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/thomsa/auktiva.git"
-  },
-  "homepage": "https://github.com/thomsa/auktiva",
-  "bugs": {
-    "url": "https://github.com/thomsa/auktiva/issues"
   },
   "private": true,
   "config": {
@@ -22,8 +22,8 @@
   "scripts": {
     "dev": "next dev",
     "dev:realtime": "concurrently \"npm run soketi:docker\" \"next dev\"",
-    "soketi:dev": "SOKETI_DEBUG=true SOKETI_DEFAULT_APP_ID=auktiva SOKETI_DEFAULT_APP_KEY=dev-key SOKETI_DEFAULT_APP_SECRET=dev-secret soketi start",
-    "soketi:docker": "docker run --rm -p 6001:6001 -e SOKETI_DEBUG=true -e SOKETI_DEFAULT_APP_ID=auktiva -e SOKETI_DEFAULT_APP_KEY=dev-key -e SOKETI_DEFAULT_APP_SECRET=dev-secret -e SOKETI_DEFAULT_APP_HOST=0.0.0.0 quay.io/soketi/soketi:latest",
+    "soketi:dev": "SOKETI_DEBUG=true SOKETI_DEFAULT_APP_ID=subastaya SOKETI_DEFAULT_APP_KEY=dev-key SOKETI_DEFAULT_APP_SECRET=dev-secret soketi start",
+    "soketi:docker": "docker run --rm -p 6001:6001 -e SOKETI_DEBUG=true -e SOKETI_DEFAULT_APP_ID=subastaya -e SOKETI_DEFAULT_APP_KEY=dev-key -e SOKETI_DEFAULT_APP_SECRET=dev-secret -e SOKETI_DEFAULT_APP_HOST=0.0.0.0 quay.io/soketi/soketi:latest",
     "build": "prisma generate && next build",
     "analyze": "ANALYZE=true next build",
     "start": "next start",

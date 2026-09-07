@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: "auktiva",
+      name: "subastaya",
       script: "npm",
       args: "start",
       cwd: __dirname,
@@ -23,7 +23,7 @@ module.exports = {
     // For production, run Soketi as a Docker container (NOT via PM2):
     //   docker run -d --name soketi --restart unless-stopped \
     //     -p 6001:6001 \
-    //     -e SOKETI_DEFAULT_APP_ID=auktiva \
+    //     -e SOKETI_DEFAULT_APP_ID=subastaya \
     //     -e SOKETI_DEFAULT_APP_KEY=your-key \
     //     -e SOKETI_DEFAULT_APP_SECRET=your-secret \
     //     quay.io/soketi/soketi:latest

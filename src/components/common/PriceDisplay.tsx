@@ -16,14 +16,17 @@ const sizeClasses = {
 export function PriceDisplay({
   amount,
   symbol,
-  decimals = 2,
+  decimals = 0,
   size = "md",
   className = "",
 }: PriceDisplayProps) {
+  const formatted = amount.toLocaleString("es-CL", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
   return (
     <span className={`font-bold ${sizeClasses[size]} ${className}`}>
-      {symbol}
-      {amount.toFixed(decimals)}
+      {symbol}{formatted}
     </span>
   );
 }

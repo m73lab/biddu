@@ -55,6 +55,17 @@ export class ForbiddenError extends ApiError {
 }
 
 /**
+ * 403 Quota Exceeded - Cloud tier limit reached (self-hosting is unlimited)
+ */
+export class QuotaExceededError extends ApiError {
+  constructor(message: string, details?: Record<string, unknown>) {
+    super(message, 403, "QUOTA_EXCEEDED", details);
+    this.name = "QuotaExceededError";
+    Object.setPrototypeOf(this, QuotaExceededError.prototype);
+  }
+}
+
+/**
  * 404 Not Found - Resource does not exist
  */
 export class NotFoundError extends ApiError {

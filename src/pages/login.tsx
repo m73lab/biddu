@@ -16,11 +16,15 @@ import { getSafeRedirectUrl } from "@/utils/auth-redirect";
 interface LoginPageProps {
   googleOAuthEnabled: boolean;
   microsoftOAuthEnabled: boolean;
+  callbackUrl: string | null;
+  invitedEmail: string | null;
 }
 
 export default function LoginPage({
   googleOAuthEnabled,
   microsoftOAuthEnabled,
+  callbackUrl,
+  invitedEmail,
 }: LoginPageProps) {
   const router = useRouter();
   const t = useTranslations("auth.login");
@@ -33,6 +37,14 @@ export default function LoginPage({
   const [resendStatus, setResendStatus] = useState<
     "idle" | "sending" | "sent" | "error"
   >("idle");
+
+  // Preserve invite/auth flow params when linking to register
+  const authParams = new URLSearchParams();
+  if (callbackUrl) authParams.set("callbackUrl", callbackUrl);
+  if (invitedEmail) authParams.set("email", invitedEmail);
+  const registerHref = authParams.toString()
+    ? `/register?${authParams.toString()}`
+    : "/register";
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -61,8 +73,13 @@ export default function LoginPage({
           setError(tErrors("auth.invalidCredentials"));
         }
       } else {
-        // Redirect to callback URL or dashboard
-        const redirectUrl = getSafeRedirectUrl(router.query.redirectUrl);
+        // Redirect to callback URL (invite flow) or dashboard
+        const redirectUrl = getSafeRedirectUrl(
+          router.query.callbackUrl ??
+            router.query.redirectUrl ??
+            callbackUrl ??
+            undefined,
+        );
         router.push(redirectUrl);
       }
     } catch {
@@ -216,6 +233,7 @@ export default function LoginPage({
                       type="email"
                       placeholder={t("emailPlaceholder")}
                       autoComplete="email"
+                      defaultValue={invitedEmail ?? undefined}
                       className="input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors"
                       required
                     />
@@ -269,8 +287,16 @@ export default function LoginPage({
                   {t("orContinueWith")}
                 </div>
                 <div className="flex flex-col gap-3">
-                  {googleOAuthEnabled && <GoogleSignInButton />}
-                  {microsoftOAuthEnabled && <MicrosoftSignInButton />}
+                  {googleOAuthEnabled && (
+                    <GoogleSignInButton
+                      callbackUrl={callbackUrl ?? undefined}
+                    />
+                  )}
+                  {microsoftOAuthEnabled && (
+                    <MicrosoftSignInButton
+                      callbackUrl={callbackUrl ?? undefined}
+                    />
+                  )}
                 </div>
                 <p className="text-xs text-base-content/50 text-center mt-4">
                   {t("oauthTermsAgreement")}{" "}
@@ -289,7 +315,7 @@ export default function LoginPage({
               <p className="text-sm text-base-content/60">
                 {t("noAccount")}{" "}
                 <Link
-                  href="/register"
+                  href={registerHref}
                   className="link link-primary font-bold hover:text-primary/80 transition-colors"
                 >
                   {t("createAccount")}
@@ -306,10 +332,22 @@ export default function LoginPage({
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions);
 
+  // Preserve invite/auth flow: callbackUrl (invite links) or redirectUrl
+  let callbackUrl: string | null = null;
+  const rawCallback = context.query.callbackUrl ?? context.query.redirectUrl;
+  if (typeof rawCallback === "string") {
+    const safe = getSafeRedirectUrl(rawCallback, "");
+    if (safe) callbackUrl = safe;
+  }
+  const invitedEmail =
+    typeof context.query.email === "string" && context.query.email.includes("@")
+      ? context.query.email
+      : null;
+
   if (session) {
     return {
       redirect: {
-        destination: "/dashboard",
+        destination: callbackUrl ?? "/dashboard",
         permanent: false,
       },
     };
@@ -330,6 +368,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       messages,
       googleOAuthEnabled,
       microsoftOAuthEnabled,
+      callbackUrl,
+      invitedEmail,
     },
   };
 };

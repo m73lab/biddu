@@ -2,26 +2,26 @@ import { renderLayout, theme, escapeHtml } from "../layout";
 
 const content = `
     <mj-text font-size="22px" font-weight="600" color="${theme.colors.text.main}">
-      Reset Your Password
+      Restablecer Contraseña
     </mj-text>
     <mj-text>
-      Hi {{NAME}},
+      Hola {{NAME}},
     </mj-text>
     <mj-text>
-      We received a request to reset your password for your Auktiva account. Click the button below to create a new password.
+      Recibimos una solicitud para restablecer la contraseña de tu cuenta en SubastaYa. Haz clic en el botón de abajo para crear una nueva contraseña.
     </mj-text>
     <mj-button href="{{RESET_URL}}">
-      Reset Password
+      Restablecer Contraseña
     </mj-button>
     <mj-text font-size="12px" color="${theme.colors.text.light}">
-      This link will expire in 10 minutes for security reasons.
+      Este enlace expirará en 10 minutos por razones de seguridad.
     </mj-text>
     <mj-divider border-color="${theme.colors.border}" padding="20px 0" />
     <mj-text font-size="12px" color="${theme.colors.text.muted}">
-      If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.
+      Si no solicitaste un restablecimiento de contraseña, puedes ignorar este correo de forma segura. Tu contraseña permanecerá sin cambios.
     </mj-text>
     <mj-text font-size="12px" color="${theme.colors.text.muted}">
-      If you're having trouble clicking the button, copy and paste this URL into your browser:
+      Si tienes problemas para hacer clic en el botón, copia y pega esta URL en tu navegador:
     </mj-text>
     <mj-text font-size="11px" color="${theme.colors.primary}" word-break="break-all">
       {{RESET_URL}}
@@ -29,8 +29,8 @@ const content = `
 `;
 
 export const passwordResetTemplate = renderLayout({
-  title: "Reset Your Password",
-  previewText: "Reset your Auktiva password",
+  title: "Restablecer Contraseña",
+  previewText: "Restablece tu contraseña de SubastaYa",
   content,
 });
 
@@ -41,8 +41,7 @@ export function getPasswordResetTemplateData(data: {
   return {
     template: passwordResetTemplate,
     replacements: {
-      // HTML-encode user-provided content to prevent injection
-      "{{NAME}}": escapeHtml(data.name || "there"),
+      "{{NAME}}": escapeHtml(data.name || "ahí"),
       "{{RESET_URL}}": data.resetUrl,
       "{{YEAR}}": new Date().getFullYear().toString(),
     },

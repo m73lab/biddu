@@ -10,7 +10,12 @@
       "displayNamePlaceholder": "Tu nombre",
       "saveProfile": "Guardar Perfil",
       "saving": "Guardando...",
-      "profileUpdated": "Perfil actualizado correctamente"
+      "profileUpdated": "Perfil actualizado correctamente",
+      "phone": "WhatsApp / Teléfono",
+      "phonePlaceholder": "+56 9 1234 5678",
+      "phoneHint": "Para que te contacten por tus pujas ganadas",
+      "phoneInvalid": "Teléfono inválido. Ejemplo: +56 9 1234 5678",
+      "optional": "opcional"
     },
     "password": {
       "title": "Cambiar Contraseña",
@@ -117,7 +122,9 @@
       "title": "Enlaces Rápidos",
       "documentation": "Documentación",
       "feedback": "Enviar Comentarios",
-      "signOut": "Cerrar Sesión"
+      "signOut": "Cerrar Sesión",
+      "helpTitle": "Ayuda y contacto",
+      "helpDesc": "Preguntas frecuentes y contacto"
     }
   }
 }

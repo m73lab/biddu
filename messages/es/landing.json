@@ -1,113 +1,159 @@
 {
   "landing": {
+    "nav": {
+      "features": "Características",
+      "howItWorks": "Cómo funciona",
+      "useCases": "Casos de uso",
+      "faq": "Preguntas"
+    },
     "hero": {
-      "badge": "{version} ya está disponible",
-      "title": "Subastas hechas",
-      "titleHighlight": "simples y sociales",
-      "description": "Plataforma de subastas 100% gratuita y de código abierto para eventos benéficos y uso personal. Perfecta para limpiezas anuales, ventas de garaje o vender artículos a amigos. Sin comisiones, sin límites.",
-      "startAuction": "Empieza Tu Subasta",
-      "viewOnGithub": "Ver en GitHub",
-      "demoAlt": "Vista previa interactiva de demostración",
-      "bidNow": "Pujar Ahora",
-      "showDemo": "Ver demostración",
-      "demoHint": "Haz clic para ver cómo funciona Auktiva",
-      "demoTitle": "Demo de Auktiva",
-      "videoNotSupported": "Tu navegador no soporta el elemento de video.",
-      "close": "Cerrar"
+      "title": "Remates online",
+      "titleHighlight": "a la chilena",
+      "description": "Crea la subasta de tu club, compañía de bomberos, pyme o familia en minutos. Pujas en tiempo real, en pesos chilenos y sin comisiones. El pago y la entrega se coordinan en persona, como siempre.",
+      "startAuction": "Crear mi subasta gratis",
+      "secondaryCta": "Ver cómo funciona",
+      "stats": [
+        {
+          "value": "100%",
+          "label": "Gratis, sin comisiones"
+        },
+        {
+          "value": "$ CLP",
+          "label": "Pesos chilenos"
+        },
+        {
+          "value": "24/7",
+          "label": "Pujas en tiempo real"
+        }
+      ],
+      "previewTitle": "Remate de la Compañía",
+      "previewBid": "Puja actual",
+      "previewButton": "Pujar",
+      "previewBidders": "Bomberos · Vecinos · Socios"
     },
     "features": {
-      "sectionTitle": "Todo lo que necesitas para una",
-      "sectionTitleHighlight": "subasta perfecta",
-      "sectionDescription": "Funcionalidades potentes creadas tanto para organizadores como para pujadores.",
+      "sectionTitle": "Todo lo que necesitas",
+      "sectionTitleHighlight": "para tu remate",
+      "sectionDescription": "Sin planillas, sin grupos de WhatsApp caóticos, sin comisiones. Solo tu subasta funcionando.",
       "realTimeBidding": {
         "title": "Pujas en tiempo real",
-        "description": "Observa las pujas al instante con nuestras actualizaciones en vivo. No hace falta refrescar."
+        "description": "Las ofertas aparecen al instante para todos los participantes, sin recargar la página."
       },
       "privateSecure": {
-        "title": "Privado y Seguro",
-        "description": "Organiza subastas solo por invitación con control de acceso basado en roles. Tus datos permanecen privados."
+        "title": "Privadas o abiertas",
+        "description": "Solo por invitación, con enlace o abiertas a todos. Tú decides quién participa, con roles y pujas anónimas si quieres."
       },
       "multiCurrency": {
-        "title": "Multimoneda",
-        "description": "Soporte para eventos globales con formato de moneda automático para USD, EUR, GBP y más."
+        "title": "En pesos chilenos",
+        "description": "Montos en $ CLP sin decimales raros, con hora de Chile. También soporta otras monedas si las necesitas."
       },
       "smartNotifications": {
-        "title": "Notificaciones Inteligentes",
-        "description": "Recibe notificaciones inmediatas cuando te superen en una puja o cuando los artículos que sigues estén por terminar."
+        "title": "Avisos que sí llegan",
+        "description": "Campana en la app y correos en español: te avisan si te superan, si ganas, si hay lotes nuevos o comentarios."
       },
       "richMedia": {
-        "title": "Multimedia",
-        "description": "Muestra artículos con galerías de imágenes de alta resolución y descripciones detalladas."
+        "title": "Lotes con fotos",
+        "description": "Sube imágenes a cada artículo, importa por CSV o edita varios a la vez. Tus remates se ven profesionales."
       },
       "offlineExchange": {
-        "title": "Intercambio Offline",
-        "description": "Perfecto para eventos benéficos. Nosotros gestionamos las pujas, tú gestionas el intercambio de artículos offline."
+        "title": "Pago offline, ordenado",
+        "description": "Sin pasarelas ni comisiones: el pago y la entrega se coordinan en persona, y la plataforma lleva el registro de cada estado."
       }
     },
     "useCases": {
-      "sectionTitle": "Perfecto para",
-      "sectionTitleHighlight": "cualquier ocasión",
-      "sectionDescription": "Ya sea para recaudar fondos o limpiar tu garaje, Auktiva lo hace simple.",
+      "sectionTitle": "Hecha para",
+      "sectionTitleHighlight": "la vida real",
+      "sectionDescription": "Donde hay una comunidad juntando lucas, SubastaYa calza perfecto.",
       "charity": {
-        "title": "Subastas Benéficas",
-        "description": "Organiza subastas silenciosas para organizaciones sin fines de lucro, escuelas, iglesias y eventos comunitarios."
+        "title": "Bomberos y causas",
+        "description": "Remates a beneficio de tu compañía o causa: publica los lotes donados, recibe pujas de vecinos y adjudica al mejor postor."
       },
       "declutter": {
-        "title": "Limpieza Anual",
-        "description": "Deshazte de artículos no usados de tu casa o almacén y deja que tus amigos pujen por ellos."
+        "title": "Pymes y liquidación",
+        "description": "Liquida stock, equipos o mercadería con subastas ordenadas: fotos, puja mínima, incrementos y resultados exportables."
       },
       "family": {
-        "title": "Amigos y Familia",
-        "description": "Subastas privadas para reuniones familiares, ventas de vecindario o grupos de amigos."
+        "title": "Clubes deportivos",
+        "description": "Financia el club con remates entre socios e hinchas: camisetas, premios y experiencias, todo en un solo lugar."
       },
       "office": {
-        "title": "Liquidaciones de Oficina",
-        "description": "Las empresas pueden subastar equipos viejos, muebles o artículos promocionales a sus empleados."
+        "title": "Familia y amigos",
+        "description": "El remate del fin de semana, la rifa del curso o la venta de garage: invítalos por correo y que gane la mejor puja."
       }
     },
     "howItWorks": {
-      "sectionTitle": "Desde la configuración hasta",
-      "sectionTitleHighlight": "una subasta exitosa",
-      "sectionDescription": "Cuatro pasos simples para realizar tu subasta. Concéntrate en lo importante, nosotros nos encargamos de las pujas.",
+      "sectionTitle": "De la idea al remate",
+      "sectionTitleHighlight": "en minutos",
+      "sectionDescription": "Sin manuales ni cursos. Así de simple:",
       "step1": {
-        "title": "Crear Subasta",
-        "description": "Configura tu evento en minutos con detalles y marca personalizables."
+        "title": "Crea tu subasta",
+        "description": "Ponle nombre, descripción y elige quién puede entrar: solo invitados, con enlace o abierta."
       },
       "step2": {
-        "title": "Invitar Invitados",
-        "description": "Comparte un enlace privado o envía invitaciones por correo a tus participantes."
+        "title": "Sube los lotes",
+        "description": "Agrega artículos con fotos, puja inicial e incremento mínimo. O impórtalos todos por CSV."
       },
       "step3": {
-        "title": "Pujas en Vivo",
-        "description": "Los invitados pujan en tiempo real desde sus teléfonos. ¡Crece la emoción!"
+        "title": "Invita a pujar",
+        "description": "Envía invitaciones por correo. Si alguien no tiene cuenta, se registra y vuelve directo a tu subasta."
       },
       "step4": {
-        "title": "Finalización",
-        "description": "Gestiona el intercambio y el pago offline, a tu manera."
+        "title": "Mira las pujas en vivo",
+        "description": "Cada oferta aparece al instante y todos reciben avisos. Al cerrar, se adjudica al mejor postor."
       },
       "step5": {
-        "title": "Celebrar",
-        "description": "¡Celebra tu éxito con tus contribuyentes y crea conciencia sobre tu causa!"
+        "title": "Coordina pago y entrega",
+        "description": "La app te muestra el contacto del ganador y lleva el registro: pendiente, pagado y entregado."
       },
-      "newBid": "¡Nueva Puja!"
+      "newBid": "Nueva puja"
     },
     "impact": {
-      "sectionTitle": "Tu Impacto,",
-      "sectionTitleHighlight": "Recaudado",
-      "sectionDescription": "Cada contribución cuenta. Mira cómo las donaciones individuales se suman para llenar el frasco de oportunidades.",
-      "totalValue": "Valor Total",
-      "itemsCollected": "Artículos Recolectados",
-      "exampleAuctionName": "Recaudación de Navidad",
-      "moreItems": "+{count}"
+      "sectionTitle": "Plata para",
+      "sectionTitleHighlight": "los que la juntan",
+      "sectionDescription": "Cada remate mueve recursos reales para comunidades reales.",
+      "totalValue": "Valor total rematado",
+      "itemsCollected": "Lotes adjudicados",
+      "exampleAuctionName": "Remate de Navidad",
+      "moreItems": "ver lotes"
+    },
+    "faq": {
+      "eyebrow": "Preguntas frecuentes",
+      "title": "¿Tienes dudas?",
+      "subtitle": "Las de siempre, respondidas sin vueltas.",
+      "items": [
+        {
+          "q": "¿SubastaYa es realmente gratis?",
+          "a": "Sí. SubastaYa es 100% gratis y de código abierto bajo licencia MIT. Sin comisiones ni límites: autoalójala en tu propio servidor."
+        },
+        {
+          "q": "¿Cómo se cobra si alguien gana una puja?",
+          "a": "El pago es 100% offline: el ganador coordina directamente con el dueño del artículo (transferencia, efectivo, lo que acuerden). La plataforma no procesa pagos ni cobra comisiones; solo lleva el registro: pendiente de pago, pagado y entregado."
+        },
+        {
+          "q": "¿Necesito RUT para registrarme?",
+          "a": "No, el RUT es opcional. Solo necesitas nombre, correo y contraseña. Si participas en remates formales, puedes agregarlo a tu perfil."
+        },
+        {
+          "q": "¿En qué moneda son las pujas?",
+          "a": "Por defecto en pesos chilenos ($ CLP), sin decimales y con hora de Chile. También puedes crear subastas en otras monedas."
+        },
+        {
+          "q": "¿Puedo tener SubastaYa en mi propio servidor?",
+          "a": "Sí, es autoalojable con Docker y licencia MIT. Clona el repositorio y levántalo con docker compose up."
+        },
+        {
+          "q": "¿Mis datos están seguros?",
+          "a": "Tus datos solo son visibles para los miembros de tus subastas. Puedes exportarlos o eliminar tu cuenta (con todos tus datos) cuando quieras. Lee la Política de Privacidad para el detalle."
+        }
+      ]
     },
     "cta": {
-      "title": "¿Listo para empezar tu subasta?",
-      "description": "Ya sea una subasta benéfica o una venta de limpieza anual, Auktiva es completamente gratis. Código abierto, sin comisiones, creado para comunidades.",
-      "getStarted": "Empezar",
-      "freeForever": "Es gratis y siempre será gratis",
-      "selfHostTitle": "¿Prefieres alojarlo tú mismo?",
-      "selfHostDescription": "Ejecuta Auktiva en tu propio servidor con control total sobre tus datos. Un comando para empezar.",
-      "seeDocumentation": "Mira la <link>documentación para desarrolladores</link> para más detalles."
+      "title": "Parte tu primer remate hoy",
+      "description": "Gratis, en español y sin comisiones. Tu comunidad te lo va a agradecer.",
+      "getStarted": "Crear cuenta gratis",
+      "freeForever": "Gratis por siempre · Sin tarjeta",
+      "selfHostTitle": "¿Prefieres alojarlo tú?",
+      "selfHostDescription": "SubastaYa es código abierto y autoalojable con Docker. Control total de tus datos en tu propia infraestructura."
     }
   }
 }

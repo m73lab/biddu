@@ -2,28 +2,28 @@ import { renderLayout, theme, escapeHtml } from "../layout";
 
 const content = `
     <mj-text font-size="22px" font-weight="600" color="${theme.colors.text.main}">
-      You've Been Invited! 🎯
+      ¡Te Invitaron! 🎯
     </mj-text>
     <mj-text>
-      <strong>{{SENDER_NAME}}</strong> has invited you to join the auction:
+      <strong>{{SENDER_NAME}}</strong> te ha invitado a unirte a la subasta:
     </mj-text>
     <mj-text font-size="18px" font-weight="600" color="${theme.colors.primary}" padding="16px 0">
       "{{AUCTION_NAME}}"
     </mj-text>
     <mj-text>
-      You've been invited as a <strong>{{ROLE}}</strong>. Click the button below to accept the invitation and start bidding!
+      Has sido invitado como <strong>{{ROLE}}</strong>. Haz clic en el botón de abajo para aceptar la invitación y comenzar a pujar.
     </mj-text>
     <mj-button href="{{INVITE_URL}}">
-      Accept Invitation
+      Aceptar Invitación
     </mj-button>
     <mj-text font-size="12px" color="${theme.colors.text.light}" padding-top="16px">
-      This invitation will expire in 7 days. If you don't have an account yet, you'll be prompted to create one.
+      Esta invitación expirará en 7 días. Si aún no tienes una cuenta, se te pedirá crear una.
     </mj-text>
 `;
 
 export const inviteTemplate = renderLayout({
-  title: "You've Been Invited!",
-  previewText: "You've been invited to join an auction on Auktiva",
+  title: "¡Te Invitaron!",
+  previewText: "Has sido invitado a una subasta en SubastaYa",
   content,
 });
 
@@ -34,12 +34,17 @@ export function getInviteTemplateData(data: {
   token: string;
   appUrl: string;
 }) {
-  const roleDisplay = data.role.charAt(0) + data.role.slice(1).toLowerCase();
+  const roleMap: Record<string, string> = {
+    OWNER: "Dueño",
+    ADMIN: "Administrador",
+    CREATOR: "Creador",
+    BIDDER: "Postor",
+  };
+  const roleDisplay = roleMap[data.role] || data.role;
   return {
     template: inviteTemplate,
     replacements: {
-      // HTML-encode user-provided content to prevent injection
-      "{{SENDER_NAME}}": escapeHtml(data.senderName || "Someone"),
+      "{{SENDER_NAME}}": escapeHtml(data.senderName || "Alguien"),
       "{{AUCTION_NAME}}": escapeHtml(data.auctionName),
       "{{ROLE}}": escapeHtml(roleDisplay),
       "{{INVITE_URL}}": `${data.appUrl}/invite/${encodeURIComponent(data.token)}`,

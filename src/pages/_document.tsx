@@ -3,7 +3,7 @@ import { Html, Head, Main, NextScript } from "next/document";
 const themeScript = `
 (function() {
   try {
-    var theme = localStorage.getItem('auktiva-theme') || 'system';
+    var theme = localStorage.getItem('subastaya-theme') || 'system';
     var resolved = theme;
     if (theme === 'system') {
       resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';

@@ -1,113 +1,159 @@
 {
   "landing": {
+    "nav": {
+      "features": "Features",
+      "howItWorks": "How it works",
+      "useCases": "Use cases",
+      "faq": "FAQ"
+    },
     "hero": {
-      "badge": "{version} is now live",
-      "title": "Free Auction Platform",
-      "titleHighlight": "Simple and Social",
-      "description": "100% free, open-source auction platform for charity events, fundraisers, and personal use. Perfect for yearly decluttering, garage sales, or selling items to friends. No fees, no limits.",
-      "startAuction": "Start Free Auction",
-      "viewOnGithub": "View on GitHub",
-      "demoAlt": "Interactive Demo Preview",
-      "bidNow": "Bid Now",
-      "showDemo": "Show me a demo",
-      "demoHint": "Click to watch how Auktiva works",
-      "demoTitle": "Auktiva Demo",
-      "videoNotSupported": "Your browser does not support the video tag.",
-      "close": "Close"
+      "title": "Online auctions",
+      "titleHighlight": "the Chilean way",
+      "description": "Create your club, firefighter company, small business or family auction in minutes. Real-time bidding, Chilean pesos, no fees. Payment and delivery are arranged in person, as always.",
+      "startAuction": "Create my free auction",
+      "secondaryCta": "See how it works",
+      "stats": [
+        {
+          "value": "100%",
+          "label": "Free, no fees"
+        },
+        {
+          "value": "$ CLP",
+          "label": "Chilean pesos"
+        },
+        {
+          "value": "24/7",
+          "label": "Real-time bidding"
+        }
+      ],
+      "previewTitle": "Company Fundraiser",
+      "previewBid": "Current bid",
+      "previewButton": "Bid",
+      "previewBidders": "Firefighters · Neighbors · Members"
     },
     "features": {
-      "sectionTitle": "Everything you need for a",
-      "sectionTitleHighlight": "perfect auction",
-      "sectionDescription": "Powerful features built for organizers and bidders alike.",
+      "sectionTitle": "Everything you need",
+      "sectionTitleHighlight": "for your auction",
+      "sectionDescription": "No spreadsheets, no chaotic chat groups, no fees. Just your auction working.",
       "realTimeBidding": {
-        "title": "Real-time Bidding",
-        "description": "Watch bids happen instantly with our live updates. No refreshing required."
+        "title": "Real-time bidding",
+        "description": "Bids appear instantly for every participant, no page reloads."
       },
       "privateSecure": {
-        "title": "Private & Secure",
-        "description": "Host invite-only auctions with role-based access control. Your data stays private."
+        "title": "Private or open",
+        "description": "Invite-only, link access or fully open. You decide who joins, with roles and anonymous bidding if you like."
       },
       "multiCurrency": {
-        "title": "Multi-Currency",
-        "description": "Support for global events with automatic currency formatting for USD, EUR, GBP, and more."
+        "title": "Chilean pesos first",
+        "description": "Amounts in $ CLP with no odd decimals, on Chile time. Other currencies supported too."
       },
       "smartNotifications": {
-        "title": "Smart Notifications",
-        "description": "Get notified immediately when you're outbid or when watched items are ending."
+        "title": "Notifications that arrive",
+        "description": "In-app bell and Spanish emails: outbid alerts, wins, new lots and comments."
       },
       "richMedia": {
-        "title": "Rich Media",
-        "description": "Showcase items with high-resolution image galleries and detailed descriptions."
+        "title": "Lots with photos",
+        "description": "Upload images per item, import via CSV or bulk-edit. Your auctions look professional."
       },
       "offlineExchange": {
-        "title": "Offline Exchange",
-        "description": "Perfect for charity events. We handle the bidding, you handle the item exchange offline."
+        "title": "Offline payment, tracked",
+        "description": "No gateways, no fees: payment and delivery happen in person, and the platform tracks each state."
       }
     },
     "useCases": {
-      "sectionTitle": "Perfect for",
-      "sectionTitleHighlight": "any occasion",
-      "sectionDescription": "Whether you're raising funds for a cause or clearing out your garage, Auktiva makes it simple.",
+      "sectionTitle": "Built for",
+      "sectionTitleHighlight": "real life",
+      "sectionDescription": "Wherever a community raises funds, SubastaYa fits right in.",
       "charity": {
-        "title": "Charity Fundraisers",
-        "description": "Host silent auctions for nonprofits, schools, churches, and community events."
+        "title": "Firefighters & causes",
+        "description": "Benefit auctions for your company or cause: publish donated lots, collect bids and award to the highest bidder."
       },
       "declutter": {
-        "title": "Yearly Decluttering",
-        "description": "Clear out unused items from your home or storage and let friends bid on them."
+        "title": "Small business & clearance",
+        "description": "Clear stock or equipment with tidy auctions: photos, starting bids, increments and exportable results."
       },
       "family": {
-        "title": "Friends & Family",
-        "description": "Private auctions for family gatherings, neighborhood sales, or friend groups."
+        "title": "Sports clubs",
+        "description": "Fund your club with auctions among members and fans: jerseys, prizes and experiences in one place."
       },
       "office": {
-        "title": "Office Clearouts",
-        "description": "Companies can auction old equipment, furniture, or promotional items to employees."
+        "title": "Family & friends",
+        "description": "The weekend auction, the class raffle or the garage sale: invite by email and let the best bid win."
       }
     },
     "howItWorks": {
-      "sectionTitle": "From setup to",
-      "sectionTitleHighlight": "successful auction",
-      "sectionDescription": "Four simple steps to run your auction. Focus on what matters, we'll handle the bidding.",
+      "sectionTitle": "From idea to auction",
+      "sectionTitleHighlight": "in minutes",
+      "sectionDescription": "No manuals, no courses. This simple:",
       "step1": {
-        "title": "Create Auction",
-        "description": "Set up your event in minutes with customizable details and branding."
+        "title": "Create your auction",
+        "description": "Name it, describe it and choose who can join: invite-only, link or open."
       },
       "step2": {
-        "title": "Invite Guests",
-        "description": "Share a private link or send email invitations to your participants."
+        "title": "Upload the lots",
+        "description": "Add items with photos, starting bid and minimum increment. Or import them all via CSV."
       },
       "step3": {
-        "title": "Live Bidding",
-        "description": "Guests place bids in real-time from their phones. Excitement builds!"
+        "title": "Invite bidders",
+        "description": "Send email invites. If someone has no account, they register and land straight in your auction."
       },
       "step4": {
-        "title": "Wrap Up",
-        "description": "Handle exchange and settlement offline, your way."
+        "title": "Watch live bidding",
+        "description": "Every bid shows instantly and everyone gets notified. At closing, the highest bidder wins."
       },
       "step5": {
-        "title": "Celebrate",
-        "description": "Celebrate your success with your contributors and raise awareness for your cause!"
+        "title": "Settle payment & delivery",
+        "description": "The app shows you the winner's contact and tracks the record: pending, paid and delivered."
       },
-      "newBid": "New Bid!"
+      "newBid": "New bid"
     },
     "impact": {
-      "sectionTitle": "Your Impact,",
-      "sectionTitleHighlight": "Collected",
-      "sectionDescription": "Every contribution counts. Watch how individual donations come together to fill the jar of opportunity.",
-      "totalValue": "Total Value",
-      "itemsCollected": "Items Collected",
-      "exampleAuctionName": "Christmas Fundraiser for Charity",
-      "moreItems": "+{count}"
+      "sectionTitle": "Money for",
+      "sectionTitleHighlight": "those who raise it",
+      "sectionDescription": "Every auction moves real resources for real communities.",
+      "totalValue": "Total auctioned value",
+      "itemsCollected": "Awarded lots",
+      "exampleAuctionName": "Christmas Auction",
+      "moreItems": "view lots"
+    },
+    "faq": {
+      "eyebrow": "FAQ",
+      "title": "Questions?",
+      "subtitle": "The usual ones, answered straight.",
+      "items": [
+        {
+          "q": "Is SubastaYa really free?",
+          "a": "Yes. SubastaYa is 100% free and open source under the MIT license. No fees, no limits: self-host it on your own server."
+        },
+        {
+          "q": "How do winners pay?",
+          "a": "Payment is 100% offline: the winner settles directly with the item owner (transfer, cash, whatever they agree). The platform processes no payments and charges no fees; it only tracks the record: pending, paid and delivered."
+        },
+        {
+          "q": "Do I need a RUT to register?",
+          "a": "No, RUT is optional. You only need a name, email and password. You can add it to your profile for formal auctions."
+        },
+        {
+          "q": "Which currency are bids in?",
+          "a": "Chilean pesos ($ CLP) by default, no decimals, on Chile time. You can also create auctions in other currencies."
+        },
+        {
+          "q": "Can I run SubastaYa on my own server?",
+          "a": "Yes, it is Docker self-hostable under the MIT license. Clone the repo and run docker compose up."
+        },
+        {
+          "q": "Is my data safe?",
+          "a": "Your data is only visible to members of your auctions. You can export it or delete your account (with all your data) anytime. See the Privacy Policy for details."
+        }
+      ]
     },
     "cta": {
-      "title": "Ready to start your auction?",
-      "description": "Whether it's a charity fundraiser or a yearly declutter sale, Auktiva is completely free. Open source, no fees, and built for communities.",
-      "getStarted": "Start Free Auction",
-      "freeForever": "100% free forever - no fees, no limits",
-      "selfHostTitle": "Prefer to self-host?",
-      "selfHostDescription": "Run this open-source auction platform on your own server with full control. One command to get started.",
-      "seeDocumentation": "See the <link>developer documentation</link> for more details."
+      "title": "Start your first auction today",
+      "description": "Free, in Spanish and with no fees. Your community will thank you.",
+      "getStarted": "Create free account",
+      "freeForever": "Free forever · No card",
+      "selfHostTitle": "Rather host it yourself?",
+      "selfHostDescription": "SubastaYa is open source and Docker self-hostable. Full control of your data on your own infrastructure."
     }
   }
 }

@@ -1,78 +1,43 @@
 import Head from "next/head";
 
-// Site-wide SEO constants
-export const SITE_URL = "https://auktiva.org";
-export const SITE_NAME = "Auktiva";
-export const SITE_AUTHOR = "Tamas Lorincz";
-export const SITE_AUTHOR_URL = "https://www.tamaslorincz.com";
-export const SITE_TWITTER = "@auktiva";
+export const SITE_URL = "https://subastaya.cl";
+export const SITE_NAME = "SubastaYa";
+export const SITE_AUTHOR = "SubastaYa";
+export const SITE_AUTHOR_URL = "https://subastaya.cl";
+export const SITE_TWITTER = "@subastaya";
 
-// Comprehensive keyword list for auction platform SEO
-// Primary target searches:
-// - "open source auction platform charity"
-// - "auction platform free", "auction free"
-// - "auction fundraiser", "auction charity"
-// - "auction platform charity", "auction platform fundraiser"
-// - "auction platform charity free", "auction platform fundraiser free"
-// - "declutter auction", "garage sale online", "sell unused items"
 export const SITE_KEYWORDS = [
-  // Primary high-intent keywords (exact match targets)
-  "open source auction platform charity",
-  "auction platform free",
-  "auction free",
-  "auction fundraiser",
-  "auction charity",
-  "auction platform charity",
-  "auction platform fundraiser",
-  "auction platform charity free",
-  "auction platform fundraiser free",
-  "free auction platform",
-  // Charity & Fundraising variations
-  "free charity auction software",
-  "free fundraiser auction platform",
-  "nonprofit auction platform free",
-  "charity auction software free",
-  "fundraising auction platform",
-  "silent auction software free",
-  "charity fundraising platform",
-  "donation auction free",
-  "benefit auction software",
-  "gala auction platform",
-  // Open source variations
-  "open source auction software",
-  "open source fundraiser platform",
-  "open source charity software",
-  "self-hosted auction platform",
-  "auction platform github",
-  // Event types
-  "school auction platform free",
-  "church auction software free",
-  "nonprofit auction software",
-  "community auction platform",
-  "private auction software",
-  // Decluttering & Personal use
-  "declutter auction app",
-  "sell unused items online",
-  "garage sale online platform",
-  "storage clearance auction",
-  "yearly declutter sale",
-  "family auction platform",
-  "friends and family auction",
-  "private sale platform free",
-  "sell stuff to friends",
-  "neighborhood auction app",
-  // Features
-  "real-time bidding platform",
-  "silent auction app free",
-  "online auction software free",
-  "auction management system",
+  "plataforma subastas chile",
+  "subastas online gratis",
+  "subasta privada chile",
+  "subastas en vivo",
+  "plataforma subastas gratuita",
+  "subastas silenciosas",
+  "subastas beneficencia chile",
+  "subastas bomberos",
+  "subastas club deportivo",
+  "remate online chile",
+  "remate privado",
+  "plataforma remates",
+  "subastas pymes chile",
+  "liquidacion empresas chile",
+  "subastas entre amigos",
+  "subastas familiares",
+  "subastas oficina",
+  "software subastas abierto",
+  "codigo abierto subastas",
+  "autoalojamiento subastas",
+  "pujas tiempo real",
+  "subastas multiples monedas",
+  "subasta sin comisiones",
+  "subasta gratis",
 ].join(", ");
 
 export const SITE_DESCRIPTION =
-  "Auktiva is a 100% free, open-source auction platform for charity fundraisers, nonprofit events, schools, churches, and personal use. Perfect for yearly decluttering, garage sales, or clearing out storage with friends and family. Create unlimited auctions with real-time bidding, member management, and multi-currency support. No fees, no limits, no credit card required.";
+  "SubastaYa es una plataforma de subastas 100% gratuita y de código abierto para Chile. Ideal para eventos benéficos, clubes, bomberos, pymes y uso personal. Crea subastas ilimitadas con pujas en tiempo real, gestión de miembros y soporte multi-moneda. Sin comisiones, sin límites.";
 
 export const SITE_DESCRIPTION_SHORT =
-  "Free open-source auction platform for charity fundraisers, decluttering sales, and private auctions with friends. Host unlimited auctions with real-time bidding - completely free, no fees ever.";
+  "Plataforma de subastas gratuita y de código abierto para Chile. Subastas privadas con pujas en tiempo real — completamente gratis, sin comisiones.";
 
 interface SEOProps {
   title?: string;
@@ -101,17 +66,16 @@ export function SEO({
   noindex = false,
   ogType = "website",
   ogImage = `${SITE_URL}/pictures/og-image.png`,
-  ogImageAlt = "Auktiva - Open Source Auction Platform",
+  ogImageAlt = "SubastaYa - Plataforma de Subastas",
   article,
   structuredData,
 }: SEOProps) {
   const fullTitle = title
     ? `${title} | ${SITE_NAME}`
-    : `${SITE_NAME} - Free Open Source Auction Platform for Fundraisers & Charities`;
+    : `${SITE_NAME} - Plataforma de Subastas Gratuita para Chile`;
 
   const canonicalUrl = canonical || SITE_URL;
 
-  // Default structured data for the software application
   const defaultStructuredData = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -122,35 +86,32 @@ export function SEO({
     offers: {
       "@type": "Offer",
       price: "0",
-      priceCurrency: "USD",
+      priceCurrency: "CLP",
     },
     description: SITE_DESCRIPTION,
     url: SITE_URL,
     author: {
-      "@type": "Person",
+      "@type": "Organization",
       name: SITE_AUTHOR,
-      url: SITE_AUTHOR_URL,
     },
     publisher: {
-      "@type": "Person",
+      "@type": "Organization",
       name: SITE_AUTHOR,
-      url: SITE_AUTHOR_URL,
     },
     license: "https://opensource.org/licenses/MIT",
     isAccessibleForFree: true,
     featureList: [
-      "Real-time bidding",
-      "Private auctions",
-      "Member management",
-      "Multi-currency support",
-      "Image uploads",
-      "Email notifications",
-      "Mobile responsive",
-      "Self-hosting option",
+      "Pujas en tiempo real",
+      "Subastas privadas",
+      "Gestión de miembros",
+      "Soporte multi-moneda",
+      "Carga de imágenes",
+      "Notificaciones por correo",
+      "Diseño responsive",
+      "Autoalojamiento",
     ],
   };
 
-  // Organization structured data
   const organizationData = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -158,15 +119,8 @@ export function SEO({
     url: SITE_URL,
     logo: `${SITE_URL}/logo.png`,
     description: SITE_DESCRIPTION_SHORT,
-    founder: {
-      "@type": "Person",
-      name: SITE_AUTHOR,
-      url: SITE_AUTHOR_URL,
-    },
-    sameAs: ["https://github.com/thomsa/auktiva"],
   };
 
-  // WebSite structured data for search
   const websiteData = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -174,7 +128,7 @@ export function SEO({
     url: SITE_URL,
     description: SITE_DESCRIPTION_SHORT,
     publisher: {
-      "@type": "Person",
+      "@type": "Organization",
       name: SITE_AUTHOR,
     },
     potentialAction: {
@@ -189,7 +143,6 @@ export function SEO({
 
   return (
     <Head>
-      {/* Primary Meta Tags */}
       <title>{fullTitle}</title>
       <meta name="title" content={fullTitle} />
       <meta name="description" content={description} />
@@ -198,7 +151,6 @@ export function SEO({
       <meta name="creator" content={SITE_AUTHOR} />
       <meta name="publisher" content={SITE_AUTHOR} />
 
-      {/* Robots */}
       <meta
         name="robots"
         content={
@@ -216,19 +168,15 @@ export function SEO({
         content={noindex ? "noindex, nofollow" : "index, follow"}
       />
 
-      {/* Language & Locale */}
-      <meta name="language" content="English" />
-      <meta httpEquiv="content-language" content="en-US" />
+      <meta name="language" content="es" />
+      <meta httpEquiv="content-language" content="es-CL" />
 
-      {/* Revisit & Cache */}
       <meta name="revisit-after" content="3 days" />
       <meta name="rating" content="general" />
       <meta name="distribution" content="global" />
 
-      {/* Canonical URL */}
       <link rel="canonical" href={canonicalUrl} />
 
-      {/* Open Graph / Facebook */}
       <meta property="og:type" content={ogType} />
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:title" content={fullTitle} />
@@ -240,22 +188,15 @@ export function SEO({
       <meta property="og:image:height" content="630" />
       <meta property="og:image:alt" content={ogImageAlt} />
       <meta property="og:site_name" content={SITE_NAME} />
-      <meta property="og:locale" content="en_US" />
+      <meta property="og:locale" content="es_CL" />
 
-      {/* Article specific OG tags */}
       {article && (
         <>
           {article.publishedTime && (
-            <meta
-              property="article:published_time"
-              content={article.publishedTime}
-            />
+            <meta property="article:published_time" content={article.publishedTime} />
           )}
           {article.modifiedTime && (
-            <meta
-              property="article:modified_time"
-              content={article.modifiedTime}
-            />
+            <meta property="article:modified_time" content={article.modifiedTime} />
           )}
           {article.author && (
             <meta property="article:author" content={article.author} />
@@ -269,7 +210,6 @@ export function SEO({
         </>
       )}
 
-      {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:site" content={SITE_TWITTER} />
       <meta name="twitter:creator" content={SITE_TWITTER} />
@@ -279,7 +219,6 @@ export function SEO({
       <meta name="twitter:image" content={ogImage} />
       <meta name="twitter:image:alt" content={ogImageAlt} />
 
-      {/* Apple & Mobile */}
       <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       <meta name="apple-mobile-web-app-title" content={SITE_NAME} />
@@ -287,33 +226,16 @@ export function SEO({
       <meta name="mobile-web-app-capable" content="yes" />
       <meta name="format-detection" content="telephone=no" />
 
-      {/* Theme Color */}
       <meta name="theme-color" content="#6366f1" />
       <meta name="msapplication-TileColor" content="#6366f1" />
       <meta name="msapplication-navbutton-color" content="#6366f1" />
 
-      {/* Favicon */}
       <link rel="icon" href="/favicon.ico" />
-      <link
-        rel="icon"
-        type="image/png"
-        sizes="32x32"
-        href="/favicon-32x32.png"
-      />
-      <link
-        rel="icon"
-        type="image/png"
-        sizes="16x16"
-        href="/favicon-16x16.png"
-      />
-      <link
-        rel="apple-touch-icon"
-        sizes="180x180"
-        href="/apple-touch-icon.png"
-      />
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+      <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
       <link rel="manifest" href="/site.webmanifest" />
 
-      {/* Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -336,55 +258,54 @@ export function SEO({
   );
 }
 
-// Page-specific SEO presets
 export const pageSEO = {
   home: {
-    title: undefined, // Uses default full title
+    title: undefined,
     description: SITE_DESCRIPTION,
     keywords: SITE_KEYWORDS,
   },
   login: {
-    title: "Sign In",
+    title: "Iniciar Sesión",
     description:
-      "Sign in to Auktiva to manage your auctions, place bids, and track your fundraising events. Free auction platform for charities and organizations.",
+      "Inicia sesión en SubastaYa para gestionar tus subastas, pujar y seguir tus eventos. Plataforma gratuita de subastas para Chile.",
     keywords:
-      "auction login, sign in auction platform, charity auction access, fundraiser login, auction account",
+      "login subastas, iniciar sesion subasta, subasta chile acceso",
     noindex: true,
   },
   register: {
-    title: "Create Free Account",
+    title: "Crear Cuenta Gratis",
     description:
-      "Create a free Auktiva account to start hosting charity auctions, fundraiser events, and silent auctions. No credit card required - completely free and open source.",
+      "Crea una cuenta gratis en SubastaYa para comenzar a subastar. Sin tarjeta de crédito — completamente gratis y de código abierto.",
     keywords:
-      "create auction account, free auction signup, charity auction registration, fundraiser account, auction platform signup",
+      "crear cuenta subasta, registro subasta gratis, subasta chile registro",
     noindex: true,
   },
   dashboard: {
-    title: "Dashboard",
+    title: "Panel",
     description:
-      "Manage your auctions, view active bids, and track your fundraising progress. Your central hub for all auction activities.",
+      "Gestiona tus subastas, sigue tus pujas activas y revisa tu progreso. Tu centro de control para todas tus subastas.",
     noindex: true,
   },
   createAuction: {
-    title: "Create New Auction",
+    title: "Crear Nueva Subasta",
     description:
-      "Create a new auction for your charity, fundraiser, or organization. Set up private or public auctions with custom settings.",
+      "Crea una nueva subasta para tu evento, organización o uso personal. Configura subastas privadas o públicas.",
     noindex: true,
   },
   privacy: {
-    title: "Privacy Policy",
+    title: "Política de Privacidad",
     description:
-      "Auktiva Privacy Policy - Learn how we protect your data and respect your privacy. Open source auction platform committed to data security.",
+      "Política de Privacidad de SubastaYa — Cómo protegemos tus datos. Plataforma de código abierto comprometida con la seguridad.",
     keywords:
-      "auction privacy policy, data protection, auction platform privacy",
+      "privacidad subasta, proteccion datos, subasta plataforma privacidad",
     noindex: true,
   },
   terms: {
-    title: "Terms of Service",
+    title: "Términos de Servicio",
     description:
-      "Auktiva Terms of Service - Understand the terms and conditions for using our free, open-source auction platform.",
+      "Términos de Servicio de SubastaYa — Conoce los términos y condiciones para usar nuestra plataforma de subastas gratuita.",
     keywords:
-      "auction terms of service, auction platform terms, usage agreement",
+      "terminos subasta, condiciones uso, plataforma subastas terminos",
     noindex: true,
   },
 };

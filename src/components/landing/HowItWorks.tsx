@@ -12,7 +12,7 @@ export function HowItWorks() {
   ];
 
   return (
-    <section id="how-it-works" className="py-32 bg-base-100">
+    <section id="como-funciona" className="py-32 bg-base-100">
       <div className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row gap-16 items-center">
           <div className="lg:w-1/2">

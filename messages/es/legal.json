@@ -8,13 +8,13 @@
       "sections": {
         "1": {
           "title": "Introducción",
-          "content": "Auktiva (\"nosotros\", \"nuestro\" o \"nos\") se compromete a proteger tu privacidad. Esta Política de Privacidad explica cómo recopilamos, usamos y salvaguardamos tu información cuando usas nuestra plataforma de subastas gratuita y de código abierto para recaudación de fondos, organizaciones benéficas y eventos internos."
+          "content": "SubastaYa (\"nosotros\", \"nuestro\" o \"nos\") se compromete a proteger tu privacidad. Esta Política de Privacidad explica cómo recopilamos, usamos y salvaguardamos tu información cuando usas nuestra plataforma de subastas gratuita y de código abierto para remates, organizaciones comunitarias y eventos privados."
         },
         "2": {
           "title": "Información que Recopilamos",
-          "content": "Recopilamos información que nos proporcionas directamente cuando usas Auktiva:",
+          "content": "Recopilamos información que nos proporcionas directamente cuando usas SubastaYa:",
           "accountInfo": "Información de Cuenta",
-          "accountInfoDesc": "Tu nombre, dirección de correo electrónico y contraseña cuando creas una cuenta.",
+          "accountInfoDesc": "Tu nombre, dirección de correo electrónico, RUT (opcional) y contraseña cuando creas una cuenta.",
           "auctionData": "Datos de Subasta",
           "auctionDataDesc": "Información sobre subastas que creas o a las que te unes, artículos que listas, pujas que realizas y tus roles de membresía.",
           "uploadedContent": "Contenido Subido",
@@ -33,8 +33,8 @@
         },
         "4": {
           "title": "Almacenamiento de Datos",
-          "content1": "Si usas la versión alojada en auktiva.org, tus datos se almacenan de forma segura utilizando infraestructura estándar de la industria. La información de la base de datos se almacena usando Turso (SQLite distribuido), y las imágenes subidas se almacenan usando almacenamiento en la nube compatible con S3.",
-          "content2": "Si eliges alojar Auktiva tú mismo, eres responsable de tu propio almacenamiento y seguridad de datos. Las instancias auto-alojadas pueden usar bases de datos SQLite locales y almacenamiento en sistema de archivos local para un control total sobre tus datos."
+          "content1": "Si usas la versión alojada, tus datos se almacenan de forma segura en servidores propios de SubastaYa. La información de la base de datos se guarda en un motor SQLite localizado en Chile, y las imágenes subidas se almacenan en el sistema de archivos del servidor.",
+          "content2": "SubastaYa es software de código abierto: puedes alojarlo tú mismo en tu propia infraestructura con control total sobre tus datos. Las instancias auto-alojadas pueden usar bases de datos SQLite locales y almacenamiento en sistema de archivos local."
         },
         "5": {
           "title": "Compartir Datos",
@@ -44,11 +44,11 @@
         "5b": {
           "title": "Autenticación de terceros (OAuth)",
           "content1": "Si eliges iniciar sesión con Google o Microsoft, usamos sus servicios OAuth 2.0 para autenticar tu identidad. Cuando inicias sesión con estos proveedores, recibimos tu información básica de perfil (nombre, dirección de correo electrónico y foto de perfil) de ellos.",
-          "content2": "No recibimos ni almacenamos tu contraseña de Google o Microsoft. El uso de tu información por parte de cada proveedor se rige por sus respectivas políticas de privacidad. Puedes revocar el acceso de Auktiva en cualquier momento a través de la configuración de tu cuenta de Google (myaccount.google.com) o Microsoft (account.microsoft.com)."
+          "content2": "No recibimos ni almacenamos tu contraseña de Google o Microsoft. El uso de tu información por parte de cada proveedor se rige por sus respectivas políticas de privacidad. Puedes revocar el acceso de SubastaYa en cualquier momento a través de la configuración de tu cuenta de Google (myaccount.google.com) o Microsoft (account.microsoft.com)."
         },
         "6": {
           "title": "Comunicaciones por Correo",
-          "content1": "Podemos enviarte correos de bienvenida cuando te registras, invitaciones a subastas cuando alguien te invita a participar, notificaciones de superación de puja cuando otro usuario hace una puja más alta, y notificaciones de nuevos artículos para subastas a las que te has unido.",
+          "content1": "Podemos enviarte correos de bienvenida cuando te registras, invitaciones a subastas cuando alguien te invita a participar, notificaciones de superación de puja cuando otro usuario hace una puja más alta, y notificaciones de nuevos lotes para subastas a las que te has unido.",
           "content2": "Puedes gestionar tus preferencias de correo en los ajustes de tu cuenta en cualquier momento. Las notificaciones de superación de puja y nuevos artículos están desactivadas por defecto para respetar tu bandeja de entrada."
         },
         "7": {
@@ -57,11 +57,11 @@
         },
         "8": {
           "title": "Transparencia de Código Abierto",
-          "content": "Auktiva es software 100% de código abierto lanzado bajo la Licencia MIT. Puedes revisar nuestra base de código completa en <a href=\"https://github.com/thomsa/auktiva\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">GitHub</a> para ver exactamente cómo recopilamos, almacenamos y manejamos tus datos. También puedes alojar Auktiva tú mismo para tener control total sobre tu información."
+          "content": "SubastaYa es software 100% de código abierto lanzado bajo la Licencia MIT. Puedes pedir una copia del código fuente al administrador de tu instancia para ver exactamente cómo recopilamos, almacenamos y manejamos tus datos. También puedes alojar SubastaYa tú mismo para tener control total sobre tu información."
         },
         "9": {
-          "title": "Tus Derechos (RGPD)",
-          "content1": "Bajo el RGPD y regulaciones similares de protección de datos, tienes derecho a: acceder a tus datos personales a través de los ajustes de tu cuenta, corregir información inexacta actualizando tu perfil, solicitar la eliminación de tu cuenta y todos los datos asociados (derecho al olvido), y gestionar tus preferencias de notificaciones por correo.",
+          "title": "Tus Derechos (Ley 19.628)",
+          "content1": "Bajo la Ley 19.628 sobre Protección de la Vida Privada de Chile y regulaciones similares de protección de datos, tienes derecho a: acceder a tus datos personales a través de los ajustes de tu cuenta, corregir información inexacta actualizando tu perfil, solicitar la eliminación de tu cuenta y todos los datos asociados, y gestionar tus preferencias de notificaciones por correo.",
           "content2": "Para ejercer cualquiera de estos derechos, visita los ajustes de tu cuenta o contáctanos a través de los canales listados abajo."
         },
         "9b": {
@@ -76,7 +76,7 @@
         },
         "11": {
           "title": "Privacidad de Niños",
-          "content": "Auktiva no está destinado a usuarios menores de 18 años. No recopilamos a sabiendas información personal de niños menores de 18 años. Si crees que hemos recopilado información de un niño, por favor contáctanos inmediatamente."
+          "content": "SubastaYa no está destinado a usuarios menores de 18 años. No recopilamos a sabiendas información personal de niños menores de 18 años. Si crees que hemos recopilado información de un niño, por favor contáctanos inmediatamente."
         },
         "12": {
           "title": "Cambios en esta Política",
@@ -84,7 +84,7 @@
         },
         "13": {
           "title": "Contáctanos",
-          "content": "Si tienes preguntas sobre esta Política de Privacidad o cómo manejamos tus datos, por favor contáctanos a través de nuestros <a href=\"https://github.com/thomsa/auktiva/issues\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">GitHub Issues</a> o contacta al mantenedor del proyecto en <a href=\"https://www.tamaslorincz.com\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">tamaslorincz.com</a>."
+          "content": "Si tienes preguntas sobre esta Política de Privacidad o cómo manejamos tus datos, por favor contáctanos a través de la <a href=\"/ayuda\" class=\"text-primary hover:underline\">sección de contacto</a>."
         }
       }
     },
@@ -96,23 +96,23 @@
       "sections": {
         "1": {
           "title": "Aceptación de Términos",
-          "content": "Al acceder o usar Auktiva, aceptas estar sujeto a estos Términos de Servicio. Si no estás de acuerdo con estos términos, por favor no uses nuestro servicio. Estos términos aplican a todos los usuarios de la plataforma, ya sea usando la versión alojada o una instancia auto-alojada."
+          "content": "Al acceder o usar SubastaYa, aceptas estar sujeto a estos Términos de Servicio. Si no estás de acuerdo con estos términos, por favor no uses nuestro servicio. Estos términos aplican a todos los usuarios de la plataforma, ya sea usando la versión alojada o una instancia auto-alojada."
         },
         "2": {
-          "title": "¿Qué es Auktiva?",
-          "content": "Auktiva es una plataforma de subastas gratuita y de código abierto diseñada para recaudación de fondos, organizaciones benéficas, escuelas, iglesias, eventos corporativos y organizaciones comunitarias. La plataforma te permite crear y gestionar subastas, invitar participantes y facilitar pujas en tiempo real.",
+          "title": "¿Qué es SubastaYa?",
+          "content": "SubastaYa es una plataforma de subastas gratuita y de código abierto diseñada para remates, recaudación de fondos, organizaciones comunitarias, clubes deportivos, bomberos, empresas y uso personal. La plataforma te permite crear y gestionar subastas, invitar participantes y facilitar pujas en tiempo real, operando en pesos chilenos y otras monedas.",
           "disclaimerTitle": "Aviso Importante",
-          "disclaimer": "Auktiva facilita las pujas pero <strong class=\"text-base-content\">no procesa pagos</strong>. Todas las transacciones se liquidan offline entre los participantes. No somos un mercado ni un procesador de pagos."
+          "disclaimer": "SubastaYa facilita las pujas pero <strong class=\"text-base-content\">no procesa pagos</strong>. Todas las transacciones se liquidan offline entre los participantes. No somos un mercado ni un procesador de pagos."
         },
         "3": {
           "title": "Cuentas de usuario",
-          "content1": "Para usar Auktiva, debes crear una cuenta con información precisa, incluyendo tu nombre, dirección de correo electrónico y una contraseña segura. Alternativamente, puedes iniciar sesión usando Google o Microsoft OAuth, lo que te permite usar las credenciales de tu cuenta existente. Eres responsable de mantener la seguridad de las credenciales de tu cuenta y no debes compartir tu cuenta con otros.",
-          "content2": "Debes tener al menos 18 años o contar con el consentimiento de tus padres para usar Auktiva. Mantén actualizada la información de tu cuenta para asegurarte de recibir notificaciones importantes sobre tus subastas."
+          "content1": "Para usar SubastaYa, debes crear una cuenta con información precisa, incluyendo tu nombre, dirección de correo electrónico y una contraseña segura. Opcionalmente puedes registrar tu RUT. Eres responsable de mantener la seguridad de las credenciales de tu cuenta y no debes compartir tu cuenta con otros.",
+          "content2": "Debes tener al menos 18 años o contar con el consentimiento de tus padres para usar SubastaYa. Mantén actualizada la información de tu cuenta para asegurarte de recibir notificaciones importantes sobre tus subastas."
         },
         "3b": {
           "title": "Autenticación de terceros",
-          "content1": "Auktiva ofrece inicio de sesión a través de Google y Microsoft OAuth como una conveniencia. Cuando usas estas opciones de inicio de sesión, autorizas al proveedor respectivo a compartir tu información básica de perfil (nombre, correo electrónico, foto de perfil) con nosotros. Usamos esta información únicamente para crear y administrar tu cuenta de Auktiva.",
-          "content2": "Tu uso del inicio de sesión de terceros también está sujeto a los Términos de Servicio y la Política de Privacidad de cada proveedor. Puedes desconectar tu cuenta de Google o Microsoft de Auktiva en cualquier momento, aunque es posible que necesites establecer una contraseña para continuar accediendo a tu cuenta."
+          "content1": "SubastaYa ofrece inicio de sesión a través de Google y Microsoft OAuth como una conveniencia. Cuando usas estas opciones de inicio de sesión, autorizas al proveedor respectivo a compartir tu información básica de perfil (nombre, correo electrónico, foto de perfil) con nosotros. Usamos esta información únicamente para crear y administrar tu cuenta de SubastaYa.",
+          "content2": "Tu uso del inicio de sesión de terceros también está sujeto a los Términos de Servicio y la Política de Privacidad de cada proveedor. Puedes desconectar tu cuenta de Google o Microsoft de SubastaYa en cualquier momento, aunque es posible que necesites establecer una contraseña para continuar accediendo a tu cuenta."
         },
         "4": {
           "title": "Roles y Permisos",
@@ -124,50 +124,50 @@
           "creator": "Creador",
           "creatorDesc": "Puede añadir nuevos artículos y editar sus propios artículos en la subasta.",
           "bidder": "Pujador",
-          "bidderDesc": "Puede ver artículos y realizar pujas en la subasta."
+          "bidderDesc": "Puede ver lotes y realizar pujas en la subasta."
         },
         "5": {
           "title": "Participación en Subastas",
-          "content1": "Al participar en subastas, aceptas honrar tus pujas ganadoras y completar transacciones offline con el vendedor del artículo. Debes proporcionar descripciones precisas para cualquier artículo que listes y respetar los tiempos de finalización de subasta y reglas de puja establecidas por el propietario de la subasta.",
+          "content1": "Al participar en subastas, aceptas honrar tus pujas ganadoras y completar transacciones con el vendedor del lote. Debes proporcionar descripciones precisas para cualquier lote que listes y respetar los tiempos de finalización de subasta y reglas de puja establecidas por el propietario de la subasta.",
           "content2": "Cada subasta puede tener sus propias reglas específicas determinadas por el propietario. Asegúrate de revisar cualquier directriz específica de la subasta antes de participar."
         },
         "6": {
           "title": "Uso Aceptable",
-          "content1": "Aceptas usar Auktiva de manera responsable y legal. No debes usar el servicio para propósitos ilegales, publicar artículos fraudulentos o engañosos, o participar en manipulación de pujas.",
+          "content1": "Aceptas usar SubastaYa de manera responsable y legal. No debes usar el servicio para propósitos ilegales, publicar artículos fraudulentos o engañosos, o participar en manipulación de pujas.",
           "content2": "El acoso, abuso o amenazas hacia otros usuarios están estrictamente prohibidos. No debes intentar obtener acceso no autorizado al sistema, usar bots o scripts automatizados, o subir contenido malicioso que pueda comprometer la plataforma u otros usuarios."
         },
         "7": {
           "title": "Sin Procesamiento de Pagos",
-          "content1": "Auktiva no procesa pagos, no recopila información de pago ni facilita transacciones financieras de ningún tipo. Los ganadores y vendedores de artículos son los únicos responsables de acordar métodos de pago, completar el intercambio de artículos y resolver cualquier disputa que surja.",
-          "content2": "Auktiva no es responsable de ninguna disputa, pérdida o daño que surja de transacciones offline entre usuarios. Recomendamos discutir los arreglos de pago y recogida antes de que termine la subasta."
+          "content1": "SubastaYa no procesa pagos, no recopila información de pago ni facilita transacciones financieras de ningún tipo. Los ganadores y vendedores de artículos son los únicos responsables de acordar métodos de pago, completar el intercambio de artículos y resolver cualquier disputa que surja.",
+          "content2": "SubastaYa no es responsable de ninguna disputa, pérdida o daño que surja de transacciones offline entre usuarios. Recomendamos discutir los arreglos de pago y recogida antes de que termine la subasta."
         },
         "8": {
           "title": "Propiedad del Contenido",
-          "content1": "Conservas la propiedad de todo el contenido que subes a Auktiva, incluyendo imágenes de artículos y descripciones. Al subir contenido, otorgas a Auktiva una licencia no exclusiva y libre de regalías para mostrar ese contenido a los participantes de la subasta con el propósito de operar el servicio.",
+          "content1": "Conservas la propiedad de todo el contenido que subes a SubastaYa, incluyendo imágenes de artículos y descripciones. Al subir contenido, otorgas a SubastaYa una licencia no exclusiva y libre de regalías para mostrar ese contenido a los participantes de la subasta con el propósito de operar el servicio.",
           "content2": "Representas que tienes el derecho de subir cualquier contenido que envíes y que no infringe ningún derecho de terceros, incluyendo derechos de autor, marcas registradas o derechos de privacidad."
         },
         "9": {
           "title": "Licencia de Código Abierto",
-          "content": "Auktiva es software de código abierto lanzado bajo la Licencia MIT. Puedes usar, modificar y distribuir el software de acuerdo con los términos de esa licencia. El código fuente completo está disponible en <a href=\"https://github.com/thomsa/auktiva\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">GitHub</a>, y puedes revisar nuestro <a href=\"https://github.com/thomsa/auktiva/blob/main/LICENSE\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">archivo LICENSE</a> para detalles completos."
+          "content": "SubastaYa es software de código abierto lanzado bajo la Licencia MIT. Puedes usar, modificar y distribuir el software de acuerdo con los términos de esa licencia. El código fuente completo puede solicitarse al administrador de tu instancia, y los términos de la licencia MIT aplican según lo publicado por el proyecto."
         },
         "10": {
           "title": "Auto-Alojamiento",
-          "content": "Puedes alojar Auktiva tú mismo en tu propia infraestructura. Al auto-alojar, eres el único responsable de la seguridad y mantenimiento del servidor, respaldo y protección de datos, cumplimiento de leyes aplicables en tu jurisdicción, y proporcionar soporte al usuario y resolución de disputas para tus usuarios."
+          "content": "Puedes alojar SubastaYa tú mismo en tu propia infraestructura. Al auto-alojar, eres el único responsable de la seguridad y mantenimiento del servidor, respaldo y protección de datos, cumplimiento de leyes aplicables en tu jurisdicción, y proporcionar soporte al usuario y resolución de disputas para tus usuarios."
         },
         "11": {
-          "title": "Alojamiento en la Nube en auktiva.org",
-          "content1": "La versión alojada en auktiva.org se proporciona de forma gratuita y se ejecuta completamente en servicios de nivel gratuito bajo las cuentas personales del creador del proyecto. Usamos Vercel para alojamiento, Turso para almacenamiento de base de datos y Brevo para entrega de correos — todos en sus respectivos niveles gratuitos.",
+          "title": "Alojamiento",
+          "content1": "La versión alojada de SubastaYa se ejecuta en infraestructura propia en Chile, garantizando mayor latencia reducida y cumplimiento local de datos. Si prefieres mantener tus datos bajo tu propio control, puedes auto-alojar el proyecto en tu propia infraestructura.",
           "commitmentTitle": "Nuestro Compromiso:",
-          "commitment": "Como dominio .org, Auktiva se esfuerza por permanecer gratis y accesible para todos. Estamos comprometidos a usar servicios gratuitos y de código abierto siempre que sea posible para mantener la plataforma funcionando sin costo para los usuarios.",
-          "content2": "Aunque hacemos todo lo posible para mantener el servicio funcionando, por favor entiende que los servicios de nivel gratuito tienen limitaciones. Puede haber límites de uso, tiempo de inactividad ocasional o cambios en el servicio fuera de nuestro control. Para casos de uso de misión crítica o requisitos de mayor fiabilidad, recomendamos alojar Auktiva tú mismo en tu propia infraestructura."
+          "commitment": "SubastaYa se esfuerza por permanecer gratis y accesible para todos. Estamos comprometidos a usar servicios gratuitos y de código abierto siempre que sea posible para mantener la plataforma funcionando sin costo para los usuarios.",
+          "content2": "Aunque hacemos todo lo posible para mantener el servicio funcionando, por favor entiende que pueden existir limitaciones de uso, tiempo de inactividad ocasional o cambios en el servicio. Para casos de uso de misión crítica o requisitos de mayor fiabilidad, recomendamos alojar SubastaYa tú mismo."
         },
         "12": {
           "title": "Renuncia de Garantías",
-          "content": "Auktiva se proporciona \"tal cual\" y \"según disponibilidad\" sin garantías de ningún tipo, ya sean expresas o implícitas. No garantizamos que el servicio sea ininterrumpido, seguro, libre de errores o que cumpla con tus requisitos específicos. El uso del servicio es bajo tu propio riesgo."
+          "content": "SubastaYa se proporciona \"tal cual\" y \"según disponibilidad\" sin garantías de ningún tipo, ya sean expresas o implícitas. No garantizamos que el servicio sea ininterrumpido, seguro, libre de errores o que cumpla con tus requisitos específicos. El uso del servicio es bajo tu propio riesgo."
         },
         "13": {
           "title": "Limitación de Responsabilidad",
-          "content": "En la máxima medida permitida por la ley, Auktiva y sus creadores, contribuyentes y mantenedores no serán responsables por ningún daño indirecto, incidental, especial, consecuente o punitivo que surja de tu uso del servicio. Esto incluye, pero no se limita a, pérdida de beneficios, datos o buena voluntad, transacciones fallidas o disputadas, acceso no autorizado a tu cuenta, e interrupciones o errores del servicio."
+          "content": "En la máxima medida permitida por la ley, SubastaYa y sus creadores, contribuyentes y mantenedores no serán responsables por ningún daño indirecto, incidental, especial, consecuente o punitivo que surja de tu uso del servicio. Esto incluye, pero no se limita a, pérdida de beneficios, datos o buena voluntad, transacciones fallidas o disputadas, acceso no autorizado a tu cuenta, e interrupciones o errores del servicio."
         },
         "14": {
           "title": "Terminación de Cuenta",
@@ -181,11 +181,11 @@
         },
         "16": {
           "title": "Ley Aplicable",
-          "content": "Estos términos se regirán e interpretarán de acuerdo con las leyes aplicables. Cualquier disputa se resolverá mediante negociación de buena fe o, si es necesario, a través de los canales legales apropiados en la jurisdicción relevante."
+          "content": "Estos términos se regirán e interpretarán de acuerdo con las leyes de la República de Chile. Cualquier disputa que surja en relación con estos términos se someterá a la jurisdicción de los tribunales ordinarios de justicia de Santiago de Chile, sin perjuicio de las normas que reconozcan los derechos de los consumidores de la Ley 19.496."
         },
         "17": {
           "title": "Contacto",
-          "content": "Si tienes preguntas sobre estos Términos de Servicio, por favor contáctanos a través de nuestros <a href=\"https://github.com/thomsa/auktiva/issues\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">GitHub Issues</a> o contacta al mantenedor del proyecto en <a href=\"https://www.tamaslorincz.com\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">tamaslorincz.com</a>."
+          "content": "Si tienes preguntas sobre estos Términos de Servicio, por favor contáctanos a través de la <a href=\"/ayuda\" class=\"text-primary hover:underline\">sección de contacto</a>."
         }
       }
     }

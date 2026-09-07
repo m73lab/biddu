@@ -30,8 +30,10 @@ export {
 export {
   createItemSchema,
   updateItemSchema,
+  fulfillmentSchema,
   type CreateItemBody,
   type UpdateItemBody,
+  type FulfillmentBody,
 } from "./item.handlers";
 
 export { createBidSchema, type CreateBidBody } from "./bid.handlers";

@@ -70,7 +70,10 @@
       "antiSnipeExtensionHint": "Cuánto tiempo añadir al fin. Entre 5 segundos y 60 minutos.",
       "antiSnipeRequiresEndDate": "Establece una fecha de fin arriba para habilitar la protección.",
       "seconds": "segundos",
-      "minutes": "minutos"
+      "minutes": "minutos",
+      "adminSettings": "Edición por Admin",
+      "allowAdminEdit": "Permitir a los admins de la subasta editar este artículo",
+      "allowAdminEditDescription": "Cuando está activado, los admins de la subasta pueden editar los detalles de este artículo en tu nombre."
     },
     "edit": {
       "title": "Editar Artículo",
@@ -118,7 +121,10 @@
       "antiSnipeExtension": "Duración de la extensión",
       "antiSnipeExtensionHint": "Cuánto tiempo añadir al fin. Entre 5 segundos y 60 minutos.",
       "seconds": "segundos",
-      "minutes": "minutos"
+      "minutes": "minutos",
+      "adminSettings": "Edición por Admin",
+      "allowAdminEdit": "Permitir a los admins de la subasta editar este artículo",
+      "allowAdminEditDescription": "Cuando está activado, los admins de la subasta pueden editar los detalles de este artículo en tu nombre."
     },
     "yourListing": "Tu artículo",
     "listedBy": "Listado por",
@@ -139,7 +145,14 @@
       "noBids": "Sin pujas aún. ¡Sé el primero!",
       "anonymous": "Anónimo",
       "you": "Tú",
-      "highest": "Más alto"
+      "highest": "Más alto",
+      "subtitle": "Sigue tu actividad de pujas y resultados",
+      "recentBids": "Pujas Recientes",
+      "browseAuctions": "Explorar Subastas",
+      "item": "Artículo",
+      "auction": "Subasta",
+      "status": "Estado",
+      "date": "Fecha"
     },
     "status": {
       "active": "Activo",
@@ -158,6 +171,51 @@
       "title": "No hay artículos aún",
       "description": "Esta subasta no tiene artículos listados todavía.",
       "createFirst": "Añadir Primer Artículo"
+    },
+    "detail": {
+      "winnerContact": "Contacto del Ganador",
+      "cannotBid": "No puedes pujar en este artículo.",
+      "currency": "Moneda",
+      "minIncrement": "Incremento Mínimo",
+      "totalBids": "Pujas Totales",
+      "fulfillment": {
+        "title": "Pago y entrega",
+        "offlineNote": "El pago y la entrega se coordinan en persona, fuera de la plataforma. Aquí se lleva el registro del acuerdo.",
+        "ownerHint": "Actualiza el estado a medida que recibas el pago y entregues el artículo. El ganador será notificado.",
+        "winnerHint": "Coordina el pago y la entrega directamente con el dueño del artículo.",
+        "noStatus": "Sin registrar",
+        "pendingPayment": "Pendiente de pago",
+        "paid": "Pagado",
+        "delivered": "Entregado",
+        "markPaid": "Marcar como pagado",
+        "markDelivered": "Marcar como entregado",
+        "markPending": "Volver a pendiente",
+        "updating": "Guardando...",
+        "updateFailed": "No se pudo actualizar el estado",
+        "amountToPay": "Monto a pagar"
+      },
+      "contact": {
+        "title": "Contactar al ganador",
+        "subtitle": "Prepara el mensaje para {item}",
+        "winner": "Ganador",
+        "winningBid": "Puja ganadora",
+        "copyEmail": "Copiar correo",
+        "copied": "¡Copiado!",
+        "messageLabel": "Mensaje",
+        "copyMessage": "Copiar mensaje",
+        "openMail": "Abrir en mi correo",
+        "mailHint": "Se abrirá tu aplicación de correo con destinatario, asunto y mensaje listos.",
+        "backToItem": "Volver al artículo",
+        "mailSubject": "¡Ganaste \"{item}\"!",
+        "template": "Hola {winner}:\n\n¡Felicitaciones! Ganaste \"{item}\" con una puja de {amount} en la subasta \"{auction}\".\n\nPara coordinar el pago y la entrega (que se hace en persona), responde a este correo.\n¡Gracias por participar!\n\n{owner}",
+        "whatsapp": "WhatsApp",
+        "openWhatsapp": "Abrir WhatsApp",
+        "noPhoneOwner": "El ganador aún no registra su WhatsApp. Cuando lo agregue aparecerá aquí para contactarlo.",
+        "noPhoneTitle": "Falta tu WhatsApp",
+        "noPhoneText": "Agrega tu número de WhatsApp en Ajustes para que el dueño del artículo pueda contactarte.",
+        "goSettings": "Ir a Ajustes"
+      },
+      "contactWinner": "Contactar al ganador"
     }
   }
 }

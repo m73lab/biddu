@@ -16,7 +16,7 @@ const prisma = createPrismaClient();
 // CONFIGURATION
 // ============================================
 
-const MAIN_USER_EMAIL = "testuser@auktiva.org";
+const MAIN_USER_EMAIL = "testuser@example.com";
 const MAIN_USER_NAME = "Test User";
 const DEFAULT_PASSWORD = "password";
 const NUM_RANDOM_USERS = 50;
