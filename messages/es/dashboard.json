@@ -32,7 +32,9 @@
     },
     "myAuctions": {
       "title": "Mis subastas",
-      "description": "Subastas que creaste y administras"
+      "description": "Subastas que creaste y administras",
+      "joinedEmptyTitle": "Todavía no te unes a subastas de otros",
+      "joinedEmptyDescription": "Cuando aceptes una invitación o te unas con un enlace, aparecerán aquí. Mientras tanto puedes crear la tuya."
     }
   }
 }

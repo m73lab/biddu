@@ -54,7 +54,8 @@
     "howItWorks": "How it Works",
     "docs": "Docs",
     "adminPanel": "Auction Admin",
-    "help": "Help"
+    "help": "Help",
+    "myAuctions": "My auctions"
   },
   "admin": {
     "title": "Auction Admin",

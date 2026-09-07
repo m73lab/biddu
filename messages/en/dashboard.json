@@ -32,7 +32,9 @@
     },
     "myAuctions": {
       "title": "My auctions",
-      "description": "Auctions you created and manage"
+      "description": "Auctions you created and manage",
+      "joinedEmptyTitle": "You have not joined other auctions yet",
+      "joinedEmptyDescription": "When you accept an invite or join with a link, they will show up here. Meanwhile you can create your own."
     }
   }
 }

@@ -12,8 +12,13 @@ export function MobileBottomNav() {
   const isActive = (path: string) => {
     if (path === "/dashboard") {
       return (
-        currentPath === "/dashboard" || currentPath.startsWith("/auctions")
+        currentPath === "/dashboard" ||
+        (currentPath.startsWith("/auctions") &&
+          currentPath !== "/auctions/mine")
       );
+    }
+    if (path === "/auctions/mine") {
+      return currentPath === "/auctions/mine";
     }
     if (path === "/listings") {
       return currentPath === "/listings";
@@ -76,6 +81,16 @@ export function MobileBottomNav() {
             }`}
           />
           <span className="text-xs font-medium">{t("myBids")}</span>
+        </Link>
+
+        <Link
+          href="/auctions/mine"
+          className={`flex flex-col items-center justify-center flex-1 h-full gap-1 transition-colors ${isActive("/auctions/mine") ? "text-primary" : "text-base-content/60 hover:text-base-content"}`}
+        >
+          <span
+            className={`icon-[tabler--crown] size-6 ${isActive("/auctions/mine") ? "text-primary" : ""}`}
+          />
+          <span className="text-xs font-medium">{t("myAuctions")}</span>
         </Link>
 
         <Link

@@ -461,17 +461,36 @@ export default function DashboardPage({ user }: DashboardProps) {
               <h2 className="text-lg sm:text-xl font-semibold text-base-content">
                 {t("auctions.title")}
               </h2>
-              <SortDropdown
-                options={auctionSortOptions}
-                currentSort={auctionSort}
-                paramName="auctionSort"
-              />
+              {otherAuctions.length > 0 && (
+                <SortDropdown
+                  options={auctionSortOptions}
+                  currentSort={auctionSort}
+                  paramName="auctionSort"
+                />
+              )}
             </div>
-            {otherAuctions.length > 0 && (
+            {otherAuctions.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {otherAuctions.map((auction) => (
                   <AuctionCard key={auction.id} auction={auction} />
                 ))}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-dashed border-base-content/15 bg-base-100/50 px-6 py-10 text-center">
+                <span className="icon-[tabler--users] size-10 text-base-content/25 block mx-auto mb-3"></span>
+                <p className="font-semibold">
+                  {t("myAuctions.joinedEmptyTitle")}
+                </p>
+                <p className="text-sm text-base-content/60 mt-1 max-w-md mx-auto">
+                  {t("myAuctions.joinedEmptyDescription")}
+                </p>
+                <Link
+                  href="/auctions/create"
+                  className="btn btn-primary btn-sm mt-4 gap-1.5"
+                >
+                  <span className="icon-[tabler--plus] size-4"></span>
+                  {t("createAuction")}
+                </Link>
               </div>
             )}
           </div>

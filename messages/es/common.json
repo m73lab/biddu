@@ -54,7 +54,8 @@
     "features": "Funcionalidades",
     "howItWorks": "Cómo funciona",
     "docs": "Docs",
-    "help": "Ayuda"
+    "help": "Ayuda",
+    "myAuctions": "Mis subastas"
   },
   "admin": {
     "title": "Admin de Subasta",

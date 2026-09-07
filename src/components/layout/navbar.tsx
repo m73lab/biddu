@@ -87,6 +87,13 @@ export function Navbar({ user }: NavbarProps) {
               <span className="icon-[tabler--gavel] size-4"></span>
               {t("myBids")}
             </Link>
+            <Link
+              href="/auctions/mine"
+              className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10 gap-1.5"
+            >
+              <span className="icon-[tabler--crown] size-4"></span>
+              {t("myAuctions")}
+            </Link>
             {isUserAuctionAdmin && (
               <Link
                 href="/auctions/admin"
@@ -175,6 +182,15 @@ export function Navbar({ user }: NavbarProps) {
                 >
                   <span className="icon-[tabler--history] size-4 opacity-70"></span>
                   {t("bidHistory")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/auctions/mine"
+                  className="active:bg-primary/10 active:text-primary"
+                >
+                  <span className="icon-[tabler--crown] size-4 opacity-70"></span>
+                  {t("myAuctions")}
                 </Link>
               </li>
               <li>
