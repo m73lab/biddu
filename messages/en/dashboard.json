@@ -29,6 +29,10 @@
     "seo": {
       "title": "Dashboard",
       "description": "Manage your auctions and bids"
+    },
+    "myAuctions": {
+      "title": "My auctions",
+      "description": "Auctions you created and manage"
     }
   }
 }

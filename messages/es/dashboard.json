@@ -29,6 +29,10 @@
     "seo": {
       "title": "Panel",
       "description": "Gestiona tus subastas y pujas"
+    },
+    "myAuctions": {
+      "title": "Mis subastas",
+      "description": "Subastas que creaste y administras"
     }
   }
 }

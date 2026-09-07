@@ -266,6 +266,14 @@ export default function DashboardPage({ user }: DashboardProps) {
     () => sortAuctions(auctions, auctionSort),
     [auctions, auctionSort],
   );
+  const myAuctions = useMemo(
+    () => sortedAuctions.filter((a) => a.role === "OWNER"),
+    [sortedAuctions],
+  );
+  const otherAuctions = useMemo(
+    () => sortedAuctions.filter((a) => a.role !== "OWNER"),
+    [sortedAuctions],
+  );
 
   const sortedBidItems = useMemo(
     () => sortItems(bidItems, bidSort),
@@ -411,6 +419,25 @@ export default function DashboardPage({ user }: DashboardProps) {
           </div>
         )}
 
+        {/* My Auctions Section */}
+        {myAuctions.length > 0 && (
+          <div className="mb-12">
+            <div className="mb-4">
+              <h2 className="text-lg sm:text-xl font-semibold text-base-content">
+                {t("myAuctions.title")}
+              </h2>
+              <p className="text-sm text-base-content/60">
+                {t("myAuctions.description")}
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {myAuctions.map((auction) => (
+                <AuctionCard key={auction.id} auction={auction} />
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Auctions Section */}
         {auctions.length === 0 ? (
           <div className="card bg-base-100 shadow-xl">
@@ -440,11 +467,13 @@ export default function DashboardPage({ user }: DashboardProps) {
                 paramName="auctionSort"
               />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sortedAuctions.map((auction) => (
-                <AuctionCard key={auction.id} auction={auction} />
-              ))}
-            </div>
+            {otherAuctions.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {otherAuctions.map((auction) => (
+                  <AuctionCard key={auction.id} auction={auction} />
+                ))}
+              </div>
+            )}
           </div>
         )}
       </PageLayout>
