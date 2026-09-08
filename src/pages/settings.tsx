@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 import { isValidPhone } from "@/utils/phone";
-import { LanguageSelect } from "@/components/ui/language-select";
 import { createLogger } from "@/lib/logger";
 import { useToast } from "@/components/ui/toast";
 import { withAuth } from "@/lib/auth/withAuth";
@@ -884,30 +883,6 @@ export default function SettingsPage({
                 />
               </label>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Language Section */}
-      <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl mb-8">
-        <div className="card-body">
-          <h2 className="card-title flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-info/10 flex items-center justify-center text-info">
-              <span className="icon-[tabler--language] size-6"></span>
-            </div>
-            {t("language.title")}
-          </h2>
-
-          <div className="form-control mt-2">
-            <label className="label">
-              <span className="label-text font-medium">
-                {t("language.selectLanguage")}
-              </span>
-            </label>
-            <p className="text-sm text-base-content/60 mb-4">
-              {t("language.languageDescription")}
-            </p>
-            <LanguageSelect />
           </div>
         </div>
       </div>

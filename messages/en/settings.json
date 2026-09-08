@@ -46,11 +46,6 @@
       "dark": "Dark",
       "system": "System"
     },
-    "language": {
-      "title": "Language",
-      "selectLanguage": "Select Language",
-      "languageDescription": "Choose your preferred language for the interface"
-    },
     "connectedAccounts": {
       "title": "Connected Accounts",
       "connected": "Connected",

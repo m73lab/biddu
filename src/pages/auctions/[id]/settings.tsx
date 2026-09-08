@@ -228,7 +228,7 @@ export default function AuctionSettingsPage({
         return;
       }
 
-      showToast("Currency profile saved", "success");
+      showToast(t("profileSaved"), "success");
       setIsCurrencyModalOpen(false);
       setCurrencyForm(EMPTY_CURRENCY_FORM);
       setEditingCurrencyId(null);
@@ -250,7 +250,7 @@ export default function AuctionSettingsPage({
         showToast(result.message || tErrors("auction.updateFailed"), "error");
         return;
       }
-      showToast("Currency archived", "success");
+      showToast(t("profileArchived"), "success");
       await loadCurrencyProfiles();
     } catch {
       showToast(tErrors("generic"), "error");
@@ -524,7 +524,7 @@ export default function AuctionSettingsPage({
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-lg font-semibold flex items-center gap-2 text-success">
                   <span className="icon-[tabler--coins] size-5"></span>
-                  Auction Currency Profiles
+                  {t("currencyProfilesTitle")}
                 </h2>
                 <button
                   type="button"
@@ -532,14 +532,14 @@ export default function AuctionSettingsPage({
                   className="btn btn-sm btn-outline btn-success"
                 >
                   <span className="icon-[tabler--plus] size-4"></span>
-                  Add Currency
+                  {t("addCurrency")}
                 </button>
               </div>
 
               {currencyProfiles.length === 0 ? (
                 <div className="alert alert-info">
                   <span className="icon-[tabler--info-circle] size-5"></span>
-                  <span>No custom currency profile yet. Base currency rules apply.</span>
+                  <span>{t("noProfiles")}</span>
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -562,7 +562,7 @@ export default function AuctionSettingsPage({
                           className="btn btn-ghost btn-sm"
                           onClick={() => openEditCurrencyModal(profile)}
                         >
-                          Edit
+                          {t("editProfile")}
                         </button>
                         {!profile.isBase && (
                           <button
@@ -570,7 +570,7 @@ export default function AuctionSettingsPage({
                             className="btn btn-ghost btn-sm text-error"
                             onClick={() => archiveCurrency(profile.id)}
                           >
-                            Archive
+                            {t("archiveProfile")}
                           </button>
                         )}
                       </div>
@@ -607,7 +607,7 @@ export default function AuctionSettingsPage({
                         setFormData((prev) => ({ ...prev, endDate: "" }))
                       }
                       className="btn btn-ghost btn-square"
-                      title="Clear end date"
+                      title={t("clearEndDate")}
                     >
                       <span className="icon-[tabler--x] size-5"></span>
                     </button>
@@ -849,31 +849,34 @@ export default function AuctionSettingsPage({
           <div className="modal-box max-w-2xl">
             <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
               <span className="icon-[tabler--coins] size-5"></span>
-              {editingCurrencyId ? "Edit Currency Profile" : "New Currency Profile"}
+              {editingCurrencyId ? t("editProfileTitle") : t("newProfileTitle")}
             </h3>
 
             <div className="space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <input
                   className="input input-bordered"
-                  placeholder="Name"
+                  placeholder={t("namePh")}
                   value={currencyForm.name}
+                  required
                   onChange={(e) =>
                     setCurrencyForm((prev) => ({ ...prev, name: e.target.value }))
                   }
                 />
                 <input
                   className="input input-bordered"
-                  placeholder="Code"
+                  placeholder={t("codePh")}
                   value={currencyForm.code}
+                  required
                   onChange={(e) =>
                     setCurrencyForm((prev) => ({ ...prev, code: e.target.value }))
                   }
                 />
                 <input
                   className="input input-bordered"
-                  placeholder="Symbol"
+                  placeholder={t("symbolPh")}
                   value={currencyForm.symbol}
+                  required
                   onChange={(e) =>
                     setCurrencyForm((prev) => ({ ...prev, symbol: e.target.value }))
                   }
@@ -886,7 +889,7 @@ export default function AuctionSettingsPage({
                   type="number"
                   min="0.000001"
                   step="0.000001"
-                  placeholder="Conversion rate"
+                  placeholder={t("conversionRatePh")}
                   value={currencyForm.conversionRate}
                   onChange={(e) =>
                     setCurrencyForm((prev) => ({
@@ -905,8 +908,8 @@ export default function AuctionSettingsPage({
                     }))
                   }
                 >
-                  <option value="DECIMAL">Decimal</option>
-                  <option value="INTEGER_ONLY">Integer only</option>
+                  <option value="DECIMAL">{t("decimalOpt")}</option>
+                  <option value="INTEGER_ONLY">{t("integerOnlyOpt")}</option>
                 </select>
                 <select
                   className="select select-bordered"
@@ -918,8 +921,8 @@ export default function AuctionSettingsPage({
                     }))
                   }
                 >
-                  <option value="SCALAR">Scalar input</option>
-                  <option value="DENOMINATION">Denomination input</option>
+                  <option value="SCALAR">{t("scalarOpt")}</option>
+                  <option value="DENOMINATION">{t("denominationOpt")}</option>
                 </select>
               </div>
 
@@ -928,7 +931,7 @@ export default function AuctionSettingsPage({
                 type="number"
                 min="0"
                 step="1"
-                placeholder="Precision"
+                placeholder={t("precisionPh")}
                 value={currencyForm.precision}
                 onChange={(e) =>
                   setCurrencyForm((prev) => ({ ...prev, precision: e.target.value }))
@@ -938,7 +941,7 @@ export default function AuctionSettingsPage({
               <textarea
                 className="textarea textarea-bordered w-full"
                 rows={4}
-                placeholder='Denomination config JSON (e.g. {"components":[{"key":"gold","label":"Gold"}]})'
+                placeholder={t("denomConfigPh")}
                 value={currencyForm.denominationConfigText}
                 onChange={(e) =>
                   setCurrencyForm((prev) => ({
@@ -949,7 +952,7 @@ export default function AuctionSettingsPage({
               />
 
               <div className="rounded-lg border border-base-content/10 p-3 bg-base-200/40">
-                <div className="text-sm font-medium mb-2">Rules</div>
+                <div className="text-sm font-medium mb-2">{t("rulesTitle")}</div>
                 <div className="space-y-2">
                   {currencyForm.rules.map((rule, index) => (
                     <div
@@ -994,7 +997,7 @@ export default function AuctionSettingsPage({
                               }))
                             }
                           />
-                          <span className="text-xs">Enabled</span>
+                          <span className="text-xs">{t("enabledLabel")}</span>
                         </label>
                         <button
                           type="button"
@@ -1006,7 +1009,7 @@ export default function AuctionSettingsPage({
                             }))
                           }
                         >
-                          Remove
+                          {t("removeRule")}
                         </button>
                       </div>
                       <textarea
@@ -1028,7 +1031,7 @@ export default function AuctionSettingsPage({
                   ))}
                 </div>
                 <button type="button" className="btn btn-xs mt-2" onClick={addRule}>
-                  Add Rule
+                  {t("addRule")}
                 </button>
               </div>
 
