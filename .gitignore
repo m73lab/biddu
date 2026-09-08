@@ -58,3 +58,6 @@ next-env.d.ts
 
 # Database backups
 /backups/*
+# Caddy self-signed certs (generated per deployment, not committed)
+caddy/self.crt
+caddy/self.key

@@ -42,9 +42,9 @@ export default function ResetPasswordPage({ token }: ResetPasswordPageProps) {
       return;
     }
 
-    if (password.length < 6) {
+    if (password.length < 8) {
       setFieldErrors({
-        password: tErrors("validation.passwordTooShort", { min: 6 }),
+        password: tErrors("validation.passwordTooShort", { min: 8 }),
       });
       setIsLoading(false);
       return;

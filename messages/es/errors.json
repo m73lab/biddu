@@ -19,7 +19,8 @@
       "emailInUse": "Este correo ya está registrado",
       "accountNotFound": "No se encontró cuenta con este correo",
       "invalidToken": "Token inválido o expirado",
-      "sessionExpired": "Tu sesión ha expirado. Por favor inicia sesión de nuevo."
+      "sessionExpired": "Tu sesión ha expirado. Por favor inicia sesión de nuevo.",
+      "tooManyAttempts": "Demasiados intentos fallidos. Espera 15 minutos antes de reintentar."
     },
     "auction": {
       "createFailed": "Error al crear la subasta",

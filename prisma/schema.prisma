@@ -18,6 +18,7 @@ model User {
   id            String    @id @default(cuid())
   email         String    @unique
   passwordHash  String?   // Optional for OAuth users
+  tokenVersion  Int       @default(0) // Bump to revoke all JWT sessions
   name          String?
   image         String?   // Profile image from OAuth provider
   rut           String?   // RUT chileno (opcional)
@@ -40,6 +41,8 @@ model User {
   passwordResetTokens       PasswordResetToken[]
   emailVerificationTokens   EmailVerificationToken[]
   auctionLeaves             AuctionLeave[]
+  slotCodesRedeemed         SlotCode[]        @relation("SlotCodeRedeemer")
+  slotRedemptions           SlotRedemption[]
 
   @@map("users")
 }
@@ -453,6 +456,7 @@ enum NotificationType {
   NEW_BID         // Someone placed a bid in an auction you're in
   NEW_COMMENT     // Someone commented on an item you're following
   FULFILLMENT_UPDATED // Payment/delivery status changed on a won item
+  SLOT_EXPIRING       // Monthly slots expiring soon
 }
 
 model Notification {
@@ -498,6 +502,8 @@ enum EmailType {
   ITEM_WON           // User won an item
   ACCOUNT_EXISTS     // Registration attempt with existing email
   EMAIL_VERIFICATION // Email verification on registration
+  RETENTION_WARNING  // Auction will be purged soon (cloud retention)
+  SLOT_EXPIRING      // Monthly slots expiring in 7 days
 }
 
 model EmailLog {
@@ -611,4 +617,71 @@ model ItemDiscussion {
   @@index([auctionItemId, createdAt])
   @@index([parentId])
   @@map("item_discussions")
+}
+
+// ============================================
+// STORE: PRODUCTS, SLOT CODES, REDEMPTIONS (cloud monetization)
+// Slots are monthly (30 rolling days). Expired slots stop counting;
+// already-created content is always kept.
+// ============================================
+
+enum SlotType {
+  SUBASTA // +N auctions
+  LOTES   // +N items per auction
+  PERSONAS // +N members/invites per auction
+  FOTOS   // +N images per item
+  RETENCION // account-wide purge protection (boolean coverage)
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  slotType    SlotType
+  slotAmount  Int
+  price       Int      // CLP, integer
+  flowUrl     String
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  slotCodes   SlotCode[]
+
+  @@map("products")
+}
+
+model SlotCode {
+  id          String    @id @default(cuid())
+  code        String    @unique
+  slotType    SlotType
+  amount      Int
+  productId   String?
+  product     Product?  @relation(fields: [productId], references: [id], onDelete: SetNull)
+  isRedeemed  Boolean   @default(false)
+  redeemedById String?
+  redeemedBy  User?     @relation("SlotCodeRedeemer", fields: [redeemedById], references: [id], onDelete: SetNull)
+  redeemedAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  redemptions SlotRedemption[]
+
+  @@map("slot_codes")
+}
+
+model SlotRedemption {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slotCodeId String
+  slotCode   SlotCode @relation(fields: [slotCodeId], references: [id], onDelete: Restrict)
+  slotType   SlotType
+  amount     Int
+  redeemedAt DateTime @default(now())
+  expiresAt  DateTime
+  expiryNotified Boolean @default(false)
+
+  @@unique([slotCodeId])
+  @@index([userId, expiresAt])
+  @@map("slot_redemptions")
 }

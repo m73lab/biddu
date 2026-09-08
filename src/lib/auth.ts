@@ -3,6 +3,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import AzureADProvider from "next-auth/providers/azure-ad";
 import { compare } from "bcryptjs";
+import { RateLimiterMemory } from "rate-limiter-flexible";
+import { getClientIp } from "./api/middleware/rate-limit";
 import { prisma } from "@/lib/prisma";
 import { queueWelcomeEmail } from "@/lib/email/service";
 import { z } from "zod";
@@ -13,6 +15,37 @@ const loginSchema = z.object({
 });
 
 // Build providers array dynamically based on env vars
+/**
+ * Login brute-force protection.
+ * 10 failed attempts per 15 minutes per IP+email, then 15-minute lockout.
+ * In-memory: correct for single-server Docker/self-host deployments.
+ */
+const loginLimiter = new RateLimiterMemory({
+  points: 10,
+  duration: 15 * 60,
+  blockDuration: 15 * 60,
+  keyPrefix: "login",
+});
+
+function loginRateKey(req: unknown, email: string): string {
+  let ip = "unknown";
+  try {
+    const r = req as {
+      headers?: Record<string, string | string[] | undefined>;
+      socket?: { remoteAddress?: string };
+    };
+    if (r && typeof r === "object") {
+      ip = getClientIp({
+        headers: r.headers || {},
+        socket: r.socket,
+      });
+    }
+  } catch {
+    // fall through with unknown IP (still rate limited, shared bucket)
+  }
+  return `${ip}|${email.toLowerCase()}`;
+}
+
 const providers: NextAuthOptions["providers"] = [
   CredentialsProvider({
     name: "credentials",
@@ -20,7 +53,7 @@ const providers: NextAuthOptions["providers"] = [
       email: { label: "Email", type: "email" },
       password: { label: "Password", type: "password" },
     },
-    async authorize(credentials) {
+    async authorize(credentials, req) {
       const parsed = loginSchema.safeParse(credentials);
 
       if (!parsed.success) {
@@ -28,6 +61,13 @@ const providers: NextAuthOptions["providers"] = [
       }
 
       const { email, password } = parsed.data;
+      const rateKey = loginRateKey(req, email);
+
+      try {
+        await loginLimiter.consume(rateKey);
+      } catch {
+        throw new Error("TOO_MANY_ATTEMPTS");
+      }
 
       const user = await prisma.user.findUnique({
         where: { email: email.toLowerCase() },
@@ -43,11 +83,16 @@ const providers: NextAuthOptions["providers"] = [
         return null;
       }
 
-      // Check if email is verified (only for credential users, not OAuth)
+      // Check if email is verified (only for credential users, not OAuth).
+      // Unverified logins don't count against the limit so legitimate
+      // users always see the verify nudge instead of a lockout.
       if (!user.emailVerified) {
         // Throw a specific error that the frontend can detect
+        await loginLimiter.delete(rateKey).catch(() => undefined);
         throw new Error("EMAIL_NOT_VERIFIED");
       }
+
+      await loginLimiter.delete(rateKey).catch(() => undefined);
 
       return {
         id: user.id,
@@ -86,12 +131,20 @@ export const authOptions: NextAuthOptions = {
     error: "/login",
   },
   callbacks: {
-    async signIn({ user, account }) {
+    async signIn({ user, account, profile }) {
       // List of OAuth providers we handle
       const oauthProviders = ["google", "azure-ad"];
 
       // For OAuth sign-ins, create or link user account
       if (account && oauthProviders.includes(account.provider) && user.email) {
+        // Defense in depth: Google guarantees verified emails, but reject
+        // explicitly-unverified ones rather than trusting blindly.
+        const claimedVerified = (
+          profile as { email_verified?: unknown } | null | undefined
+        )?.email_verified;
+        if (account.provider === "google" && claimedVerified !== true) {
+          return false;
+        }
         const existingUser = await prisma.user.findUnique({
           where: { email: user.email.toLowerCase() },
           include: { accounts: true },
@@ -190,9 +243,29 @@ export const authOptions: NextAuthOptions = {
           });
           if (dbUser) {
             token.id = dbUser.id;
+            token.tokenVersion = dbUser.tokenVersion;
           }
         } else {
-          token.id = user.id;
+          const dbUser = await prisma.user.findUnique({
+            where: { id: user.id },
+            select: { id: true, tokenVersion: true },
+          });
+          if (!dbUser) {
+            return null as any;
+          }
+          token.id = dbUser.id;
+          token.tokenVersion = dbUser.tokenVersion;
+        }
+      } else if (token.id) {
+        // Validate session freshness: password changes bump tokenVersion
+        // and revoke all previously issued tokens. Runs on every session
+        // access (local SQLite PK lookup, sub-millisecond).
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { tokenVersion: true },
+        });
+        if (!dbUser || dbUser.tokenVersion !== token.tokenVersion) {
+          return null as any;
         }
       }
       return token;
@@ -206,6 +279,9 @@ export const authOptions: NextAuthOptions = {
   },
   session: {
     strategy: "jwt",
+    // 7 days (was NextAuth default of 30). Short-lived sessions limit
+    // the window of a stolen token; refresh requires re-login.
+    maxAge: 7 * 24 * 60 * 60,
   },
   secret: process.env.AUTH_SECRET,
 };

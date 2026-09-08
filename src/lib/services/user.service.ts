@@ -209,7 +209,7 @@ export async function updateUserPassword(
 
   await prisma.user.update({
     where: { id: userId },
-    data: { passwordHash: hashedPassword },
+    data: { passwordHash: hashedPassword, tokenVersion: { increment: 1 } },
   });
 
   return { success: true };

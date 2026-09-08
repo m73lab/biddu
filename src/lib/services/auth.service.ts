@@ -263,7 +263,7 @@ export async function resetPassword(input: ResetPasswordInput): Promise<{
   await prisma.$transaction([
     prisma.user.update({
       where: { id: resetToken.userId },
-      data: { passwordHash },
+      data: { passwordHash, tokenVersion: { increment: 1 } },
     }),
     prisma.passwordResetToken.delete({
       where: { id: resetToken.id },

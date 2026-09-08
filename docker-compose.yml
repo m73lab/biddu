@@ -70,6 +70,26 @@ services:
       - subastaya-logs:/app/logs
     depends_on:
       - soketi
+
+  # ---------------------------------------------------------------------------
+  # Caddy - HTTPS reverse proxy (TLS termination for LAN)
+  # ---------------------------------------------------------------------------
+  caddy:
+    image: caddy:2-alpine
+    container_name: subastaya-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - CADDY_DOMAIN=${CADDY_DOMAIN:-192.168.1.16}
+      - APP_HOST=subastaya
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - subastaya
     healthcheck:
       test:
         [
@@ -106,6 +126,10 @@ services:
 # Volumes for data persistence
 # -----------------------------------------------------------------------------
 volumes:
+  caddy-data:
+    driver: local
+  caddy-config:
+    driver: local
   subastaya-data:
     driver: local
   subastaya-uploads:

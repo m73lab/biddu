@@ -1,0 +1,24 @@
+{
+	debug
+	servers {
+		protocols h1
+	}
+}
+
+{$CADDY_DOMAIN:192.168.1.16} {
+	tls internal
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+	}
+
+	reverse_proxy {$APP_HOST}:3000
+}
+
+:443 {
+	tls internal
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+	}
+	reverse_proxy {$APP_HOST}:3000
+}

@@ -29,27 +29,62 @@ interface RateLimitOptions {
   keyPrefix?: string;
 }
 
+function normalizeIp(ip: string): string {
+  // Strip IPv4-mapped IPv6 prefix (::ffff:1.2.3.4 -> 1.2.3.4)
+  return ip.startsWith("::ffff:") ? ip.slice("::ffff:".length) : ip;
+}
+
+function isPrivateOrLoopback(ip: string): boolean {
+  const clean = normalizeIp(ip.trim());
+  if (clean === "127.0.0.1" || clean === "::1" || clean === "localhost") {
+    return true;
+  }
+  const parts = clean.split(".");
+  if (parts.length !== 4 || parts.some((p) => !/^\d+$/.test(p))) {
+    return false;
+  }
+  const [a, b] = parts.map(Number);
+  return (
+    a === 10 || a === 127 || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168)
+  );
+}
+
+function firstHeaderValue(
+  value: string | string[] | undefined,
+): string | null {
+  if (!value) return null;
+  const raw = Array.isArray(value) ? value[0] : value.split(",")[0];
+  const trimmed = (raw || "").trim();
+  return trimmed || null;
+}
+
 /**
- * Get client IP address from request
+ * Get client IP address from request.
+ *
+ * Proxy headers (X-Forwarded-For / X-Real-IP) are only trusted when the
+ * direct TCP peer is a private or loopback address - i.e. we sit behind
+ * our own reverse proxy (Caddy/Docker) on a trusted host. Otherwise the
+ * socket address is used, so attackers cannot spoof their way around
+ * rate limits with a forged header.
  */
-function getClientIp(req: {
+export function getClientIp(req: {
   headers: Record<string, string | string[] | undefined>;
   socket?: { remoteAddress?: string };
 }): string {
-  const forwarded = req.headers["x-forwarded-for"];
-  if (forwarded) {
-    const ip = Array.isArray(forwarded)
-      ? forwarded[0]
-      : forwarded.split(",")[0];
-    return ip.trim();
+  const socketIp = req.socket?.remoteAddress || "";
+
+  if (socketIp && isPrivateOrLoopback(socketIp)) {
+    const forwarded = firstHeaderValue(req.headers["x-forwarded-for"]);
+    if (forwarded) return normalizeIp(forwarded);
+    const realIp = firstHeaderValue(req.headers["x-real-ip"]);
+    if (realIp) return normalizeIp(realIp);
   }
 
-  const realIp = req.headers["x-real-ip"];
-  if (realIp) {
-    return Array.isArray(realIp) ? realIp[0] : realIp;
-  }
-
-  return req.socket?.remoteAddress || "unknown";
+  if (socketIp) return normalizeIp(socketIp);
+  const fallback =
+    firstHeaderValue(req.headers["x-forwarded-for"]) ||
+    firstHeaderValue(req.headers["x-real-ip"]);
+  return fallback ? normalizeIp(fallback) : "unknown";
 }
 
 // Cache rate limiters to avoid creating new instances on each request

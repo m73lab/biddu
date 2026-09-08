@@ -68,6 +68,9 @@ export default function LoginPage({
           setEmailNotVerified(true);
           setLoginEmail(email);
           setError(null);
+        } else if (result.error === "TOO_MANY_ATTEMPTS") {
+          setEmailNotVerified(false);
+          setError(tErrors("auth.tooManyAttempts"));
         } else {
           setEmailNotVerified(false);
           setError(tErrors("auth.invalidCredentials"));

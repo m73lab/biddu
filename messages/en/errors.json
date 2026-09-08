@@ -19,7 +19,8 @@
       "emailInUse": "This email is already registered",
       "accountNotFound": "No account found with this email",
       "invalidToken": "Invalid or expired token",
-      "sessionExpired": "Your session has expired. Please sign in again."
+      "sessionExpired": "Your session has expired. Please sign in again.",
+      "tooManyAttempts": "Too many failed attempts. Please wait 15 minutes before trying again."
     },
     "auction": {
       "createFailed": "Failed to create auction",
