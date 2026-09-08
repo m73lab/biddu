@@ -8,7 +8,11 @@ import {
 import * as itemService from "@/lib/services/item.service";
 import * as notificationService from "@/lib/services/notification.service";
 import { prisma } from "@/lib/prisma";
-import { formatCurrency, decimalsForCurrency } from "@/utils/formatters";
+import {
+  formatCurrency,
+  decimalsForCurrency,
+  normalizeAmountForCurrency,
+} from "@/utils/formatters";
 import { z } from "zod";
 
 // ============================================================================
@@ -88,6 +92,20 @@ export const createItem: ApiHandler = async (req, res, ctx) => {
 
   if (!currency) {
     throw new BadRequestError("Invalid currency");
+  }
+
+  // Zero-decimal currencies (CLP): store whole numbers
+  if (decimalsForCurrency(validatedBody.currencyCode) === 0) {
+    if (validatedBody.startingBid !== undefined)
+      validatedBody.startingBid = normalizeAmountForCurrency(
+        validatedBody.startingBid,
+        validatedBody.currencyCode,
+      );
+    if (validatedBody.minBidIncrement !== undefined)
+      validatedBody.minBidIncrement = normalizeAmountForCurrency(
+        validatedBody.minBidIncrement,
+        validatedBody.currencyCode,
+      );
   }
 
   const item = await itemService.createItem(
@@ -232,6 +250,23 @@ export const updateItem: ApiHandler = async (req, res, ctx) => {
       throw new BadRequestError(
         "Custom item end dates are not allowed for this auction",
       );
+    }
+  }
+
+  // Zero-decimal currencies (CLP): store whole numbers
+  {
+    const effectiveCode = validatedBody.currencyCode ?? item.currencyCode;
+    if (decimalsForCurrency(effectiveCode) === 0) {
+      if (validatedBody.startingBid !== undefined)
+        validatedBody.startingBid = normalizeAmountForCurrency(
+          validatedBody.startingBid,
+          effectiveCode,
+        );
+      if (validatedBody.minBidIncrement !== undefined)
+        validatedBody.minBidIncrement = normalizeAmountForCurrency(
+          validatedBody.minBidIncrement,
+          effectiveCode,
+        );
     }
   }
 

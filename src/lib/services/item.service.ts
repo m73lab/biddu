@@ -25,6 +25,7 @@ export interface ItemListItem {
   userHasBid: boolean;
   currency: {
     symbol: string;
+    code: string;
   };
   _count: {
     bids: number;
@@ -43,6 +44,7 @@ export interface ItemSidebarItem {
   userHasBid: boolean;
   currency: {
     symbol: string;
+    code: string;
   };
 }
 
@@ -546,7 +548,7 @@ export async function getAuctionItemsForListPage(
     },
     include: {
       currency: {
-        select: { symbol: true },
+        select: { symbol: true, code: true },
       },
       images: {
         orderBy: { order: "asc" },
@@ -587,6 +589,7 @@ export async function getAuctionItemsForListPage(
     thumbnailUrl: item.images[0]?.url ? getPublicUrl(item.images[0].url) : null,
     currency: {
       symbol: item.currency.symbol,
+      code: item.currency.code,
     },
     _count: item._count,
   }));
@@ -615,7 +618,7 @@ export async function getAuctionItemsForSidebar(
       creatorId: true,
       highestBidderId: true,
       currency: {
-        select: { symbol: true },
+        select: { symbol: true, code: true },
       },
       images: {
         select: { url: true },
@@ -1122,6 +1125,7 @@ export async function getUserItemsForBulkEdit(
       currency: {
         select: {
           symbol: true,
+          code: true,
         },
       },
       creator: {
@@ -1304,6 +1308,7 @@ export async function getAdminEditableItems(
       currency: {
         select: {
           symbol: true,
+          code: true,
         },
       },
       creator: {
@@ -1379,6 +1384,7 @@ export async function getUserCreatedItems(userId: string) {
       currency: {
         select: {
           symbol: true,
+          code: true,
         },
       },
       images: {
@@ -1410,6 +1416,7 @@ export async function getUserCreatedItems(userId: string) {
     auctionId: item.auction.id,
     auctionName: item.auction.name,
     currencySymbol: item.currency.symbol,
+    currencyCode: item.currency.code,
     startingBid: item.startingBid,
     currentBid: item.bids[0]?.amount ?? null,
     endDate: item.endDate?.toISOString() ?? null,

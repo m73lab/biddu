@@ -47,6 +47,7 @@ export interface UserBidItem {
   endDate: string | null;
   createdAt: string;
   currencySymbol: string;
+  currencyCode: string;
   auctionId: string;
   auctionName: string;
   userHighestBid: number;
@@ -255,6 +256,7 @@ export async function getUserBidItems(userId: string): Promise<UserBidItem[]> {
     endDate: item.endDate?.toISOString() || null,
     createdAt: item.createdAt.toISOString(),
     currencySymbol: item.currency.symbol,
+    currencyCode: item.currency.code,
     auctionId: item.auction.id,
     auctionName: item.auction.name,
     userHighestBid: item.userHighestBid,
@@ -514,6 +516,7 @@ async function notifyOutbidUser(
       newAmount,
       currencySymbol,
       normalizedAmount,
+      currencyCode,
     );
 
     // Get previous bidder info for email

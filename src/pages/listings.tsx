@@ -14,6 +14,10 @@ import { useSortFilter } from "@/hooks/ui";
 import { isItemEnded } from "@/utils/auction-helpers";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
+import {
+  formatCurrency,
+  decimalsForCurrency,
+} from "@/utils/formatters";
 import { useFormatters } from "@/i18n";
 import { withAuth } from "@/lib/auth/withAuth";
 
@@ -23,6 +27,7 @@ interface UserItem {
   auctionId: string;
   auctionName: string;
   currencySymbol: string;
+  currencyCode: string;
   startingBid: number;
   currentBid: number | null;
   endDate: string | null;
@@ -351,8 +356,11 @@ function JustEndedCard({ item }: { item: UserItem }) {
         <div className="flex items-center gap-1 text-xs text-base-content/60 mt-0.5">
           <span className="icon-[tabler--trophy] size-3 text-primary"></span>
           <span className="font-medium">
-            {item.currencySymbol}
-            {(item.currentBid || item.startingBid).toFixed(0)}
+            {formatCurrency(
+              item.currentBid || item.startingBid,
+              item.currencySymbol,
+              decimalsForCurrency(item.currencyCode),
+            )}
           </span>
         </div>
         {item.winner && (
@@ -433,8 +441,11 @@ function ListingCard({
                 {tListings("bids", { count: item.bidCount })}
               </span>
               <span className="text-sm font-semibold">
-                {item.currencySymbol}
-                {(item.currentBid || item.startingBid).toFixed(0)}
+                {formatCurrency(
+                  item.currentBid || item.startingBid,
+                  item.currencySymbol,
+                  decimalsForCurrency(item.currencyCode),
+                )}
               </span>
             </div>
           </div>

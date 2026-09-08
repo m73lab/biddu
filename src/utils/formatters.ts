@@ -67,6 +67,26 @@ export function decimalsForCurrency(code?: string | null): number {
   return code && zeroDecimal.has(code.toUpperCase()) ? 0 : 2;
 }
 
+/**
+ * Step Granularity for numeric money inputs (HTML step attribute).
+ * Zero-decimal currencies (CLP) only allow whole numbers.
+ */
+export function inputStepForCurrency(code?: string | null): string {
+  return decimalsForCurrency(code) === 0 ? "1" : "0.01";
+}
+
+/**
+ * Normalize an entered amount for currencies without minor units.
+ * E.g. CLP 1500.5 becomes 1501. Pass-through otherwise.
+ */
+export function normalizeAmountForCurrency(
+  amount: number,
+  code?: string | null,
+): number {
+  if (!Number.isFinite(amount)) return amount;
+  return decimalsForCurrency(code) === 0 ? Math.round(amount) : amount;
+}
+
 export function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
   return text.substring(0, maxLength) + "...";

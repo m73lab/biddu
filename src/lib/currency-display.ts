@@ -1,5 +1,8 @@
+import { formatCurrency, decimalsForCurrency } from "@/utils/formatters";
+
 export interface CurrencyDisplayProfile {
   symbol: string;
+  code?: string;
   inputMode?: "SCALAR" | "DENOMINATION";
   fractionMode?: "INTEGER_ONLY" | "DECIMAL";
   precision?: number;
@@ -46,14 +49,20 @@ export function formatAuctionAmount(
   amount: number,
   profile: CurrencyDisplayProfile,
 ): string {
+  // Explicit profile config wins; otherwise fall back to the ISO code
+  // (CLP and other zero-decimal currencies render without decimals).
   const decimals =
     profile.fractionMode === "INTEGER_ONLY"
       ? 0
       : typeof profile.precision === "number"
         ? profile.precision
-        : 2;
+        : decimalsForCurrency(profile.code);
+  const grouped = amount.toLocaleString("es-CL", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
 
-  return `${profile.symbol}${amount.toFixed(decimals)}`;
+  return `${profile.symbol}${grouped}`;
 }
 
 export function formatAuctionBidDisplay(params: {
@@ -61,11 +70,17 @@ export function formatAuctionBidDisplay(params: {
   enteredRepresentation?: unknown;
   profile?: CurrencyDisplayProfile | null;
   fallbackSymbol: string;
+  fallbackCode?: string;
 }): string {
-  const { amount, enteredRepresentation, profile, fallbackSymbol } = params;
+  const { amount, enteredRepresentation, profile, fallbackSymbol, fallbackCode } =
+    params;
 
   if (!profile) {
-    return `${fallbackSymbol}${amount.toFixed(2)}`;
+    return formatCurrency(
+      amount,
+      fallbackSymbol,
+      decimalsForCurrency(fallbackCode),
+    );
   }
 
   if (profile.inputMode === "DENOMINATION") {

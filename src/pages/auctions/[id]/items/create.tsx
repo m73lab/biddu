@@ -12,6 +12,7 @@ import { ImageUpload } from "@/components/upload/image-upload";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
+import { inputStepForCurrency } from "@/utils/formatters";
 import { withAuth } from "@/lib/auth/withAuth";
 
 interface Currency {
@@ -75,6 +76,8 @@ export default function CreateItemPage({
 
   // Form state
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [currencyCode, setCurrencyCode] = useState("CLP");
+  const amountStep = inputStepForCurrency(currencyCode);
   const [isLoading, setIsLoading] = useState(false);
 
   // Publish modal state
@@ -335,7 +338,7 @@ export default function CreateItemPage({
                     <div className="form-control">
                       <label className="label" htmlFor="minBidNormalized">
                         <span className="label-text font-medium">
-                          Minimum Bid (Auction Currency)
+                          {t("minBidNormalized")}
                         </span>
                       </label>
                       <input
@@ -351,7 +354,7 @@ export default function CreateItemPage({
                     <div className="form-control">
                       <label className="label" htmlFor="minIncrementNormalized">
                         <span className="label-text font-medium">
-                          Minimum Increment (Auction Currency)
+                          {t("minIncrementNormalized")}
                         </span>
                       </label>
                       <input
@@ -369,7 +372,7 @@ export default function CreateItemPage({
                     <div className="form-control">
                       <label className="label" htmlFor="minBidConstraint">
                         <span className="label-text font-medium">
-                          Minimum Constraint (JSON)
+                          {t("minBidConstraint")}
                         </span>
                       </label>
                       <textarea
@@ -393,7 +396,7 @@ export default function CreateItemPage({
                 <div className="space-y-4">
                   <h2 className="text-lg font-semibold flex items-center gap-2 text-secondary">
                     <span className="icon-[tabler--currency-dollar] size-5"></span>
-                    Pricing
+                    {t("pricing")}
                   </h2>
 
                   <div className="form-control">
@@ -406,7 +409,8 @@ export default function CreateItemPage({
                       id="currencyCode"
                       name="currencyCode"
                       className="select select-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
-                      defaultValue="USD"
+                      value={currencyCode}
+                      onChange={(e) => setCurrencyCode(e.target.value)}
                       required
                     >
                       {currencies.map((currency) => (
@@ -429,7 +433,7 @@ export default function CreateItemPage({
                         name="startingBid"
                         type="number"
                         min="0"
-                        step="0.01"
+                        step={amountStep}
                         defaultValue="0"
                         className={`input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors ${
                           fieldErrors.startingBid ? "input-error" : ""
@@ -454,8 +458,8 @@ export default function CreateItemPage({
                         id="minBidIncrement"
                         name="minBidIncrement"
                         type="number"
-                        min="0.01"
-                        step="0.01"
+                        min={amountStep}
+                        step={amountStep}
                         defaultValue="1"
                         className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                       />

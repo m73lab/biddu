@@ -1,4 +1,8 @@
 import { prisma } from "@/lib/prisma";
+import {
+  formatCurrency,
+  decimalsForCurrency,
+} from "@/utils/formatters";
 import type { AuctionMember } from "@/generated/prisma/client";
 import { publish, Events, Channels } from "@/lib/realtime";
 import * as notificationService from "./notification.service";
@@ -436,7 +440,11 @@ function publishBidUpdatesAndNotify(
           userId: item.newHighestBidderId,
           type: "OUTBID",
           title: "¡Volviste a liderar!",
-          message: `Tu puja de ${item.currencySymbol}${item.newHighestBid.toFixed(2)} por "${item.itemName}" vuelve a ser la más alta`,
+          message: `Tu puja de ${formatCurrency(
+          item.newHighestBid ?? 0,
+          item.currencySymbol,
+          decimalsForCurrency(item.currencyCode),
+        )} por "${item.itemName}" vuelve a ser la más alta`,
           auctionId,
           itemId: item.itemId,
         })

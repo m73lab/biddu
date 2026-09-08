@@ -18,6 +18,10 @@ import { useSortFilter, usePollingInterval } from "@/hooks/ui";
 import { withAuth } from "@/lib/auth/withAuth";
 import { isItemEnded, getBidStatus } from "@/utils/auction-helpers";
 import { useTranslations } from "next-intl";
+import {
+  formatCurrency,
+  decimalsForCurrency,
+} from "@/utils/formatters";
 
 interface Auction {
   id: string;
@@ -43,6 +47,7 @@ interface BidItem {
   endDate: string | null;
   createdAt: string;
   currencySymbol: string;
+  currencyCode: string;
   auctionId: string;
   auctionName: string;
   userHighestBid: number;
@@ -67,6 +72,7 @@ interface UserItem {
   auctionId: string;
   auctionName: string;
   currencySymbol: string;
+  currencyCode: string;
   startingBid: number;
   currentBid: number | null;
   endDate: string | null;
@@ -147,8 +153,11 @@ function BidItemCard({ item, userId }: { item: BidItem; userId: string }) {
             {t(status)}
           </span>
           <span className="text-xs font-semibold">
-            {item.currencySymbol}
-            {(item.currentBid || 0).toFixed(0)}
+            {formatCurrency(
+              item.currentBid || 0,
+              item.currencySymbol,
+              decimalsForCurrency(item.currencyCode),
+            )}
           </span>
         </div>
       </div>
@@ -220,8 +229,11 @@ function UserItemCard({ item }: { item: UserItem }) {
             </span>
           )}
           <span className="text-xs font-semibold">
-            {item.currencySymbol}
-            {(item.currentBid || item.startingBid).toFixed(0)}
+            {formatCurrency(
+              item.currentBid || item.startingBid,
+              item.currencySymbol,
+              decimalsForCurrency(item.currencyCode),
+            )}
           </span>
         </div>
       </div>

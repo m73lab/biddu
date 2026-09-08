@@ -54,7 +54,10 @@ export default function CSVImportPage({
   } | null>(null);
 
   const selectedAuction = auctions.find((a) => a.id === selectedAuctionId);
-  const defaultCurrency = currencies[0]?.code || "USD";
+  const defaultCurrency =
+    currencies.find((c) => c.code === "CLP")?.code ||
+    currencies[0]?.code ||
+    "CLP";
   const validCurrencyCodes = currencies.map((c) => c.code);
 
   const handleFileSelect = useCallback(
@@ -119,7 +122,7 @@ export default function CSVImportPage({
             updated.errors.push({
               row: 0,
               field: "name",
-              message: "Name is required",
+              message: "El nombre es obligatorio",
             });
           }
           if (
@@ -129,7 +132,7 @@ export default function CSVImportPage({
             updated.errors.push({
               row: 0,
               field: "currencyCode",
-              message: `Invalid currency: ${value}`,
+              message: `Moneda inválida: ${value}`,
             });
           }
 

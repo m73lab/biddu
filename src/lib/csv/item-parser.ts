@@ -75,14 +75,14 @@ function generateTempId(): string {
 
 export function parseCSV(
   content: string,
-  defaultCurrencyCode: string = "USD",
+  defaultCurrencyCode: string = "CLP",
 ): CSVParseResult {
   const lines = content.split(/\r?\n/).filter((line) => line.trim());
   const errors: CSVParseError[] = [];
   const items: ParsedCSVItem[] = [];
 
   if (lines.length === 0) {
-    errors.push({ row: 0, field: "", message: "CSV file is empty" });
+    errors.push({ row: 0, field: "", message: "El archivo CSV está vacío" });
     return { items: [], errors, headers: [] };
   }
 
@@ -96,7 +96,7 @@ export function parseCSV(
     errors.push({
       row: 1,
       field: "name",
-      message: "Missing required column: name (or title/item)",
+      message: "Falta la columna obligatoria: name (o title/item)",
     });
   }
 
@@ -233,7 +233,7 @@ export function generateCSVTemplate(): string {
   const sampleRow = [
     "Sample Item",
     "Item description here",
-    "USD",
+    "CLP",
     "100",
     "10",
     "false",
@@ -256,7 +256,7 @@ export function validateCurrencies(
       errors.push({
         row: index + 2, // +2 for header row and 0-indexing
         field: "currencyCode",
-        message: `Invalid currency: ${item.currencyCode}`,
+        message: `Moneda inválida: ${item.currencyCode}`,
       });
     }
 

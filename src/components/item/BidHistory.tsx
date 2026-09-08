@@ -1,4 +1,8 @@
 import { useTranslations } from "next-intl";
+import {
+  formatCurrency,
+  decimalsForCurrency,
+} from "@/utils/formatters";
 import { useFormatters } from "@/i18n";
 import { UserAvatar, AnonymousAvatar } from "@/components/ui/user-avatar";
 
@@ -16,15 +20,16 @@ interface Bid {
 interface BidHistoryProps {
   bids: Bid[];
   currencySymbol: string;
+  currencyCode?: string;
 }
 
-export function BidHistory({ bids, currencySymbol }: BidHistoryProps) {
+export function BidHistory({
+  bids,
+  currencySymbol,
+  currencyCode,
+}: BidHistoryProps) {
   const t = useTranslations("item.history");
   const { formatDate } = useFormatters();
-
-  const formatCurrency = (amount: number, symbol: string) => {
-    return `${symbol}${amount.toFixed(2)}`;
-  };
 
   return (
     <div>
@@ -65,7 +70,7 @@ export function BidHistory({ bids, currencySymbol }: BidHistoryProps) {
               </div>
               <div className="text-right">
                 <div className="font-bold">
-                  {formatCurrency(bid.amount, currencySymbol)}
+                  {formatCurrency(bid.amount, currencySymbol, decimalsForCurrency(currencyCode))}
                 </div>
                 <div className="text-xs text-base-content/60">
                   {formatDate(bid.createdAt)}

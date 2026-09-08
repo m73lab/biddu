@@ -64,7 +64,7 @@ export function useFormatters() {
     return new Intl.NumberFormat(locale, options).format(num);
   };
 
-  const formatCurrency = (amount: number, currency: string = "USD") => {
+  const formatCurrency = (amount: number, currency: string = "CLP") => {
     return new Intl.NumberFormat(locale, {
       style: "currency",
       currency,
@@ -115,7 +115,7 @@ export function formatDateServer(
 export function formatCurrencyServer(
   amount: number,
   locale: string,
-  currency: string = "USD",
+  currency: string = "CLP",
 ) {
   return new Intl.NumberFormat(locale, {
     style: "currency",

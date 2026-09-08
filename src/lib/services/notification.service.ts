@@ -187,11 +187,11 @@ export async function notifyOutbid(
   newAmount: number,
   currencySymbol: string,
   normalizedAmount?: number,
+  currencyCode?: string,
 ): Promise<Notification> {
   const displayAmount = formatAuctionAmount(newAmount, {
     symbol: currencySymbol,
-    precision: 2,
-    fractionMode: "DECIMAL",
+    code: currencyCode,
   });
 
   return createNotification({
@@ -219,11 +219,11 @@ export async function notifyAuctionWon(
   amount: number,
   currencySymbol: string,
   normalizedAmount?: number,
+  currencyCode?: string,
 ): Promise<Notification> {
   const displayAmount = formatAuctionAmount(amount, {
     symbol: currencySymbol,
-    precision: 2,
-    fractionMode: "DECIMAL",
+    code: currencyCode,
   });
 
   return createNotification({

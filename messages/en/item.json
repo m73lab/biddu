@@ -73,7 +73,10 @@
       "antiSnipeExtensionHint": "How much time to add to the end when triggered. Between 5 seconds and 60 minutes.",
       "antiSnipeRequiresEndDate": "Set an end date above to enable bid extension protection.",
       "seconds": "seconds",
-      "minutes": "minutes"
+      "minutes": "minutes",
+      "minBidNormalized": "Minimum bid (auction currency)",
+      "minIncrementNormalized": "Minimum increment (auction currency)",
+      "minBidConstraint": "Minimum constraint (JSON)"
     },
     "edit": {
       "title": "Edit Item",
@@ -124,7 +127,10 @@
       "antiSnipeExtension": "Extension amount",
       "antiSnipeExtensionHint": "How much time to add to the end when triggered. Between 5 seconds and 60 minutes.",
       "seconds": "seconds",
-      "minutes": "minutes"
+      "minutes": "minutes",
+      "minBidNormalized": "Minimum bid (auction currency)",
+      "minIncrementNormalized": "Minimum increment (auction currency)",
+      "minBidConstraint": "Minimum constraint (JSON)"
     },
     "yourListing": "Your Listing",
     "listedBy": "Listed by",

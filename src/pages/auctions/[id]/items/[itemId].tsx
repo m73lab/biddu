@@ -22,7 +22,9 @@ import { fetcher } from "@/lib/fetcher";
 import { useTranslations } from "next-intl";
 import {
   formatCurrency,
+  formatDate,
   decimalsForCurrency,
+  inputStepForCurrency,
 } from "@/utils/formatters";
 import { FulfillmentCard } from "@/components/item/FulfillmentCard";
 import * as auctionService from "@/lib/services/auction.service";
@@ -786,7 +788,7 @@ export default function ItemDetailPage({
                                       )}
                                     </div>
                                     <div className="text-xs text-base-content/50">
-                                      {new Date(bid.createdAt).toLocaleString()}
+                                      {formatDate(bid.createdAt)}
                                     </div>
                                   </div>
                                 </div>
@@ -798,6 +800,7 @@ export default function ItemDetailPage({
                                         bid.enteredRepresentation,
                                       profile: bid.currencyProfile,
                                       fallbackSymbol: item.currency.symbol,
+                                      fallbackCode: item.currency.code,
                                     })}
                                   </div>
                                 </div>
@@ -845,13 +848,20 @@ export default function ItemDetailPage({
                           )}
                         </div>
                         <div className="text-4xl font-extrabold text-primary tracking-tight mb-2">
-                          {item.currency.symbol}
-                          {(item.currentBid || item.startingBid).toFixed(2)}
+                          {formatCurrency(
+                            item.currentBid || item.startingBid,
+                            item.currency.symbol,
+                            decimalsForCurrency(item.currency.code),
+                          )}
                         </div>
                         <div className="flex items-center gap-2 text-xs text-base-content/50">
                           <span className="icon-[tabler--arrow-up] size-3"></span>
-                          {t("bid.startingBid")}: {item.currency.symbol}
-                          {item.startingBid.toFixed(2)}
+                          {t("bid.startingBid")}:{" "}
+                          {formatCurrency(
+                            item.startingBid,
+                            item.currency.symbol,
+                            decimalsForCurrency(item.currency.code),
+                          )}
                         </div>
                       </div>
 
@@ -927,8 +937,12 @@ export default function ItemDetailPage({
                                 {t("bid.yourBid")}
                               </span>
                               <span className="label-text-alt text-base-content/60">
-                                {t("bid.minBid")}: {item.currency.symbol}
-                                {minBid.toFixed(2)}
+                                {t("bid.minBid")}:{" "}
+                                {formatCurrency(
+                                  minBid,
+                                  item.currency.symbol,
+                                  decimalsForCurrency(item.currency.code),
+                                )}
                               </span>
                             </label>
 
@@ -988,13 +1002,20 @@ export default function ItemDetailPage({
                                   type="number"
                                   value={bidAmount}
                                   onChange={(e) => setBidAmount(e.target.value)}
-                                  placeholder={minBid.toFixed(2)}
+                                  placeholder={minBid.toLocaleString("es-CL", {
+                                    maximumFractionDigits:
+                                      decimalsForCurrency(item.currency.code),
+                                  })}
                                   min={minBid}
                                   step={
-                                    selectedCurrencyProfile?.fractionMode ===
-                                    "INTEGER_ONLY"
-                                      ? "1"
-                                      : "0.01"
+                                    selectedCurrencyProfile
+                                      ? selectedCurrencyProfile.fractionMode ===
+                                        "INTEGER_ONLY"
+                                        ? "1"
+                                        : "0.01"
+                                      : inputStepForCurrency(
+                                          item.currency.code,
+                                        )
                                   }
                                   required
                                   className="join-item input input-bordered w-full focus:outline-none"

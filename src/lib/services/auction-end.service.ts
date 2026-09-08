@@ -22,7 +22,7 @@ export async function processEndedItems(): Promise<number> {
         winnerNotified: false,
       },
       include: {
-        currency: { select: { symbol: true } },
+        currency: { select: { symbol: true, code: true } },
         auction: { select: { id: true, name: true } },
       },
       take: 50, // Process max 50 at a time to avoid long-running queries
@@ -49,6 +49,8 @@ export async function processEndedItems(): Promise<number> {
             item.id,
             item.currentBid!,
             item.currency.symbol,
+            undefined,
+            item.currency.code,
           );
 
           // Fetch winner info for email

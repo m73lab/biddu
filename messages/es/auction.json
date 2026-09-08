@@ -132,7 +132,10 @@
       "minutes": "minutos",
       "adminEditingDefaults": "Edición por Admin por Defecto",
       "defaultItemsEditableByAdmin": "Permitir a los admins editar nuevos artículos por defecto",
-      "defaultItemsEditableByAdminDescription": "Cuando está activado, los nuevos artículos creados en esta subasta tendrán la edición por admin activada por defecto. Los propietarios aún pueden desactivarla."
+      "defaultItemsEditableByAdminDescription": "Cuando está activado, los nuevos artículos creados en esta subasta tendrán la edición por admin activada por defecto. Los propietarios aún pueden desactivarla.",
+      "ruleMinIncrement": "Incremento mínimo",
+      "ruleMinComponentRatio": "Relación mínima de componentes",
+      "ruleRequiredDenomination": "Denominación requerida"
     },
     "members": {
       "title": "Miembros",

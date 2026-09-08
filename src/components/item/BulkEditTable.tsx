@@ -905,7 +905,7 @@ function BulkEditRow({
       {/* Created At */}
       <td className="whitespace-nowrap">
         <div className="text-sm">
-          {new Date(item.createdAt).toLocaleDateString(undefined, {
+          {new Date(item.createdAt).toLocaleDateString("es-CL", {
             year: "numeric",
             month: "short",
             day: "numeric",
@@ -923,7 +923,7 @@ function BulkEditRow({
       {/* Updated At */}
       <td className="whitespace-nowrap">
         <div className="text-sm">
-          {new Date(item.updatedAt).toLocaleDateString(undefined, {
+          {new Date(item.updatedAt).toLocaleDateString("es-CL", {
             year: "numeric",
             month: "short",
             day: "numeric",
@@ -943,7 +943,7 @@ function BulkEditRow({
         {item.endDate ? (
           <>
             <div className="text-sm">
-              {new Date(item.endDate).toLocaleDateString(undefined, {
+              {new Date(item.endDate).toLocaleDateString("es-CL", {
                 year: "numeric",
                 month: "short",
                 day: "numeric",

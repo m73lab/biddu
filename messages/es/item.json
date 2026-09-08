@@ -73,7 +73,10 @@
       "minutes": "minutos",
       "adminSettings": "Edición por Admin",
       "allowAdminEdit": "Permitir a los admins de la subasta editar este artículo",
-      "allowAdminEditDescription": "Cuando está activado, los admins de la subasta pueden editar los detalles de este artículo en tu nombre."
+      "allowAdminEditDescription": "Cuando está activado, los admins de la subasta pueden editar los detalles de este artículo en tu nombre.",
+      "minBidNormalized": "Puja mínima (moneda de subasta)",
+      "minIncrementNormalized": "Incremento mínimo (moneda de subasta)",
+      "minBidConstraint": "Restricción mínima (JSON)"
     },
     "edit": {
       "title": "Editar Artículo",
@@ -124,7 +127,10 @@
       "minutes": "minutos",
       "adminSettings": "Edición por Admin",
       "allowAdminEdit": "Permitir a los admins de la subasta editar este artículo",
-      "allowAdminEditDescription": "Cuando está activado, los admins de la subasta pueden editar los detalles de este artículo en tu nombre."
+      "allowAdminEditDescription": "Cuando está activado, los admins de la subasta pueden editar los detalles de este artículo en tu nombre.",
+      "minBidNormalized": "Puja mínima (moneda de subasta)",
+      "minIncrementNormalized": "Incremento mínimo (moneda de subasta)",
+      "minBidConstraint": "Restricción mínima (JSON)"
     },
     "yourListing": "Tu artículo",
     "listedBy": "Listado por",

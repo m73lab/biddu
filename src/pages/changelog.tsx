@@ -30,10 +30,11 @@ export default function ChangelogPage({
   const previousReleases = releases.slice(1);
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(undefined, {
+    return new Date(dateString).toLocaleDateString("es-CL", {
       year: "numeric",
       month: "long",
       day: "numeric",
+      timeZone: "America/Santiago",
     });
   };
 

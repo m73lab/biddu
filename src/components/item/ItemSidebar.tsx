@@ -1,5 +1,9 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import {
+  formatCurrency,
+  decimalsForCurrency,
+} from "@/utils/formatters";
 import { isItemEnded } from "@/utils/auction-helpers";
 import {
   SortDropdown,
@@ -15,6 +19,7 @@ interface AuctionItemSummary {
   endDate: string | null;
   currency: {
     symbol: string;
+    code: string;
   };
 }
 
@@ -103,8 +108,11 @@ export function ItemSidebar({
                         <div
                           className={`text-sm font-semibold ${ended ? "text-base-content/50" : "text-primary"}`}
                         >
-                          {item.currency.symbol}
-                          {(item.currentBid || item.startingBid).toFixed(2)}
+                          {formatCurrency(
+                            item.currentBid || item.startingBid,
+                            item.currency.symbol,
+                            decimalsForCurrency(item.currency.code),
+                          )}
                         </div>
                       </div>
                     </div>

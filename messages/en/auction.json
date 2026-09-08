@@ -132,7 +132,10 @@
       "defaultAntiSnipeExtension": "Default extension amount",
       "defaultAntiSnipeExtensionHint": "How much time to add to the end when triggered. Between 5 seconds and 60 minutes.",
       "seconds": "seconds",
-      "minutes": "minutes"
+      "minutes": "minutes",
+      "ruleMinIncrement": "Minimum increment",
+      "ruleMinComponentRatio": "Minimum component ratio",
+      "ruleRequiredDenomination": "Required denomination"
     },
     "members": {
       "title": "Members",

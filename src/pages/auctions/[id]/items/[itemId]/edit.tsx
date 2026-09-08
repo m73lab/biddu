@@ -14,6 +14,7 @@ import { useConfirmDialog } from "@/hooks/ui";
 import { useToast } from "@/components/ui/toast";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
+import { inputStepForCurrency } from "@/utils/formatters";
 import { withAuth } from "@/lib/auth/withAuth";
 
 interface Currency {
@@ -401,7 +402,7 @@ export default function EditItemPage({
                 <div className="form-control">
                   <label className="label" htmlFor="minBidNormalized">
                     <span className="label-text font-medium">
-                      Minimum Bid (Auction Currency)
+                      {t("minBidNormalized")}
                     </span>
                   </label>
                   <input
@@ -418,7 +419,7 @@ export default function EditItemPage({
                 <div className="form-control">
                   <label className="label" htmlFor="minIncrementNormalized">
                     <span className="label-text font-medium">
-                      Minimum Increment (Auction Currency)
+                      {t("minIncrementNormalized")}
                     </span>
                   </label>
                   <input
@@ -437,7 +438,7 @@ export default function EditItemPage({
                 <div className="form-control">
                   <label className="label" htmlFor="minBidConstraint">
                     <span className="label-text font-medium">
-                      Minimum Constraint (JSON)
+                      {t("minBidConstraint")}
                     </span>
                   </label>
                   <textarea
@@ -525,7 +526,7 @@ export default function EditItemPage({
                     name="startingBid"
                     type="number"
                     min="0"
-                    step="0.01"
+                    step={inputStepForCurrency(item.currencyCode)}
                     defaultValue={item.startingBid}
                     className={`input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors ${
                       fieldErrors.startingBid ? "input-error" : ""
@@ -558,8 +559,8 @@ export default function EditItemPage({
                     id="minBidIncrement"
                     name="minBidIncrement"
                     type="number"
-                    min="0.01"
-                    step="0.01"
+                    min={inputStepForCurrency(item.currencyCode)}
+                    step={inputStepForCurrency(item.currencyCode)}
                     defaultValue={item.minBidIncrement}
                     className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                   />

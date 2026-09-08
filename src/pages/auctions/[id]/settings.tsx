@@ -974,9 +974,9 @@ export default function AuctionSettingsPage({
                             }))
                           }
                         >
-                          <option value="MIN_INCREMENT">Minimum increment</option>
-                          <option value="MIN_COMPONENT_RATIO">Minimum component ratio</option>
-                          <option value="REQUIRED_DENOMINATION">Required denomination</option>
+                          <option value="MIN_INCREMENT">{t("ruleMinIncrement")}</option>
+                          <option value="MIN_COMPONENT_RATIO">{t("ruleMinComponentRatio")}</option>
+                          <option value="REQUIRED_DENOMINATION">{t("ruleRequiredDenomination")}</option>
                         </select>
                         <label className="label cursor-pointer gap-2">
                           <input

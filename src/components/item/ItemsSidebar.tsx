@@ -5,6 +5,10 @@ import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import {
+  formatCurrency,
+  decimalsForCurrency,
+} from "@/utils/formatters";
+import {
   SortDropdown,
   sidebarItemSortOptions,
   sortItems,
@@ -23,6 +27,7 @@ export interface SidebarItem {
   userHasBid: boolean;
   currency: {
     symbol: string;
+    code: string;
   };
 }
 
@@ -176,8 +181,11 @@ function SidebarItemCard({
                   : "text-base-content/70"
             }`}
           >
-            {item.currency.symbol}
-            {(item.currentBid || item.startingBid).toFixed(2)}
+            {formatCurrency(
+              item.currentBid || item.startingBid,
+              item.currency.symbol,
+              decimalsForCurrency(item.currency.code),
+            )}
           </div>
         </div>
       </div>

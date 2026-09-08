@@ -329,7 +329,7 @@ model AuctionItem {
   description     String?
   
   // Pricing
-  currencyCode    String    @default("USD")
+  currencyCode    String    @default("CLP")
   currency        Currency  @relation(fields: [currencyCode], references: [code])
   startingBid     Float     @default(0)
   minBidIncrement Float     @default(1)

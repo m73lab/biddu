@@ -13,6 +13,11 @@ import {
   evaluateBidRules,
 } from "@/lib/services/auction-currency-rule.service";
 import { prisma } from "@/lib/prisma";
+import {
+  formatCurrency,
+  decimalsForCurrency,
+  normalizeAmountForCurrency,
+} from "@/utils/formatters";
 import { z } from "zod";
 
 // ============================================================================
@@ -130,14 +135,28 @@ export const placeBid: ApiHandler = async (req, res, ctx) => {
   );
 
   if (!valid) {
-    throw new BadRequestError(`Minimum bid is ${minBid.toFixed(2)}`);
+    throw new BadRequestError(
+      `La puja mínima es ${formatCurrency(
+        minBid,
+        item.currency.symbol,
+        decimalsForCurrency(item.currency.code),
+      )}`,
+    );
   }
+
+  // Zero-decimal currencies (CLP) without a custom profile: whole numbers
+  const plainAmount = currencyProfile
+    ? validatedBody.amount ?? normalizedAmount
+    : normalizeAmountForCurrency(
+        validatedBody.amount ?? normalizedAmount,
+        item.currency.code,
+      );
 
   const bid = await bidService.placeBid(
     itemId,
     ctx.session!.user.id,
     {
-      amount: validatedBody.amount ?? normalizedAmount,
+      amount: plainAmount,
       normalizedAmount,
       enteredRepresentation: validatedBody.enteredRepresentation,
       currencyProfileId: currencyProfile?.id,

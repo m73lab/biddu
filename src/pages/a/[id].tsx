@@ -152,7 +152,15 @@ export default function PublicAuctionPage({
                   <div className="badge badge-outline gap-1">
                     <span className="icon-[tabler--clock] size-3"></span>
                     {t("endsOn", {
-                      date: new Date(auction.endDate).toLocaleDateString(),
+                      date: new Date(auction.endDate).toLocaleDateString(
+                        "es-CL",
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                          timeZone: "America/Santiago",
+                        },
+                      ),
                     })}
                   </div>
                 </div>

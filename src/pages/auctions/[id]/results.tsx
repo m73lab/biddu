@@ -6,6 +6,10 @@ import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 import { withAuth } from "@/lib/auth/withAuth";
 import { formatAuctionBidDisplay } from "@/lib/currency-display";
+import {
+  formatCurrency,
+  decimalsForCurrency,
+} from "@/utils/formatters";
 
 interface Winner {
   itemId: string;
@@ -179,7 +183,7 @@ export default function ResultsPage({
             <StatsCard
               icon="icon-[tabler--currency-dollar]"
               iconColor="success"
-              value={`$${totalValue.toLocaleString()}`}
+              value={formatCurrency(totalValue, "$", 0)}
               label={t("totalValue")}
             />
           </div>
@@ -236,6 +240,7 @@ export default function ResultsPage({
                             enteredRepresentation: win.enteredRepresentation,
                             profile: win.currencyProfile,
                             fallbackSymbol: win.currencySymbol,
+                            fallbackCode: win.currencyCode,
                           })}
                         </div>
                       </div>
@@ -245,10 +250,14 @@ export default function ResultsPage({
                     <div className="flex justify-between items-center text-sm font-medium">
                       <span className="text-base-content/60">Total</span>
                       <span className="text-xl font-bold text-primary">
-                        {userWins[0]?.currencySymbol}
-                        {userWins
-                          .reduce((sum, w) => sum + w.winningBid, 0)
-                          .toFixed(2)}
+                        {formatCurrency(
+                          userWins.reduce(
+                            (sum, w) => sum + w.winningBid,
+                            0,
+                          ),
+                          userWins[0]?.currencySymbol || "$",
+                          decimalsForCurrency(userWins[0]?.currencyCode),
+                        )}
                       </span>
                     </div>
                   </div>
@@ -398,6 +407,7 @@ export default function ResultsPage({
                                 enteredRepresentation: win.enteredRepresentation,
                                 profile: win.currencyProfile,
                                 fallbackSymbol: win.currencySymbol,
+                                fallbackCode: win.currencyCode,
                               })}
                             </span>
                           </td>
