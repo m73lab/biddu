@@ -70,6 +70,12 @@ services:
       - subastaya-logs:/app/logs
     depends_on:
       - soketi
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   # ---------------------------------------------------------------------------
   # Caddy - HTTPS reverse proxy (TLS termination for LAN)
@@ -91,19 +97,7 @@ services:
     depends_on:
       - subastaya
     healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "-q",
-          "-O",
-          "/dev/null",
-          "http://localhost:3000/api/health",
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
+      disable: true
 
   # ---------------------------------------------------------------------------
   # Soketi - WebSocket Server (Optional, for realtime features)
