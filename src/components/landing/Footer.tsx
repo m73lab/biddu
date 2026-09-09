@@ -104,27 +104,15 @@ export function Footer() {
             </p>
             <p className="flex items-center gap-1.5 text-cream-50/60">
               <span>by</span>
-              <svg
-                width="70"
-                height="14"
-                viewBox="0 0 200 40"
-                role="img"
+              <a
+                href="https://m73lab.space"
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label="m73lab"
+                className="inline-flex items-center opacity-80 hover:opacity-100 transition-opacity"
               >
-                <text
-                  x="0"
-                  y="30"
-                  font-family="system-ui, -apple-system, sans-serif"
-                  font-weight="700"
-                  font-size="28"
-                  letter-spacing="-1"
-                >
-                  <tspan fill="#00ff88" opacity="0.25" dx="1" dy="1">
-                    m73lab
-                  </tspan>
-                  <tspan fill="#e8e8e8">m73lab</tspan>
-                </text>
-              </svg>
+                <img src="/m73lab.svg" alt="m73lab" className="h-5 w-auto" />
+              </a>
             </p>
           </div>
         </div>

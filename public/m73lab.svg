@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 138 32">
+  <g fill="none">
+    <path d="M8 22V10l4 6 4-6v12" stroke="#00ff88" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.3" transform="translate(0.4, 0.4)"/>
+    <path d="M8 22V10l4 6 4-6v12" stroke="#e8e8e8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <circle cx="24.5" cy="22" r="1.5" fill="#00ff88"/>
+  <text x="37" y="22.5" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="23" letter-spacing="-0.7">
+    <tspan fill="#e8e8e8">m73lab</tspan>
+  </text>
+</svg>
