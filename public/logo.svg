@@ -6,6 +6,8 @@
       <stop offset="1" stop-color="#e89b2d"/>
     </linearGradient>
   </defs>
-  <path d="M24 16 H30.5 C37.5 16 41 19.5 41 24.5 C41 29.5 37.5 32.6 31.5 32.6 C37.5 32.8 41.5 36.5 41.5 41.5 C41.5 45.5 38 48 30.5 48 H24 Z"
-        fill="none" stroke="url(#bgold)" stroke-width="7" stroke-linejoin="round"/>
+  <g transform="translate(3 0)">
+    <path d="M18 13 H27 C35 13 39.5 16.5 39.5 23 C39.5 29.5 35 33 27.5 33 C35 33.2 40.5 37 40.5 43.5 C40.5 49 35.5 52 27.5 52 H18 Z"
+          fill="none" stroke="url(#bgold)" stroke-width="7" stroke-linejoin="round"/>
+  </g>
 </svg>

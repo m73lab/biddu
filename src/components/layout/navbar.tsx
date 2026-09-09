@@ -56,10 +56,11 @@ export function Navbar({ user }: NavbarProps) {
             href="/dashboard"
             className="group flex items-center gap-2 text-xl font-bold tracking-tight"
           >
-            <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
-              <span className="icon-[tabler--gavel] size-6 text-primary transition-transform group-hover:-rotate-12 duration-300"></span>
+            <div className="relative">
+              <img src="/logo.svg" alt="" aria-hidden="true" className="h-8 w-8 transition-transform group-hover:-rotate-6 duration-300" />
+              <div className="absolute inset-0 bg-primary/30 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
-            <span className="bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent font-extrabold tracking-tight">
               {tCommon("appName")}
             </span>
           </Link>
