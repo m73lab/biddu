@@ -63,7 +63,7 @@ export function Navbar({
           className="text-xl sm:text-2xl font-bold text-cream-50 flex items-center gap-2 group shrink-0"
         >
           <div className="relative">
-            <span className="icon-[tabler--gavel] size-7 sm:size-8 text-gold-400 transition-transform group-hover:-rotate-12 duration-300"></span>
+            <img src="/logo.svg" alt="" aria-hidden="true" className="h-7 w-7 sm:h-8 sm:w-8 transition-transform group-hover:-rotate-6 duration-300" />
             <div className="absolute inset-0 bg-gold-500/30 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
           <span className="bg-linear-to-r from-cream-50 via-gold-300 to-gold-400 bg-clip-text text-transparent font-extrabold tracking-tight">

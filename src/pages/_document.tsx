@@ -16,7 +16,9 @@ const themeScript = `
 export default function Document() {
   return (
     <Html lang="en" suppressHydrationWarning>
-      <Head />
+      <Head>
+          <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        </Head>
       <body className="antialiased">
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <Main />

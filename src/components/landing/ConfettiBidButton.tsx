@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { MouseEvent } from "react";
+import { createPortal } from "react-dom";
 
 type Shape = "rect" | "circle";
 
@@ -31,6 +32,15 @@ export function ConfettiBidButton({ label }: { label: string }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const particlesRef = useRef<Particle[]>([]);
   const rafRef = useRef<number | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    return () => {
+      if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    };
+  }, []);
 
   const ensureCanvas = useCallback(() => {
     const canvas = canvasRef.current;
@@ -137,12 +147,13 @@ export function ConfettiBidButton({ label }: { label: string }) {
     [ensureCanvas, spawn, step],
   );
 
-  useEffect(() => {
-    return () => {
-      if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
-      rafRef.current = null;
-    };
-  }, []);
+  const canvasEl = (
+    <canvas
+      ref={canvasRef}
+      aria-hidden="true"
+      className="pointer-events-none fixed inset-0 z-[9999] h-full w-full"
+    />
+  );
 
   return (
     <>
@@ -155,11 +166,7 @@ export function ConfettiBidButton({ label }: { label: string }) {
         <span className="icon-[tabler--gavel] size-5"></span>
         {label}
       </button>
-      <canvas
-        ref={canvasRef}
-        aria-hidden="true"
-        className="pointer-events-none fixed inset-0 z-[90] h-full w-full"
-      />
+      {mounted ? createPortal(canvasEl, document.body) : null}
     </>
   );
 }

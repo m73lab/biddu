@@ -20,7 +20,7 @@ export function Footer() {
         <div className="grid md:grid-cols-4 gap-10 mb-12">
           <div className="col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-5">
-              <span className="icon-[tabler--gavel] size-8 text-gold-400"></span>
+              <img src="/logo.svg" alt="" aria-hidden="true" className="h-8 w-8" />
               <span className="text-2xl font-bold bg-linear-to-r from-cream-50 via-gold-300 to-gold-400 bg-clip-text text-transparent">
                 {t("common.appName")}
               </span>
