@@ -8,7 +8,7 @@ const content = `
       Hola {{NAME}},
     </mj-text>
     <mj-text>
-      Recibimos una solicitud para restablecer la contraseña de tu cuenta en SubastaYa. Haz clic en el botón de abajo para crear una nueva contraseña.
+      Recibimos una solicitud para restablecer la contraseña de tu cuenta en Biddu. Haz clic en el botón de abajo para crear una nueva contraseña.
     </mj-text>
     <mj-button href="{{RESET_URL}}">
       Restablecer Contraseña
@@ -30,7 +30,7 @@ const content = `
 
 export const passwordResetTemplate = renderLayout({
   title: "Restablecer Contraseña",
-  previewText: "Restablece tu contraseña de SubastaYa",
+  previewText: "Restablece tu contraseña de Biddu",
   content,
 });
 

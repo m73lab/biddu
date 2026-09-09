@@ -1,4 +1,4 @@
-# SubastaYa 🇨🇱
+# Biddu 🇨🇱
 
 Plataforma de subastas gratuita y de código abierto, adaptada al contexto chileno y latinoamericano: español, pesos chilenos ($ CLP), RUT opcional, hora de Chile y notificaciones en español.
 

@@ -8,11 +8,11 @@
       "sections": {
         "1": {
           "title": "Introduction",
-          "content": "SubastaYa (\"we\", \"our\", or \"us\") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our free, open-source auction platform for fundraisers, charities, and internal events."
+          "content": "Biddu (\"we\", \"our\", or \"us\") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our free, open-source auction platform for fundraisers, charities, and internal events."
         },
         "2": {
           "title": "Information We Collect",
-          "content": "We collect information you provide directly to us when you use SubastaYa:",
+          "content": "We collect information you provide directly to us when you use Biddu:",
           "accountInfo": "Account Information",
           "accountInfoDesc": "Your name, email address, and password when you create an account. If you sign in with Google or Microsoft, we receive your name, email address, and profile picture from the respective provider.",
           "auctionData": "Auction Data",
@@ -33,8 +33,8 @@
         },
         "4": {
           "title": "Data Storage",
-          "content1": "If you use the hosted version at subastaya.cl, your data is stored securely using industry-standard infrastructure. Database information is stored using Turso (distributed SQLite), and uploaded images are stored using S3-compatible cloud storage.",
-          "content2": "If you choose to self-host SubastaYa, you are responsible for your own data storage and security. Self-hosted instances can use local SQLite databases and local filesystem storage for complete control over your data."
+          "content1": "If you use the hosted version at biddu.cl, your data is stored securely using industry-standard infrastructure. Database information is stored using Turso (distributed SQLite), and uploaded images are stored using S3-compatible cloud storage.",
+          "content2": "If you choose to self-host Biddu, you are responsible for your own data storage and security. Self-hosted instances can use local SQLite databases and local filesystem storage for complete control over your data."
         },
         "5": {
           "title": "Data Sharing",
@@ -44,7 +44,7 @@
         "5b": {
           "title": "Third-Party Authentication (OAuth)",
           "content1": "If you choose to sign in with Google or Microsoft, we use their OAuth 2.0 services to authenticate your identity. When you sign in with these providers, we receive your basic profile information (name, email address, and profile picture) from them.",
-          "content2": "We do not receive or store your Google or Microsoft password. Each provider's use of your information is governed by their respective privacy policies. You can revoke SubastaYa's access at any time through your Google Account settings (myaccount.google.com) or Microsoft Account settings (account.microsoft.com)."
+          "content2": "We do not receive or store your Google or Microsoft password. Each provider's use of your information is governed by their respective privacy policies. You can revoke Biddu's access at any time through your Google Account settings (myaccount.google.com) or Microsoft Account settings (account.microsoft.com)."
         },
         "6": {
           "title": "Email Communications",
@@ -57,7 +57,7 @@
         },
         "8": {
           "title": "Open Source Transparency",
-          "content": "SubastaYa is 100% open source software released under the MIT License. You can request a copy of the source code from your instance administrator to see exactly how we collect, store, and handle your data. You can also self-host SubastaYa for complete control over your information."
+          "content": "Biddu is 100% open source software released under the MIT License. You can request a copy of the source code from your instance administrator to see exactly how we collect, store, and handle your data. You can also self-host Biddu for complete control over your information."
         },
         "9": {
           "title": "Your Rights (GDPR)",
@@ -76,7 +76,7 @@
         },
         "11": {
           "title": "Children's Privacy",
-          "content": "SubastaYa is not intended for users under 18 years of age. We do not knowingly collect personal information from children under 18. If you believe we have collected information from a child, please contact us immediately."
+          "content": "Biddu is not intended for users under 18 years of age. We do not knowingly collect personal information from children under 18. If you believe we have collected information from a child, please contact us immediately."
         },
         "12": {
           "title": "Changes to This Policy",
@@ -96,23 +96,23 @@
       "sections": {
         "1": {
           "title": "Acceptance of Terms",
-          "content": "By accessing or using SubastaYa, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our service. These terms apply to all users of the platform, whether using the hosted version or a self-hosted instance."
+          "content": "By accessing or using Biddu, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our service. These terms apply to all users of the platform, whether using the hosted version or a self-hosted instance."
         },
         "2": {
-          "title": "What is SubastaYa",
-          "content": "SubastaYa is a free, open-source auction platform designed for fundraisers, charities, schools, churches, company events, and community organizations. The platform enables you to create and manage auctions, invite participants, and facilitate real-time bidding.",
+          "title": "What is Biddu",
+          "content": "Biddu is a free, open-source auction platform designed for fundraisers, charities, schools, churches, company events, and community organizations. The platform enables you to create and manage auctions, invite participants, and facilitate real-time bidding.",
           "disclaimerTitle": "Important Disclaimer",
-          "disclaimer": "SubastaYa facilitates bidding but <strong class=\"text-base-content\">does not process payments</strong>. All transactions are settled offline between participants. We are not a marketplace or payment processor."
+          "disclaimer": "Biddu facilitates bidding but <strong class=\"text-base-content\">does not process payments</strong>. All transactions are settled offline between participants. We are not a marketplace or payment processor."
         },
         "3": {
           "title": "User Accounts",
-          "content1": "To use SubastaYa, you must create an account with accurate information including your name, email address, and a secure password. Alternatively, you may sign in using Google or Microsoft OAuth, which allows you to use your existing account credentials. You are responsible for maintaining the security of your account credentials and should not share your account with others.",
-          "content2": "You must be at least 18 years old or have parental consent to use SubastaYa. Please keep your account information up to date to ensure you receive important notifications about your auctions."
+          "content1": "To use Biddu, you must create an account with accurate information including your name, email address, and a secure password. Alternatively, you may sign in using Google or Microsoft OAuth, which allows you to use your existing account credentials. You are responsible for maintaining the security of your account credentials and should not share your account with others.",
+          "content2": "You must be at least 18 years old or have parental consent to use Biddu. Please keep your account information up to date to ensure you receive important notifications about your auctions."
         },
         "3b": {
           "title": "Third-Party Authentication",
-          "content1": "SubastaYa offers sign-in through Google and Microsoft OAuth as a convenience. When you use these sign-in options, you authorize the respective provider to share your basic profile information (name, email, profile picture) with us. We use this information solely to create and manage your SubastaYa account.",
-          "content2": "Your use of third-party sign-in is also subject to each provider's Terms of Service and Privacy Policy. You can disconnect your Google or Microsoft account from SubastaYa at any time, though you may need to set a password to continue accessing your account."
+          "content1": "Biddu offers sign-in through Google and Microsoft OAuth as a convenience. When you use these sign-in options, you authorize the respective provider to share your basic profile information (name, email, profile picture) with us. We use this information solely to create and manage your Biddu account.",
+          "content2": "Your use of third-party sign-in is also subject to each provider's Terms of Service and Privacy Policy. You can disconnect your Google or Microsoft account from Biddu at any time, though you may need to set a password to continue accessing your account."
         },
         "4": {
           "title": "Roles and Permissions",
@@ -133,41 +133,41 @@
         },
         "6": {
           "title": "Acceptable Use",
-          "content1": "You agree to use SubastaYa responsibly and legally. You must not use the service for illegal purposes, post fraudulent or misleading items, or engage in bid manipulation such as shill bidding.",
+          "content1": "You agree to use Biddu responsibly and legally. You must not use the service for illegal purposes, post fraudulent or misleading items, or engage in bid manipulation such as shill bidding.",
           "content2": "Harassment, abuse, or threats toward other users are strictly prohibited. You must not attempt to gain unauthorized access to the system, use automated bots or scripts, or upload malicious content that could compromise the platform or other users."
         },
         "7": {
           "title": "No Payment Processing",
-          "content1": "SubastaYa does not process payments, collect payment information, or facilitate financial transactions of any kind. Winning bidders and item sellers are solely responsible for arranging payment methods, completing the exchange of items, and resolving any disputes that arise.",
-          "content2": "SubastaYa is not liable for any disputes, losses, or damages arising from offline transactions between users. We recommend discussing payment and pickup arrangements before the auction ends."
+          "content1": "Biddu does not process payments, collect payment information, or facilitate financial transactions of any kind. Winning bidders and item sellers are solely responsible for arranging payment methods, completing the exchange of items, and resolving any disputes that arise.",
+          "content2": "Biddu is not liable for any disputes, losses, or damages arising from offline transactions between users. We recommend discussing payment and pickup arrangements before the auction ends."
         },
         "8": {
           "title": "Content Ownership",
-          "content1": "You retain ownership of all content you upload to SubastaYa, including item images and descriptions. By uploading content, you grant SubastaYa a non-exclusive, royalty-free license to display that content to auction participants for the purpose of operating the service.",
+          "content1": "You retain ownership of all content you upload to Biddu, including item images and descriptions. By uploading content, you grant Biddu a non-exclusive, royalty-free license to display that content to auction participants for the purpose of operating the service.",
           "content2": "You represent that you have the right to upload any content you submit and that it does not infringe on any third-party rights including copyrights, trademarks, or privacy rights."
         },
         "9": {
           "title": "Open Source License",
-          "content": "SubastaYa is open source software released under the MIT License. You may use, modify, and distribute the software according to the terms of that license. The complete source code may be requested from your instance administrator, and the MIT license terms apply as published by the project. for complete details."
+          "content": "Biddu is open source software released under the MIT License. You may use, modify, and distribute the software according to the terms of that license. The complete source code may be requested from your instance administrator, and the MIT license terms apply as published by the project. for complete details."
         },
         "10": {
           "title": "Self-Hosting",
-          "content": "You may self-host SubastaYa on your own infrastructure. When self-hosting, you are solely responsible for server security and maintenance, data backup and protection, compliance with applicable laws in your jurisdiction, and providing user support and dispute resolution for your users."
+          "content": "You may self-host Biddu on your own infrastructure. When self-hosting, you are solely responsible for server security and maintenance, data backup and protection, compliance with applicable laws in your jurisdiction, and providing user support and dispute resolution for your users."
         },
         "11": {
-          "title": "Cloud Hosting at subastaya.cl",
-          "content1": "The hosted version at subastaya.cl is provided free of charge and runs entirely on free-tier services under the project creator's personal accounts. We use Vercel for hosting, Turso for database storage, and Brevo for email delivery — all on their respective free tiers.",
+          "title": "Cloud Hosting at biddu.cl",
+          "content1": "The hosted version at biddu.cl is provided free of charge and runs entirely on free-tier services under the project creator's personal accounts. We use Vercel for hosting, Turso for database storage, and Brevo for email delivery — all on their respective free tiers.",
           "commitmentTitle": "Our Commitment:",
-          "commitment": "As a .org domain, SubastaYa strives to remain free and accessible to everyone. We are committed to using free and open-source services wherever possible to keep the platform running at no cost to users.",
-          "content2": "While we make every effort to keep the service running, please understand that free-tier services have limitations. There may be usage caps, occasional downtime, or service changes beyond our control. For mission-critical use cases or higher reliability requirements, we recommend self-hosting SubastaYa on your own infrastructure."
+          "commitment": "As a .org domain, Biddu strives to remain free and accessible to everyone. We are committed to using free and open-source services wherever possible to keep the platform running at no cost to users.",
+          "content2": "While we make every effort to keep the service running, please understand that free-tier services have limitations. There may be usage caps, occasional downtime, or service changes beyond our control. For mission-critical use cases or higher reliability requirements, we recommend self-hosting Biddu on your own infrastructure."
         },
         "12": {
           "title": "Disclaimer of Warranties",
-          "content": "SubastaYa is provided \"as is\" and \"as available\" without warranties of any kind, either express or implied. We do not guarantee that the service will be uninterrupted, secure, error-free, or meet your specific requirements. Use of the service is at your own risk."
+          "content": "Biddu is provided \"as is\" and \"as available\" without warranties of any kind, either express or implied. We do not guarantee that the service will be uninterrupted, secure, error-free, or meet your specific requirements. Use of the service is at your own risk."
         },
         "13": {
           "title": "Limitation of Liability",
-          "content": "To the maximum extent permitted by law, SubastaYa and its creators, contributors, and maintainers shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the service. This includes but is not limited to loss of profits, data, or goodwill, failed or disputed transactions, unauthorized access to your account, and service interruptions or errors."
+          "content": "To the maximum extent permitted by law, Biddu and its creators, contributors, and maintainers shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the service. This includes but is not limited to loss of profits, data, or goodwill, failed or disputed transactions, unauthorized access to your account, and service interruptions or errors."
         },
         "14": {
           "title": "Account Termination",

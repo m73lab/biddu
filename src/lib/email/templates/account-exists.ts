@@ -8,7 +8,7 @@ const content = `
       Hola {{NAME}},
     </mj-text>
     <mj-text>
-      Alguien (¡esperamos que tú!) intentó crear una nueva cuenta en SubastaYa usando este correo electrónico. Sin embargo, ya tienes una cuenta con nosotros.
+      Alguien (¡esperamos que tú!) intentó crear una nueva cuenta en Biddu usando este correo electrónico. Sin embargo, ya tienes una cuenta con nosotros.
     </mj-text>
     <mj-text>
       Si fuiste tú, puedes iniciar sesión en tu cuenta existente:
@@ -29,7 +29,7 @@ const content = `
 
 export const accountExistsTemplate = renderLayout({
   title: "La Cuenta Ya Existe",
-  previewText: "Ya tienes una cuenta en SubastaYa",
+  previewText: "Ya tienes una cuenta en Biddu",
   content,
 });
 

@@ -57,9 +57,9 @@ export default async function handler(
     "User verified as deployment admin",
   );
 
-  // SubastaYa fork: self-updates from upstream are disabled
+  // Biddu fork: self-updates from upstream are disabled
   // (they would pull Auktiva code over this fork)
-  updateLogger.warn("Self-update disabled on SubastaYa fork");
+  updateLogger.warn("Self-update disabled on Biddu fork");
   return res.status(403).json({ success: false });
 
   // Look for update script

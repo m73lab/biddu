@@ -860,7 +860,7 @@ export async function createItem(
   });
 
   // Get the first image URL for notifications
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://subastaya.cl";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://biddu.cl";
   const firstImageUrl =
     item.images.length > 0
       ? item.images[0].url.startsWith("http")

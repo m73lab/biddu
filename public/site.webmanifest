@@ -1,11 +1,11 @@
 {
   "name": "SubastaYa",
   "short_name": "SubastaYa",
-  "description": "Free, open-source auction platform for fundraisers, charities, and internal events.",
+  "description": "Free, open-source auction platform for fundraisers, charities, clubs and communities. Pujas en tiempo real, en pesos chilenos.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#6366f1",
+  "background_color": "#0b1220",
+  "theme_color": "#e89b2d",
   "icons": [
     {
       "src": "/favicon.svg",

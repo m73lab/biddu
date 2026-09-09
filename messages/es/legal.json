@@ -8,11 +8,11 @@
       "sections": {
         "1": {
           "title": "Introducción",
-          "content": "SubastaYa (\"nosotros\", \"nuestro\" o \"nos\") se compromete a proteger tu privacidad. Esta Política de Privacidad explica cómo recopilamos, usamos y salvaguardamos tu información cuando usas nuestra plataforma de subastas gratuita y de código abierto para remates, organizaciones comunitarias y eventos privados."
+          "content": "Biddu (\"nosotros\", \"nuestro\" o \"nos\") se compromete a proteger tu privacidad. Esta Política de Privacidad explica cómo recopilamos, usamos y salvaguardamos tu información cuando usas nuestra plataforma de subastas gratuita y de código abierto para remates, organizaciones comunitarias y eventos privados."
         },
         "2": {
           "title": "Información que Recopilamos",
-          "content": "Recopilamos información que nos proporcionas directamente cuando usas SubastaYa:",
+          "content": "Recopilamos información que nos proporcionas directamente cuando usas Biddu:",
           "accountInfo": "Información de Cuenta",
           "accountInfoDesc": "Tu nombre, dirección de correo electrónico, RUT (opcional) y contraseña cuando creas una cuenta.",
           "auctionData": "Datos de Subasta",
@@ -33,8 +33,8 @@
         },
         "4": {
           "title": "Almacenamiento de Datos",
-          "content1": "Si usas la versión alojada, tus datos se almacenan de forma segura en servidores propios de SubastaYa. La información de la base de datos se guarda en un motor SQLite localizado en Chile, y las imágenes subidas se almacenan en el sistema de archivos del servidor.",
-          "content2": "SubastaYa es software de código abierto: puedes alojarlo tú mismo en tu propia infraestructura con control total sobre tus datos. Las instancias auto-alojadas pueden usar bases de datos SQLite locales y almacenamiento en sistema de archivos local."
+          "content1": "Si usas la versión alojada, tus datos se almacenan de forma segura en servidores propios de Biddu. La información de la base de datos se guarda en un motor SQLite localizado en Chile, y las imágenes subidas se almacenan en el sistema de archivos del servidor.",
+          "content2": "Biddu es software de código abierto: puedes alojarlo tú mismo en tu propia infraestructura con control total sobre tus datos. Las instancias auto-alojadas pueden usar bases de datos SQLite locales y almacenamiento en sistema de archivos local."
         },
         "5": {
           "title": "Compartir Datos",
@@ -44,7 +44,7 @@
         "5b": {
           "title": "Autenticación de terceros (OAuth)",
           "content1": "Si eliges iniciar sesión con Google o Microsoft, usamos sus servicios OAuth 2.0 para autenticar tu identidad. Cuando inicias sesión con estos proveedores, recibimos tu información básica de perfil (nombre, dirección de correo electrónico y foto de perfil) de ellos.",
-          "content2": "No recibimos ni almacenamos tu contraseña de Google o Microsoft. El uso de tu información por parte de cada proveedor se rige por sus respectivas políticas de privacidad. Puedes revocar el acceso de SubastaYa en cualquier momento a través de la configuración de tu cuenta de Google (myaccount.google.com) o Microsoft (account.microsoft.com)."
+          "content2": "No recibimos ni almacenamos tu contraseña de Google o Microsoft. El uso de tu información por parte de cada proveedor se rige por sus respectivas políticas de privacidad. Puedes revocar el acceso de Biddu en cualquier momento a través de la configuración de tu cuenta de Google (myaccount.google.com) o Microsoft (account.microsoft.com)."
         },
         "6": {
           "title": "Comunicaciones por Correo",
@@ -57,7 +57,7 @@
         },
         "8": {
           "title": "Transparencia de Código Abierto",
-          "content": "SubastaYa es software 100% de código abierto lanzado bajo la Licencia MIT. Puedes pedir una copia del código fuente al administrador de tu instancia para ver exactamente cómo recopilamos, almacenamos y manejamos tus datos. También puedes alojar SubastaYa tú mismo para tener control total sobre tu información."
+          "content": "Biddu es software 100% de código abierto lanzado bajo la Licencia MIT. Puedes pedir una copia del código fuente al administrador de tu instancia para ver exactamente cómo recopilamos, almacenamos y manejamos tus datos. También puedes alojar Biddu tú mismo para tener control total sobre tu información."
         },
         "9": {
           "title": "Tus Derechos (Ley 19.628)",
@@ -76,7 +76,7 @@
         },
         "11": {
           "title": "Privacidad de Niños",
-          "content": "SubastaYa no está destinado a usuarios menores de 18 años. No recopilamos a sabiendas información personal de niños menores de 18 años. Si crees que hemos recopilado información de un niño, por favor contáctanos inmediatamente."
+          "content": "Biddu no está destinado a usuarios menores de 18 años. No recopilamos a sabiendas información personal de niños menores de 18 años. Si crees que hemos recopilado información de un niño, por favor contáctanos inmediatamente."
         },
         "12": {
           "title": "Cambios en esta Política",
@@ -96,23 +96,23 @@
       "sections": {
         "1": {
           "title": "Aceptación de Términos",
-          "content": "Al acceder o usar SubastaYa, aceptas estar sujeto a estos Términos de Servicio. Si no estás de acuerdo con estos términos, por favor no uses nuestro servicio. Estos términos aplican a todos los usuarios de la plataforma, ya sea usando la versión alojada o una instancia auto-alojada."
+          "content": "Al acceder o usar Biddu, aceptas estar sujeto a estos Términos de Servicio. Si no estás de acuerdo con estos términos, por favor no uses nuestro servicio. Estos términos aplican a todos los usuarios de la plataforma, ya sea usando la versión alojada o una instancia auto-alojada."
         },
         "2": {
-          "title": "¿Qué es SubastaYa?",
-          "content": "SubastaYa es una plataforma de subastas gratuita y de código abierto diseñada para remates, recaudación de fondos, organizaciones comunitarias, clubes deportivos, bomberos, empresas y uso personal. La plataforma te permite crear y gestionar subastas, invitar participantes y facilitar pujas en tiempo real, operando en pesos chilenos y otras monedas.",
+          "title": "¿Qué es Biddu?",
+          "content": "Biddu es una plataforma de subastas gratuita y de código abierto diseñada para remates, recaudación de fondos, organizaciones comunitarias, clubes deportivos, bomberos, empresas y uso personal. La plataforma te permite crear y gestionar subastas, invitar participantes y facilitar pujas en tiempo real, operando en pesos chilenos y otras monedas.",
           "disclaimerTitle": "Aviso Importante",
-          "disclaimer": "SubastaYa facilita las pujas pero <strong class=\"text-base-content\">no procesa pagos</strong>. Todas las transacciones se liquidan offline entre los participantes. No somos un mercado ni un procesador de pagos."
+          "disclaimer": "Biddu facilita las pujas pero <strong class=\"text-base-content\">no procesa pagos</strong>. Todas las transacciones se liquidan offline entre los participantes. No somos un mercado ni un procesador de pagos."
         },
         "3": {
           "title": "Cuentas de usuario",
-          "content1": "Para usar SubastaYa, debes crear una cuenta con información precisa, incluyendo tu nombre, dirección de correo electrónico y una contraseña segura. Opcionalmente puedes registrar tu RUT. Eres responsable de mantener la seguridad de las credenciales de tu cuenta y no debes compartir tu cuenta con otros.",
-          "content2": "Debes tener al menos 18 años o contar con el consentimiento de tus padres para usar SubastaYa. Mantén actualizada la información de tu cuenta para asegurarte de recibir notificaciones importantes sobre tus subastas."
+          "content1": "Para usar Biddu, debes crear una cuenta con información precisa, incluyendo tu nombre, dirección de correo electrónico y una contraseña segura. Opcionalmente puedes registrar tu RUT. Eres responsable de mantener la seguridad de las credenciales de tu cuenta y no debes compartir tu cuenta con otros.",
+          "content2": "Debes tener al menos 18 años o contar con el consentimiento de tus padres para usar Biddu. Mantén actualizada la información de tu cuenta para asegurarte de recibir notificaciones importantes sobre tus subastas."
         },
         "3b": {
           "title": "Autenticación de terceros",
-          "content1": "SubastaYa ofrece inicio de sesión a través de Google y Microsoft OAuth como una conveniencia. Cuando usas estas opciones de inicio de sesión, autorizas al proveedor respectivo a compartir tu información básica de perfil (nombre, correo electrónico, foto de perfil) con nosotros. Usamos esta información únicamente para crear y administrar tu cuenta de SubastaYa.",
-          "content2": "Tu uso del inicio de sesión de terceros también está sujeto a los Términos de Servicio y la Política de Privacidad de cada proveedor. Puedes desconectar tu cuenta de Google o Microsoft de SubastaYa en cualquier momento, aunque es posible que necesites establecer una contraseña para continuar accediendo a tu cuenta."
+          "content1": "Biddu ofrece inicio de sesión a través de Google y Microsoft OAuth como una conveniencia. Cuando usas estas opciones de inicio de sesión, autorizas al proveedor respectivo a compartir tu información básica de perfil (nombre, correo electrónico, foto de perfil) con nosotros. Usamos esta información únicamente para crear y administrar tu cuenta de Biddu.",
+          "content2": "Tu uso del inicio de sesión de terceros también está sujeto a los Términos de Servicio y la Política de Privacidad de cada proveedor. Puedes desconectar tu cuenta de Google o Microsoft de Biddu en cualquier momento, aunque es posible que necesites establecer una contraseña para continuar accediendo a tu cuenta."
         },
         "4": {
           "title": "Roles y Permisos",
@@ -133,41 +133,41 @@
         },
         "6": {
           "title": "Uso Aceptable",
-          "content1": "Aceptas usar SubastaYa de manera responsable y legal. No debes usar el servicio para propósitos ilegales, publicar artículos fraudulentos o engañosos, o participar en manipulación de pujas.",
+          "content1": "Aceptas usar Biddu de manera responsable y legal. No debes usar el servicio para propósitos ilegales, publicar artículos fraudulentos o engañosos, o participar en manipulación de pujas.",
           "content2": "El acoso, abuso o amenazas hacia otros usuarios están estrictamente prohibidos. No debes intentar obtener acceso no autorizado al sistema, usar bots o scripts automatizados, o subir contenido malicioso que pueda comprometer la plataforma u otros usuarios."
         },
         "7": {
           "title": "Sin Procesamiento de Pagos",
-          "content1": "SubastaYa no procesa pagos, no recopila información de pago ni facilita transacciones financieras de ningún tipo. Los ganadores y vendedores de artículos son los únicos responsables de acordar métodos de pago, completar el intercambio de artículos y resolver cualquier disputa que surja.",
-          "content2": "SubastaYa no es responsable de ninguna disputa, pérdida o daño que surja de transacciones offline entre usuarios. Recomendamos discutir los arreglos de pago y recogida antes de que termine la subasta."
+          "content1": "Biddu no procesa pagos, no recopila información de pago ni facilita transacciones financieras de ningún tipo. Los ganadores y vendedores de artículos son los únicos responsables de acordar métodos de pago, completar el intercambio de artículos y resolver cualquier disputa que surja.",
+          "content2": "Biddu no es responsable de ninguna disputa, pérdida o daño que surja de transacciones offline entre usuarios. Recomendamos discutir los arreglos de pago y recogida antes de que termine la subasta."
         },
         "8": {
           "title": "Propiedad del Contenido",
-          "content1": "Conservas la propiedad de todo el contenido que subes a SubastaYa, incluyendo imágenes de artículos y descripciones. Al subir contenido, otorgas a SubastaYa una licencia no exclusiva y libre de regalías para mostrar ese contenido a los participantes de la subasta con el propósito de operar el servicio.",
+          "content1": "Conservas la propiedad de todo el contenido que subes a Biddu, incluyendo imágenes de artículos y descripciones. Al subir contenido, otorgas a Biddu una licencia no exclusiva y libre de regalías para mostrar ese contenido a los participantes de la subasta con el propósito de operar el servicio.",
           "content2": "Representas que tienes el derecho de subir cualquier contenido que envíes y que no infringe ningún derecho de terceros, incluyendo derechos de autor, marcas registradas o derechos de privacidad."
         },
         "9": {
           "title": "Licencia de Código Abierto",
-          "content": "SubastaYa es software de código abierto lanzado bajo la Licencia MIT. Puedes usar, modificar y distribuir el software de acuerdo con los términos de esa licencia. El código fuente completo puede solicitarse al administrador de tu instancia, y los términos de la licencia MIT aplican según lo publicado por el proyecto."
+          "content": "Biddu es software de código abierto lanzado bajo la Licencia MIT. Puedes usar, modificar y distribuir el software de acuerdo con los términos de esa licencia. El código fuente completo puede solicitarse al administrador de tu instancia, y los términos de la licencia MIT aplican según lo publicado por el proyecto."
         },
         "10": {
           "title": "Auto-Alojamiento",
-          "content": "Puedes alojar SubastaYa tú mismo en tu propia infraestructura. Al auto-alojar, eres el único responsable de la seguridad y mantenimiento del servidor, respaldo y protección de datos, cumplimiento de leyes aplicables en tu jurisdicción, y proporcionar soporte al usuario y resolución de disputas para tus usuarios."
+          "content": "Puedes alojar Biddu tú mismo en tu propia infraestructura. Al auto-alojar, eres el único responsable de la seguridad y mantenimiento del servidor, respaldo y protección de datos, cumplimiento de leyes aplicables en tu jurisdicción, y proporcionar soporte al usuario y resolución de disputas para tus usuarios."
         },
         "11": {
           "title": "Alojamiento",
-          "content1": "La versión alojada de SubastaYa se ejecuta en infraestructura propia en Chile, garantizando mayor latencia reducida y cumplimiento local de datos. Si prefieres mantener tus datos bajo tu propio control, puedes auto-alojar el proyecto en tu propia infraestructura.",
+          "content1": "La versión alojada de Biddu se ejecuta en infraestructura propia en Chile, garantizando mayor latencia reducida y cumplimiento local de datos. Si prefieres mantener tus datos bajo tu propio control, puedes auto-alojar el proyecto en tu propia infraestructura.",
           "commitmentTitle": "Nuestro Compromiso:",
-          "commitment": "SubastaYa se esfuerza por permanecer gratis y accesible para todos. Estamos comprometidos a usar servicios gratuitos y de código abierto siempre que sea posible para mantener la plataforma funcionando sin costo para los usuarios.",
-          "content2": "Aunque hacemos todo lo posible para mantener el servicio funcionando, por favor entiende que pueden existir limitaciones de uso, tiempo de inactividad ocasional o cambios en el servicio. Para casos de uso de misión crítica o requisitos de mayor fiabilidad, recomendamos alojar SubastaYa tú mismo."
+          "commitment": "Biddu se esfuerza por permanecer gratis y accesible para todos. Estamos comprometidos a usar servicios gratuitos y de código abierto siempre que sea posible para mantener la plataforma funcionando sin costo para los usuarios.",
+          "content2": "Aunque hacemos todo lo posible para mantener el servicio funcionando, por favor entiende que pueden existir limitaciones de uso, tiempo de inactividad ocasional o cambios en el servicio. Para casos de uso de misión crítica o requisitos de mayor fiabilidad, recomendamos alojar Biddu tú mismo."
         },
         "12": {
           "title": "Renuncia de Garantías",
-          "content": "SubastaYa se proporciona \"tal cual\" y \"según disponibilidad\" sin garantías de ningún tipo, ya sean expresas o implícitas. No garantizamos que el servicio sea ininterrumpido, seguro, libre de errores o que cumpla con tus requisitos específicos. El uso del servicio es bajo tu propio riesgo."
+          "content": "Biddu se proporciona \"tal cual\" y \"según disponibilidad\" sin garantías de ningún tipo, ya sean expresas o implícitas. No garantizamos que el servicio sea ininterrumpido, seguro, libre de errores o que cumpla con tus requisitos específicos. El uso del servicio es bajo tu propio riesgo."
         },
         "13": {
           "title": "Limitación de Responsabilidad",
-          "content": "En la máxima medida permitida por la ley, SubastaYa y sus creadores, contribuyentes y mantenedores no serán responsables por ningún daño indirecto, incidental, especial, consecuente o punitivo que surja de tu uso del servicio. Esto incluye, pero no se limita a, pérdida de beneficios, datos o buena voluntad, transacciones fallidas o disputadas, acceso no autorizado a tu cuenta, e interrupciones o errores del servicio."
+          "content": "En la máxima medida permitida por la ley, Biddu y sus creadores, contribuyentes y mantenedores no serán responsables por ningún daño indirecto, incidental, especial, consecuente o punitivo que surja de tu uso del servicio. Esto incluye, pero no se limita a, pérdida de beneficios, datos o buena voluntad, transacciones fallidas o disputadas, acceso no autorizado a tu cuenta, e interrupciones o errores del servicio."
         },
         "14": {
           "title": "Terminación de Cuenta",

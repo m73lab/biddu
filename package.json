@@ -1,8 +1,8 @@
 {
-  "name": "subastaya",
+  "name": "biddu",
   "version": "1.21.0",
   "description": "A comprehensive auction platform for hosting private and public auctions with real-time bidding, multi-currency support, and role-based member management.",
-  "author": "subastaya",
+  "author": "biddu",
   "repository": {
     "type": "git",
     "url": "https://github.com/m73lab/subastaya.git"

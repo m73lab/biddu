@@ -26,7 +26,7 @@ let cacheTimestamp = 0;
 const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
 
 async function getLatestRelease(): Promise<GitHubRelease | null> {
-  // SubastaYa fork: upstream version checks disabled (Auktiva releases don't apply here)
+  // Biddu fork: upstream version checks disabled (Auktiva releases don't apply here)
   void cachedRelease;
   void cacheTimestamp;
   void CACHE_DURATION;

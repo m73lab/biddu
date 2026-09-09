@@ -63,7 +63,7 @@
     "useCases": {
       "sectionTitle": "Hecha para",
       "sectionTitleHighlight": "la vida real",
-      "sectionDescription": "Donde hay una comunidad juntando lucas, SubastaYa calza perfecto.",
+      "sectionDescription": "Donde hay una comunidad juntando lucas, Biddu calza perfecto.",
       "charity": {
         "title": "Bomberos y causas",
         "description": "Remates a beneficio de tu compañía o causa: publica los lotes donados, recibe pujas de vecinos y adjudica al mejor postor."
@@ -122,8 +122,8 @@
       "subtitle": "Las de siempre, respondidas sin vueltas.",
       "items": [
         {
-          "q": "¿SubastaYa es realmente gratis?",
-          "a": "Sí. SubastaYa es 100% gratis y de código abierto bajo licencia MIT. Sin comisiones ni límites: autoalójala en tu propio servidor."
+          "q": "¿Biddu es realmente gratis?",
+          "a": "Sí. Biddu es 100% gratis y de código abierto bajo licencia MIT. Sin comisiones ni límites: autoalójala en tu propio servidor."
         },
         {
           "q": "¿Cómo se cobra si alguien gana una puja?",
@@ -138,7 +138,7 @@
           "a": "Por defecto en pesos chilenos ($ CLP), sin decimales y con hora de Chile. También puedes crear subastas en otras monedas."
         },
         {
-          "q": "¿Puedo tener SubastaYa en mi propio servidor?",
+          "q": "¿Puedo tener Biddu en mi propio servidor?",
           "a": "Sí, es autoalojable con Docker y licencia MIT. Clona el repositorio y levántalo con docker compose up."
         },
         {
@@ -153,7 +153,7 @@
       "getStarted": "Crear cuenta gratis",
       "freeForever": "Gratis por siempre · Sin tarjeta",
       "selfHostTitle": "¿Prefieres alojarlo tú?",
-      "selfHostDescription": "SubastaYa es código abierto y autoalojable con Docker. Control total de tus datos en tu propia infraestructura."
+      "selfHostDescription": "Biddu es código abierto y autoalojable con Docker. Control total de tus datos en tu propia infraestructura."
     }
   }
 }

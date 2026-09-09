@@ -1409,7 +1409,7 @@ export const getServerSideProps = withAuth(async (context) => {
         "Current version from package.json",
       );
 
-      // SubastaYa fork: no upstream version check (Auktiva releases don't apply here)
+      // Biddu fork: no upstream version check (Auktiva releases don't apply here)
       versionInfo = {
         currentVersion,
         latestVersion: null,

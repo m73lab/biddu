@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "SubastaYa",
+    "appName": "Biddu",
     "loading": "Cargando...",
     "save": "Guardar",
     "cancel": "Cancelar",
@@ -204,7 +204,7 @@
   },
   "changelog": {
     "title": "Registro de cambios y versiones",
-    "description": "Descubre las novedades de SubastaYa y sigue nuestro progreso",
+    "description": "Descubre las novedades de Biddu y sigue nuestro progreso",
     "currentVersion": "Versión actual",
     "latest": "Última",
     "installed": "Instalada",

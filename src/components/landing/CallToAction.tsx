@@ -7,7 +7,7 @@ export function CallToAction() {
   return (
     <section
       id="contacto"
-      className="relative py-20 md:py-28 bg-cream-50 overflow-hidden scroll-mt-24"
+      className="relative py-20 md:py-28 bg-base-100 overflow-hidden scroll-mt-24 border-t border-base-content/5"
     >
       <div className="container mx-auto px-4">
         {/* Main CTA */}
@@ -23,7 +23,7 @@ export function CallToAction() {
 
           <div className="relative z-10 max-w-3xl mx-auto">
             <div className="flex justify-center mb-6">
-              <span className="w-12 h-12 rounded-full bg-gold-500 text-ink-950 flex items-center justify-center shadow-lg shadow-gold-500/30">
+              <span className="w-12 h-12 rounded-full bg-gold-500 text-base-content flex items-center justify-center shadow-lg shadow-gold-500/30">
                 <span className="icon-[tabler--gavel] size-6"></span>
               </span>
             </div>
@@ -37,7 +37,7 @@ export function CallToAction() {
             <div className="flex flex-col items-center gap-2">
               <Link
                 href="/register"
-                className="btn border-0 h-14 px-8 rounded-full bg-gold-500 text-ink-950 hover:bg-gold-400 shadow-xl shadow-gold-500/25 hover:-translate-y-0.5 transition-all duration-300"
+                className="btn border-0 h-14 px-8 rounded-full bg-gold-500 text-base-content hover:bg-gold-400 shadow-xl shadow-gold-500/25 hover:-translate-y-0.5 transition-all duration-300"
               >
                 {t("getStarted")}{" "}
                 <span className="icon-[tabler--rocket] size-5"></span>
@@ -50,10 +50,10 @@ export function CallToAction() {
         {/* Self-Host */}
         <div className="max-w-3xl mx-auto text-center">
           <span className="icon-[tabler--server] size-10 text-gold-600 block mb-4 mx-auto"></span>
-          <h3 className="text-2xl md:text-3xl font-bold text-ink-950 mb-4">
+          <h3 className="text-2xl md:text-3xl font-bold text-base-content mb-4">
             {t("selfHostTitle")}
           </h3>
-          <p className="text-ink-950/60 mb-8">{t("selfHostDescription")}</p>
+          <p className="text-base-content/60 mb-8">{t("selfHostDescription")}</p>
 
           {/* Terminal mockup */}
           <div className="mockup-code bg-ink-950 text-cream-50 text-left border border-ink-800 shadow-xl">

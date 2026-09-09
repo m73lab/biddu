@@ -23,7 +23,7 @@ const content = `
 
 export const inviteTemplate = renderLayout({
   title: "¡Te Invitaron!",
-  previewText: "Has sido invitado a una subasta en SubastaYa",
+  previewText: "Has sido invitado a una subasta en Biddu",
   content,
 });
 

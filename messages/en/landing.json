@@ -63,7 +63,7 @@
     "useCases": {
       "sectionTitle": "Built for",
       "sectionTitleHighlight": "real life",
-      "sectionDescription": "Wherever a community raises funds, SubastaYa fits right in.",
+      "sectionDescription": "Wherever a community raises funds, Biddu fits right in.",
       "charity": {
         "title": "Firefighters & causes",
         "description": "Benefit auctions for your company or cause: publish donated lots, collect bids and award to the highest bidder."
@@ -122,8 +122,8 @@
       "subtitle": "The usual ones, answered straight.",
       "items": [
         {
-          "q": "Is SubastaYa really free?",
-          "a": "Yes. SubastaYa is 100% free and open source under the MIT license. No fees, no limits: self-host it on your own server."
+          "q": "Is Biddu really free?",
+          "a": "Yes. Biddu is 100% free and open source under the MIT license. No fees, no limits: self-host it on your own server."
         },
         {
           "q": "How do winners pay?",
@@ -138,7 +138,7 @@
           "a": "Chilean pesos ($ CLP) by default, no decimals, on Chile time. You can also create auctions in other currencies."
         },
         {
-          "q": "Can I run SubastaYa on my own server?",
+          "q": "Can I run Biddu on my own server?",
           "a": "Yes, it is Docker self-hostable under the MIT license. Clone the repo and run docker compose up."
         },
         {
@@ -153,7 +153,7 @@
       "getStarted": "Create free account",
       "freeForever": "Free forever · No card",
       "selfHostTitle": "Rather host it yourself?",
-      "selfHostDescription": "SubastaYa is open source and Docker self-hostable. Full control of your data on your own infrastructure."
+      "selfHostDescription": "Biddu is open source and Docker self-hostable. Full control of your data on your own infrastructure."
     }
   }
 }

@@ -42,7 +42,7 @@ const getSettingsData: ApiHandler = async (_req, res, ctx) => {
       const packageJson = await import("../../../../package.json");
       const currentVersion = packageJson.version;
 
-      // SubastaYa fork: no upstream version check (Auktiva releases don't apply here)
+      // Biddu fork: no upstream version check (Auktiva releases don't apply here)
       versionInfo = {
         currentVersion,
         latestVersion: null,

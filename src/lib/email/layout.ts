@@ -45,7 +45,7 @@ interface LayoutProps {
 export function renderLayout({
   content,
   previewText,
-  title = "SubastaYa",
+  title = "Biddu",
   year = "{{YEAR}}",
 }: LayoutProps) {
   return `
@@ -82,7 +82,7 @@ export function renderLayout({
           <mj-column>
             <mj-text align="center">
               <a href="{{APP_URL}}" style="text-decoration: none; font-size: 24px; font-weight: 800; color: ${theme.colors.primary}; letter-spacing: -0.5px;">
-                SubastaYa
+                Biddu
               </a>
             </mj-text>
           </mj-column>
@@ -99,7 +99,7 @@ export function renderLayout({
         <mj-section padding="32px 0 48px">
           <mj-column>
             <mj-text align="center" color="${theme.colors.text.light}" font-size="12px">
-              © ${year} SubastaYa.cl<br/>
+              © ${year} Biddu<br/>
               Tu Plataforma de Subastas Privadas
             </mj-text>
             <mj-text align="center" color="${theme.colors.text.light}" font-size="12px" padding-top="8px">

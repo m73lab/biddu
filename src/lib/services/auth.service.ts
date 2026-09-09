@@ -109,7 +109,7 @@ export async function registerUser(input: RegisterInput) {
     await sendEmail({
       to: existingUser.email,
       toName: existingUser.name || undefined,
-      subject: "La cuenta ya existe - SubastaYa",
+      subject: "La cuenta ya existe - Biddu",
       mjmlTemplate: templateData.template,
       replacements: templateData.replacements,
       type: "ACCOUNT_EXISTS",
@@ -212,7 +212,7 @@ export async function requestPasswordReset(email: string): Promise<{
   await sendEmail({
     to: user.email,
     toName: user.name || undefined,
-    subject: "Restablece tu contraseña - SubastaYa",
+    subject: "Restablece tu contraseña - Biddu",
     mjmlTemplate: templateData.template,
     replacements: templateData.replacements,
     type: "PASSWORD_RESET",
@@ -342,7 +342,7 @@ export async function sendEmailVerification(
   await sendEmail({
     to: email,
     toName: name || undefined,
-    subject: "Verifica tu correo - SubastaYa",
+    subject: "Verifica tu correo - Biddu",
     mjmlTemplate: templateData.template,
     replacements: templateData.replacements,
     type: "EMAIL_VERIFICATION",

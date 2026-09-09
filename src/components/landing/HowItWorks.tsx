@@ -16,7 +16,7 @@ export function HowItWorks() {
   return (
     <section
       id="como-funciona"
-      className="py-20 md:py-28 bg-white scroll-mt-24"
+      className="py-20 md:py-28 bg-base-200 scroll-mt-24"
     >
       <div className="container mx-auto px-4">
         <div className="max-w-2xl">
@@ -24,9 +24,9 @@ export function HowItWorks() {
             <span className="w-8 h-px bg-gold-500"></span>
             {t("sectionDescription")}
           </p>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-ink-950">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-base-content">
             {t("sectionTitle")}{" "}
-            <span className="text-ink-800">{t("sectionTitleHighlight")}</span>
+            <span className="text-base-content">{t("sectionTitleHighlight")}</span>
           </h2>
         </div>
 
@@ -34,7 +34,7 @@ export function HowItWorks() {
           {/* Timeline */}
           <div className="relative pl-0">
             <div
-              className="absolute left-[22px] top-3 bottom-3 w-px bg-ink-950/10"
+              className="absolute left-[22px] top-3 bottom-3 w-px bg-base-content/10"
               aria-hidden="true"
             ></div>
             <div className="space-y-8">
@@ -44,10 +44,10 @@ export function HowItWorks() {
                     {step.num}
                   </div>
                   <div className="pt-1">
-                    <h3 className="text-lg font-bold text-ink-950 mb-1">
+                    <h3 className="text-lg font-bold text-base-content mb-1">
                       {t(`${step.key}.title`)}
                     </h3>
-                    <p className="text-sm leading-relaxed text-ink-950/60">
+                    <p className="text-sm leading-relaxed text-base-content/60">
                       {t(`${step.key}.description`)}
                     </p>
                   </div>
@@ -81,7 +81,7 @@ export function HowItWorks() {
                       <div className="w-10 h-10 rounded-full bg-gold-500/25"></div>
                       <div className="w-32 h-2.5 bg-cream-50/15 rounded"></div>
                     </div>
-                    <div className="w-20 h-8 bg-gold-500 rounded-lg text-ink-950 flex items-center justify-center text-xs font-bold">
+                    <div className="w-20 h-8 bg-gold-500 rounded-lg text-base-content flex items-center justify-center text-xs font-bold">
                       {t("newBid")}
                     </div>
                   </div>

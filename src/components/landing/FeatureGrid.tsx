@@ -35,7 +35,7 @@ export function FeatureGrid() {
   return (
     <section
       id="caracteristicas"
-      className="py-20 md:py-28 bg-cream-50 relative overflow-hidden scroll-mt-24"
+      className="py-20 md:py-28 bg-base-100 relative overflow-hidden scroll-mt-24 border-t border-base-content/5"
     >
       <div className="container mx-auto px-4">
         <div className="max-w-2xl">
@@ -43,7 +43,7 @@ export function FeatureGrid() {
             <span className="w-8 h-px bg-gold-500"></span>
             {t("sectionDescription")}
           </p>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-ink-950">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-base-content">
             {t("sectionTitle")}{" "}
             <span className="text-gold-600">{t("sectionTitleHighlight")}</span>
           </h2>
@@ -53,7 +53,7 @@ export function FeatureGrid() {
           {featureKeys.map((feature, idx) => (
             <div
               key={idx}
-              className="group relative rounded-2xl border border-ink-950/10 bg-white p-6 sm:p-7 hover:border-gold-500/50 hover:shadow-xl hover:shadow-gold-500/10 hover:-translate-y-1 transition-all duration-300"
+              className="group relative rounded-2xl border border-base-content/10 bg-base-200 p-6 sm:p-7 hover:border-gold-500/50 hover:shadow-xl hover:shadow-gold-500/10 hover:-translate-y-1 transition-all duration-300"
             >
               <div className="absolute top-5 right-6 font-mono text-3xl font-extrabold text-gold-500/20 group-hover:text-gold-500/50 transition-colors duration-300">
                 0{idx + 1}
@@ -65,10 +65,10 @@ export function FeatureGrid() {
                 ></span>
               </div>
 
-              <h3 className="text-lg font-bold text-ink-950 mb-2">
+              <h3 className="text-lg font-bold text-base-content mb-2">
                 {t(`${feature.key}.title`)}
               </h3>
-              <p className="text-sm leading-relaxed text-ink-950/60">
+              <p className="text-sm leading-relaxed text-base-content/60">
                 {t(`${feature.key}.description`)}
               </p>
 

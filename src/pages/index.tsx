@@ -65,9 +65,9 @@ export default function LandingPage() {
   const homepageStructuredData = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: "SubastaYa - Plataforma de Subastas Gratuita",
+    name: "Biddu - Plataforma de Subastas Gratuita",
     alternateName: [
-      "Plataforma de Subastas SubastaYa",
+      "Plataforma de Subastas Biddu",
       "Software de Remates Gratis",
       "Software de Subastas Gratis de Código Abierto",
     ],
@@ -133,10 +133,10 @@ export default function LandingPage() {
     mainEntity: [
       {
         "@type": "Question",
-        name: "¿SubastaYa es realmente gratis?",
+        name: "¿Biddu es realmente gratis?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Sí, SubastaYa es 100% gratis y de código abierto bajo licencia MIT. Sin comisiones ni límites: autoalójala en tu propio servidor.",
+          text: "Sí, Biddu es 100% gratis y de código abierto bajo licencia MIT. Sin comisiones ni límites: autoalójala en tu propio servidor.",
         },
       },
       {
@@ -165,7 +165,7 @@ export default function LandingPage() {
       },
       {
         "@type": "Question",
-        name: "¿Puedo tener SubastaYa en mi propio servidor?",
+        name: "¿Puedo tener Biddu en mi propio servidor?",
         acceptedAnswer: {
           "@type": "Answer",
           text: "Sí, es autoalojable con Docker y licencia MIT.",
@@ -190,7 +190,7 @@ export default function LandingPage() {
         }}
       />
 
-      <div className="min-h-screen bg-cream-50 text-ink-950 selection:bg-gold-500/30">
+      <div className="min-h-screen bg-base-100 text-base-content selection:bg-gold-500/30">
         <Navbar links={SECTION_LINKS} />
 
         <main>

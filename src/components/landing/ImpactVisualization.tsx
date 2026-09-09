@@ -105,7 +105,7 @@ export function ImpactVisualization() {
 
   return (
     <section
-      className="py-24 bg-cream-100 relative overflow-hidden scroll-mt-24"
+      className="py-24 bg-base-200 relative overflow-hidden scroll-mt-24"
       ref={containerRef}
     >
       <div className="absolute inset-0 opacity-10">

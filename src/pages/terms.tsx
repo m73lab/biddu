@@ -59,7 +59,7 @@ export default function TermsPage() {
               </p>
             </section>
 
-            {/* What is SubastaYa */}
+            {/* What is Biddu */}
             <section>
               <h2 className="flex items-center gap-3 text-2xl font-bold mb-6">
                 <span className="w-8 h-8 rounded-lg bg-base-200 flex items-center justify-center text-base-content/70 text-lg">

@@ -209,11 +209,11 @@ export const getStaticProps: GetStaticProps<ChangelogPageProps> = async ({
 }) => {
   const messages = await getMessages(locale as Locale);
 
-  // SubastaYa fork: local changelog (no upstream releases apply here)
+  // Biddu fork: local changelog (no upstream releases apply here)
   const releases: GitHubRelease[] = [
     {
       tag_name: `v${packageJson.version}`,
-      name: "SubastaYa: fork chileno",
+      name: "Biddu: fork chileno",
       body: "Adaptación al contexto chileno: español, pesos chilenos, RUT opcional, hora de Chile, notificaciones en español, registro de pago y entrega offline, y landing rediseñada.",
       published_at: new Date().toISOString(),
       html_url: "",

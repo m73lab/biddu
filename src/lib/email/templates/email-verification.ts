@@ -8,7 +8,7 @@ const content = `
       Hola {{NAME}},
     </mj-text>
     <mj-text>
-      ¡Gracias por crear una cuenta en SubastaYa! Por favor verifica tu correo electrónico haciendo clic en el botón de abajo.
+      ¡Gracias por crear una cuenta en Biddu! Por favor verifica tu correo electrónico haciendo clic en el botón de abajo.
     </mj-text>
     <mj-button href="{{VERIFICATION_URL}}">
       Verificar Correo
@@ -18,7 +18,7 @@ const content = `
     </mj-text>
     <mj-divider border-color="${theme.colors.border}" padding="20px 0" />
     <mj-text font-size="12px" color="${theme.colors.text.muted}">
-      Si no creaste una cuenta en SubastaYa, puedes ignorar este correo de forma segura.
+      Si no creaste una cuenta en Biddu, puedes ignorar este correo de forma segura.
     </mj-text>
     <mj-text font-size="12px" color="${theme.colors.text.muted}">
       Si tienes problemas para hacer clic en el botón, copia y pega esta URL en tu navegador:
@@ -30,7 +30,7 @@ const content = `
 
 export const emailVerificationTemplate = renderLayout({
   title: "Verifica tu Correo Electrónico",
-  previewText: "Verifica tu correo electrónico de SubastaYa",
+  previewText: "Verifica tu correo electrónico de Biddu",
   content,
 });
 

@@ -1,10 +1,10 @@
 import Head from "next/head";
 
-export const SITE_URL = "https://subastaya.cl";
-export const SITE_NAME = "SubastaYa";
-export const SITE_AUTHOR = "SubastaYa";
-export const SITE_AUTHOR_URL = "https://subastaya.cl";
-export const SITE_TWITTER = "@subastaya";
+export const SITE_URL = "https://biddu.cl";
+export const SITE_NAME = "Biddu";
+export const SITE_AUTHOR = "Biddu";
+export const SITE_AUTHOR_URL = "https://biddu.cl";
+export const SITE_TWITTER = "@biddu";
 
 export const SITE_KEYWORDS = [
   "plataforma subastas chile",
@@ -34,7 +34,7 @@ export const SITE_KEYWORDS = [
 ].join(", ");
 
 export const SITE_DESCRIPTION =
-  "SubastaYa es una plataforma de subastas 100% gratuita y de código abierto para Chile. Ideal para eventos benéficos, clubes, bomberos, pymes y uso personal. Crea subastas ilimitadas con pujas en tiempo real, gestión de miembros y soporte multi-moneda. Sin comisiones, sin límites.";
+  "Biddu es una plataforma de subastas 100% gratuita y de código abierto para Chile. Ideal para eventos benéficos, clubes, bomberos, pymes y uso personal. Crea subastas ilimitadas con pujas en tiempo real, gestión de miembros y soporte multi-moneda. Sin comisiones, sin límites.";
 
 export const SITE_DESCRIPTION_SHORT =
   "Plataforma de subastas gratuita y de código abierto para Chile. Subastas privadas con pujas en tiempo real — completamente gratis, sin comisiones.";
@@ -66,7 +66,7 @@ export function SEO({
   noindex = false,
   ogType = "website",
   ogImage = `${SITE_URL}/pictures/og-image.png`,
-  ogImageAlt = "SubastaYa - Plataforma de Subastas",
+  ogImageAlt = "Biddu - Plataforma de Subastas",
   article,
   structuredData,
 }: SEOProps) {
@@ -267,7 +267,7 @@ export const pageSEO = {
   login: {
     title: "Iniciar Sesión",
     description:
-      "Inicia sesión en SubastaYa para gestionar tus subastas, pujar y seguir tus eventos. Plataforma gratuita de subastas para Chile.",
+      "Inicia sesión en Biddu para gestionar tus subastas, pujar y seguir tus eventos. Plataforma gratuita de subastas para Chile.",
     keywords:
       "login subastas, iniciar sesion subasta, subasta chile acceso",
     noindex: true,
@@ -275,7 +275,7 @@ export const pageSEO = {
   register: {
     title: "Crear Cuenta Gratis",
     description:
-      "Crea una cuenta gratis en SubastaYa para comenzar a subastar. Sin tarjeta de crédito — completamente gratis y de código abierto.",
+      "Crea una cuenta gratis en Biddu para comenzar a subastar. Sin tarjeta de crédito — completamente gratis y de código abierto.",
     keywords:
       "crear cuenta subasta, registro subasta gratis, subasta chile registro",
     noindex: true,
@@ -295,7 +295,7 @@ export const pageSEO = {
   privacy: {
     title: "Política de Privacidad",
     description:
-      "Política de Privacidad de SubastaYa — Cómo protegemos tus datos. Plataforma de código abierto comprometida con la seguridad.",
+      "Política de Privacidad de Biddu — Cómo protegemos tus datos. Plataforma de código abierto comprometida con la seguridad.",
     keywords:
       "privacidad subasta, proteccion datos, subasta plataforma privacidad",
     noindex: true,
@@ -303,7 +303,7 @@ export const pageSEO = {
   terms: {
     title: "Términos de Servicio",
     description:
-      "Términos de Servicio de SubastaYa — Conoce los términos y condiciones para usar nuestra plataforma de subastas gratuita.",
+      "Términos de Servicio de Biddu — Conoce los términos y condiciones para usar nuestra plataforma de subastas gratuita.",
     keywords:
       "terminos subasta, condiciones uso, plataforma subastas terminos",
     noindex: true,

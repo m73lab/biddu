@@ -1,12 +1,14 @@
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui" {
+  themes: false;
+}
 
 /* Iconify */
 @plugin "@iconify/tailwind4" {
   prefixes: tabler;
 }
 
-/* SubastaYa brand palette — identidad del landing */
+/* ====== Biddu brand palette ====== */
 @theme {
   --color-ink-950: #0b1220;
   --color-ink-900: #0f1830;
@@ -19,6 +21,78 @@
   --color-live: #e11d48;
   --color-cream-50: #faf6ee;
   --color-cream-100: #f3ecde;
+}
+
+/* ====== Biddu light theme ====== */
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+  --color-base-100: #faf6ee;
+  --color-base-200: #f3ecde;
+  --color-base-300: #e7dcc2;
+  --color-base-content: #0b1220;
+  --color-primary: #e89b2d;
+  --color-primary-content: #0b1220;
+  --color-secondary: #e11d48;
+  --color-secondary-content: #fef2f5;
+  --color-accent: #2c3a59;
+  --color-accent-content: #faf6ee;
+  --color-neutral: #0f1830;
+  --color-neutral-content: #faf6ee;
+  --color-info: #0284c7;
+  --color-info-content: #f0f9ff;
+  --color-success: #16a34a;
+  --color-success-content: #f0fdf4;
+  --color-warning: #d97706;
+  --color-warning-content: #fffbeb;
+  --color-error: #dc2626;
+  --color-error-content: #fef2f2;
+  --radius-selector: 0.75rem;
+  --radius-field: 0.75rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+/* ====== Biddu dark theme ====== */
+@plugin "daisyui/theme" {
+  name: "dark";
+  default: false;
+  prefersdark: true;
+  color-scheme: dark;
+  --color-base-100: #0b1220;
+  --color-base-200: #0f1830;
+  --color-base-300: #1c2844;
+  --color-base-content: #faf6ee;
+  --color-primary: #f5b940;
+  --color-primary-content: #0b1220;
+  --color-secondary: #ff5577;
+  --color-secondary-content: #1a0510;
+  --color-accent: #6f7f9e;
+  --color-accent-content: #0b1220;
+  --color-neutral: #1c2844;
+  --color-neutral-content: #faf6ee;
+  --color-info: #38bdf8;
+  --color-info-content: #082f49;
+  --color-success: #4ade80;
+  --color-success-content: #052e16;
+  --color-warning: #fbbf24;
+  --color-warning-content: #451a03;
+  --color-error: #fb7185;
+  --color-error-content: #4c0519;
+  --radius-selector: 0.75rem;
+  --radius-field: 0.75rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
 }
 
 /* Base styles */
