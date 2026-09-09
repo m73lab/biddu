@@ -41,7 +41,7 @@ export function getRealtimeConfig(): RealtimeConfig {
   if (driver === "soketi") {
     return {
       driver: "soketi",
-      appId: process.env.SOKETI_APP_ID || "subastaya",
+      appId: process.env.SOKETI_APP_ID || "biddu",
       // Use NEXT_PUBLIC_ vars for shared config (key, port, tls)
       key: process.env.NEXT_PUBLIC_SOKETI_APP_KEY || "",
       secret: process.env.SOKETI_APP_SECRET || "",

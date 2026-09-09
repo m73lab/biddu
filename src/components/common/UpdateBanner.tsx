@@ -15,7 +15,7 @@ interface VersionData {
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-const DISMISSED_VERSIONS_KEY = "subastaya_dismissed_versions";
+const DISMISSED_VERSIONS_KEY = "biddu_dismissed_versions";
 
 function getDismissedVersions(): string[] {
   if (typeof window === "undefined") return [];

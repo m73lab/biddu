@@ -1,24 +1,26 @@
 # =============================================================================
-# SubastaYa Docker Compose
-# Production deployment with optional Soketi for realtime features
+# Biddu Docker Compose
+$__NOP__$
 # =============================================================================
+
+name: biddu
 
 services:
   # ---------------------------------------------------------------------------
   # SubastaYa Application
   # ---------------------------------------------------------------------------
-  subastaya:
+  biddu:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: subastaya
+    container_name: biddu
     restart: unless-stopped
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=production
       # Database (SQLite - stored in volume)
-      - DATABASE_URL=file:./data/subastaya.db
+      - DATABASE_URL=file:./data/biddu.db
       # Authentication (REQUIRED - generate with: openssl rand -base64 32)
       - AUTH_SECRET=${AUTH_SECRET}
       - AUTH_URL=${AUTH_URL:-http://localhost:3000}
@@ -39,8 +41,8 @@ services:
       - SMTP_SECURE=${SMTP_SECURE:-false}
       - SMTP_USER=${SMTP_USER:-}
       - SMTP_PASSWORD=${SMTP_PASSWORD:-}
-      - MAIL_FROM=${MAIL_FROM:-noreply@subastaya.cl}
-      - MAIL_FROM_NAME=${MAIL_FROM_NAME:-SubastaYa}
+      - MAIL_FROM=${MAIL_FROM:-noreply@biddu.cl}
+      - MAIL_FROM_NAME=${MAIL_FROM_NAME:-Biddu}
       - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
       - TZ=America/Santiago
       - CRON_SECRET=${CRON_SECRET:-}
@@ -58,16 +60,16 @@ services:
       - NEXT_PUBLIC_SOKETI_HOST=${NEXT_PUBLIC_SOKETI_HOST:-soketi}
       - NEXT_PUBLIC_SOKETI_PORT=${NEXT_PUBLIC_SOKETI_PORT:-6001}
       - NEXT_PUBLIC_SOKETI_USE_TLS=${NEXT_PUBLIC_SOKETI_USE_TLS:-false}
-      - SOKETI_APP_ID=${SOKETI_APP_ID:-subastaya}
+      - SOKETI_APP_ID=${SOKETI_APP_ID:-biddu}
       - SOKETI_APP_SECRET=${SOKETI_APP_SECRET:-}
       - SOKETI_HOST=soketi
       # Features
       - ALLOW_OPEN_AUCTIONS=${ALLOW_OPEN_AUCTIONS:-false}
     volumes:
       # Persist database and uploads
-      - subastaya-data:/app/data
-      - subastaya-uploads:/app/public/uploads
-      - subastaya-logs:/app/logs
+      - biddu-data:/app/data
+      - biddu-uploads:/app/public/uploads
+      - biddu-logs:/app/logs
     depends_on:
       - soketi
     healthcheck:
@@ -82,20 +84,20 @@ services:
   # ---------------------------------------------------------------------------
   caddy:
     image: caddy:2-alpine
-    container_name: subastaya-caddy
+    container_name: biddu-caddy
     restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
     environment:
       - CADDY_DOMAIN=${CADDY_DOMAIN:-192.168.1.16}
-      - APP_HOST=subastaya
+      - APP_HOST=biddu
     volumes:
       - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy-data:/data
-      - caddy-config:/config
+      - biddu-caddy-data:/data
+      - biddu-caddy-config:/config
     depends_on:
-      - subastaya
+      - biddu
     healthcheck:
       disable: true
 
@@ -110,7 +112,7 @@ services:
       - "6001:6001"
     environment:
       - SOKETI_DEBUG=${SOKETI_DEBUG:-false}
-      - SOKETI_DEFAULT_APP_ID=${SOKETI_APP_ID:-subastaya}
+      - SOKETI_DEFAULT_APP_ID=${SOKETI_APP_ID:-biddu}
       - SOKETI_DEFAULT_APP_KEY=${NEXT_PUBLIC_SOKETI_APP_KEY:-}
       - SOKETI_DEFAULT_APP_SECRET=${SOKETI_APP_SECRET:-}
       - SOKETI_DEFAULT_APP_HOST=0.0.0.0
@@ -120,13 +122,13 @@ services:
 # Volumes for data persistence
 # -----------------------------------------------------------------------------
 volumes:
-  caddy-data:
+  biddu-caddy-data:
     driver: local
-  caddy-config:
+  biddu-caddy-config:
     driver: local
-  subastaya-data:
+  biddu-data:
     driver: local
-  subastaya-uploads:
+  biddu-uploads:
     driver: local
-  subastaya-logs:
+  biddu-logs:
     driver: local
