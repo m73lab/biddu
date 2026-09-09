@@ -97,10 +97,36 @@ export function Footer() {
             © {new Date().getFullYear()} {t("common.appName")}.{" "}
             {t("footer.allRightsReserved")}
           </p>
-          <p className="flex items-center gap-2">
-            <span className="icon-[tabler--heart] size-4 text-live"></span>
-            Hecho en Chile
-          </p>
+          <div className="flex items-center gap-4">
+            <p className="flex items-center gap-2">
+              <span className="icon-[tabler--heart] size-4 text-live"></span>
+              Hecho en Chile
+            </p>
+            <p className="flex items-center gap-1.5 text-cream-50/60">
+              <span>by</span>
+              <svg
+                width="70"
+                height="14"
+                viewBox="0 0 200 40"
+                role="img"
+                aria-label="m73lab"
+              >
+                <text
+                  x="0"
+                  y="30"
+                  font-family="system-ui, -apple-system, sans-serif"
+                  font-weight="700"
+                  font-size="28"
+                  letter-spacing="-1"
+                >
+                  <tspan fill="#00ff88" opacity="0.25" dx="1" dy="1">
+                    m73lab
+                  </tspan>
+                  <tspan fill="#e8e8e8">m73lab</tspan>
+                </text>
+              </svg>
+            </p>
+          </div>
         </div>
       </div>
     </footer>
