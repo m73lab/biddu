@@ -59,6 +59,18 @@ export function Footer() {
                   {t("footer.changelog")}
                 </Link>
               </li>
+              <li>
+                <a
+                  href="https://github.com/m73lab/biddu"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-gold-300 transition-colors inline-flex items-center gap-1.5"
+                >
+                  <span className="icon-[tabler--brand-github] size-4"></span>
+                  {t("footer.github")}
+                </a>
+              </li>
+
             </ul>
           </div>
 
