@@ -253,16 +253,39 @@ function QuotaPanel({ auctions }: { auctions: any[] }) {
   const { data: slots } = useSWR<SlotBalance>("/api/user/slots", fetcher);
   const perAuctionExtras = slots?.perAuctionExtras || {};
   const owned = auctions.filter((a: any) => a.role === "OWNER");
+  const max = 1 + (slots?.extras?.maxAuctions || 0);
+  const current = owned.length;
   const [expanded, setExpanded] = useState(false);
   if (owned.length === 0) return null;
   const visible = expanded ? owned : owned.slice(0, 2);
   return (
     <div className="card bg-base-100 border border-base-content/5 shadow-sm mb-8">
       <div className="card-body p-5">
-        <h2 className="font-bold flex items-center gap-2">
-          <span className="icon-[tabler--gauge] size-5 text-primary"></span>
-          {t("quotaTitle") || "Uso y límites"}
-        </h2>
+        <div className="flex items-center justify-between gap-2">
+          <h2 className="font-bold flex items-center gap-2">
+            <span className="icon-[tabler--gauge] size-5 text-primary"></span>
+            {t("quotaTitle") || "Uso y límites"}
+          </h2>
+          {slots && (
+            <div className="flex items-center gap-2 shrink-0 min-w-0">
+              <div className="text-right leading-tight">
+                <div className="text-[11px] text-base-content/60 font-medium uppercase tracking-wide">
+                  {t("auctionCounterLabel") || "Subastas"}
+                </div>
+                <div
+                  className={`font-mono font-bold text-sm ${current >= max ? "text-warning" : ""}`}
+                >
+                  {current} / {max}
+                </div>
+              </div>
+              <progress
+                className={`progress w-24 h-1.5 ${current >= max ? "progress-warning" : "progress-primary"}`}
+                value={current}
+                max={max}
+              ></progress>
+            </div>
+          )}
+        </div>
         <div className="space-y-4 mt-4">
           {visible.map((a: any) => {
             const extras = perAuctionExtras[a.id] || { maxItems: 0, maxMembers: 0, maxImages: 0 };
