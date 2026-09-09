@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import useSWR from "swr";
 import { getMessages, Locale } from "@/i18n";
@@ -31,6 +31,7 @@ interface Auction {
   createdAt: string;
   role: string;
   thumbnailUrl: string | null;
+  imageCount: number;
   _count: {
     items: number;
     members: number;
@@ -95,6 +96,12 @@ interface DashboardProps {
     name: string | null;
     email: string;
   };
+}
+
+interface SlotBalance {
+  extras: Record<string, number>;
+  perAuctionExtras: Record<string, Record<string, number>>;
+  items: any[];
 }
 
 function BidItemCard({ item, userId }: { item: BidItem; userId: string }) {
@@ -241,6 +248,80 @@ function UserItemCard({ item }: { item: UserItem }) {
   );
 }
 
+function QuotaPanel({ auctions }: { auctions: any[] }) {
+  const t = useTranslations("dashboard.slots");
+  const { data: slots } = useSWR<SlotBalance>("/api/user/slots", fetcher);
+  const perAuctionExtras = slots?.perAuctionExtras || {};
+  const owned = auctions.filter((a: any) => a.role === "OWNER");
+  const [expanded, setExpanded] = useState(false);
+  if (owned.length === 0) return null;
+  const visible = expanded ? owned : owned.slice(0, 2);
+  return (
+    <div className="card bg-base-100 border border-base-content/5 shadow-sm mb-8">
+      <div className="card-body p-5">
+        <h2 className="font-bold flex items-center gap-2">
+          <span className="icon-[tabler--gauge] size-5 text-primary"></span>
+          {t("quotaTitle") || "Uso y límites"}
+        </h2>
+        <div className="space-y-4 mt-4">
+          {visible.map((a: any) => {
+            const extras = perAuctionExtras[a.id] || { maxItems: 0, maxMembers: 0, maxImages: 0 };
+            const limits = { items: 3 + (extras.maxItems || 0), members: 10 + (extras.maxMembers || 0), images: 3 + (extras.maxImages || 0) };
+            const used = {
+              items: a._count?.items || 0,
+              members: a._count?.members || 0,
+              photos: a.imageCount || 0,
+            };
+            const photoCapacity = used.items * limits.images;
+            return (
+              <div key={a.id} className="rounded-xl bg-base-200/50 p-4">
+                <div className="font-semibold truncate">{a.name}</div>
+                <div className="grid grid-cols-3 gap-4 mt-3 text-sm">
+                  <div>
+                    <div className="text-base-content/60 text-xs">Lotes</div>
+                    <div className="font-mono font-bold">{used.items}/{limits.items}</div>
+                    <progress className="progress progress-primary w-full h-1" value={used.items} max={limits.items}></progress>
+                  </div>
+                  <div>
+                    <div className="text-base-content/60 text-xs">Personas</div>
+                    <div className="font-mono font-bold">{used.members}/{limits.members}</div>
+                    <progress className="progress progress-secondary w-full h-1" value={used.members} max={limits.members}></progress>
+                  </div>
+                  <div>
+                    <div className="text-base-content/60 text-xs">Fotos</div>
+                    <div className="font-mono font-bold">
+                      {used.photos}
+                      {photoCapacity > 0 && (
+                        <span className="text-xs font-normal opacity-60">/{photoCapacity}</span>
+                      )}
+                    </div>
+                    {photoCapacity > 0 ? (
+                      <progress className="progress progress-accent w-full h-1" value={used.photos} max={photoCapacity}></progress>
+                    ) : (
+                      <div className="text-xs text-base-content/50">{t("fotosHint") || "Límite por artículo"}</div>
+                    )}
+                  </div>
+                </div>
+                <Link href="/slots" className="btn btn-ghost btn-xs mt-3 gap-1">
+                  {t("manageSlots") || "Gestionar slots"} <span className="icon-[tabler--arrow-right] size-3"></span>
+                </Link>
+              </div>
+            );
+          })}
+        </div>
+        {owned.length > 2 && (
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="btn btn-ghost btn-sm w-full mt-2"
+          >
+            {expanded ? t("showLess") || "Ver menos" : t("showMore", { count: owned.length - 2 }) || `Ver ${owned.length - 2} más`}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardPage({ user }: DashboardProps) {
   const t = useTranslations("dashboard");
   const tStats = useTranslations("dashboard.stats");
@@ -291,6 +372,17 @@ export default function DashboardPage({ user }: DashboardProps) {
     () => sortItems(bidItems, bidSort),
     [bidItems, bidSort],
   );
+  // Slots/cuotas son feature solo-cloud: si la ruta no existe (self-hosted),
+  // no hay límites que aplicar.
+  const { data: quotaSlots } = useSWR<SlotBalance>(
+    "/api/user/slots",
+    fetcher,
+    { shouldRetryOnError: false },
+  );
+  const isCloudPanel = !!quotaSlots;
+  const auctionLimit = 1 + (quotaSlots?.extras?.maxAuctions || 0);
+  const isAuctionLimitReached =
+    isCloudPanel && myAuctions.length >= auctionLimit;
 
   // Show skeleton while loading
   if (isLoading) {
@@ -310,13 +402,25 @@ export default function DashboardPage({ user }: DashboardProps) {
                 </p>
               </div>
             </div>
-            <Link
-              href="/auctions/create"
-              className="btn btn-primary w-full sm:w-auto"
-            >
-              <span className="icon-[tabler--plus] size-5"></span>
-              {t("createAuction")}
-            </Link>
+            {isAuctionLimitReached ? (
+              <div className="tooltip tooltip-bottom" data-tip={t("limitReached") || "Límite alcanzado"}>
+                <button
+                  disabled
+                  className="btn btn-primary w-full sm:w-auto btn-disabled"
+                >
+                  <span className="icon-[tabler--lock] size-5"></span>
+                  {t("createAuction")}
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/auctions/create"
+                className="btn btn-primary w-full sm:w-auto"
+              >
+                <span className="icon-[tabler--plus] size-5"></span>
+                {t("createAuction")}
+              </Link>
+            )}
           </div>
           <SkeletonDashboard />
         </PageLayout>
@@ -431,6 +535,8 @@ export default function DashboardPage({ user }: DashboardProps) {
           </div>
         )}
 
+        {isCloudPanel && <QuotaPanel auctions={auctions} />}
+
         {/* My Auctions Section */}
         {myAuctions.length > 0 && (
           <div className="mb-12">
@@ -459,10 +565,28 @@ export default function DashboardPage({ user }: DashboardProps) {
                 title={tEmpty("title")}
                 description={tEmpty("description")}
                 action={
-                  <Link href="/auctions/create" className="btn btn-primary">
-                    <span className="icon-[tabler--plus] size-5"></span>
-                    {tEmpty("createFirst")}
-                  </Link>
+                  isAuctionLimitReached ? (
+                    <div
+                      className="tooltip tooltip-bottom"
+                      data-tip={t("limitReached") || "Límite alcanzado"}
+                    >
+                      <button
+                        disabled
+                        className="btn btn-primary btn-disabled"
+                      >
+                        <span className="icon-[tabler--lock] size-5"></span>
+                        {tEmpty("createFirst")}
+                      </button>
+                    </div>
+                  ) : (
+                    <Link
+                      href="/auctions/create"
+                      className="btn btn-primary"
+                    >
+                      <span className="icon-[tabler--plus] size-5"></span>
+                      {tEmpty("createFirst")}
+                    </Link>
+                  )
                 }
               />
             </div>
