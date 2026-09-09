@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useTheme } from "@/components/providers/theme-provider";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
@@ -8,10 +8,21 @@ const SECTION_LINKS = [
   { href: "#caracteristicas", key: "features" },
   { href: "#como-funciona", key: "howItWorks" },
   { href: "#casos", key: "useCases" },
+  { href: "#modelo", key: "model" },
+  { href: "#origen", key: "origin" },
   { href: "#faq", key: "faq" },
 ] as const;
 
-export function Navbar() {
+interface SectionLink {
+  href: string;
+  key: string;
+}
+
+export function Navbar({
+  links = SECTION_LINKS,
+}: {
+  links?: ReadonlyArray<SectionLink>;
+}) {
   const t = useTranslations("landing.nav");
   const tNav = useTranslations("nav");
   const tCommon = useTranslations("common");
@@ -21,7 +32,6 @@ export function Navbar() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // This is an intentional hydration pattern to prevent SSR mismatch
     setMounted(true); // eslint-disable-line
   }, []);
 
@@ -43,46 +53,44 @@ export function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-base-100/80 backdrop-blur-lg border-b border-base-200 py-3"
-          : "bg-transparent py-5"
+      className={`fixed top-0 left-0 right-0 z-50 bg-ink-950/90 backdrop-blur-lg border-b border-cream-50/10 transition-all duration-300 ${
+        scrolled ? "shadow-2xl shadow-ink-950/40 py-2.5" : "py-3.5"
       }`}
     >
-      <div className="container mx-auto px-4 flex items-center justify-between">
+      <div className="container mx-auto px-4 flex items-center justify-between gap-3">
         <Link
           href="/"
-          className="text-2xl font-bold text-primary flex items-center gap-2 group"
+          className="text-xl sm:text-2xl font-bold text-cream-50 flex items-center gap-2 group shrink-0"
         >
           <div className="relative">
-            <span className="icon-[tabler--gavel] size-8 transition-transform group-hover:-rotate-12 duration-300"></span>
-            <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <span className="icon-[tabler--gavel] size-7 sm:size-8 text-gold-400 transition-transform group-hover:-rotate-12 duration-300"></span>
+            <div className="absolute inset-0 bg-gold-500/30 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
-          <span className="bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent font-extrabold tracking-tight">
+          <span className="bg-linear-to-r from-cream-50 via-gold-300 to-gold-400 bg-clip-text text-transparent font-extrabold tracking-tight">
             {tCommon("appName")}
           </span>
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden lg:flex items-center gap-4">
-          <div className="flex items-center gap-5 text-sm font-medium text-base-content/80">
-            {SECTION_LINKS.map((link) => (
+        <div className="hidden lg:flex items-center gap-5">
+          <div className="flex items-center gap-5 text-sm font-medium text-cream-50/75">
+            {links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="hover:text-primary transition-colors"
+                className="hover:text-gold-400 transition-colors"
               >
                 {t(link.key)}
               </Link>
             ))}
           </div>
 
-          <div className="flex items-center gap-3 pl-4 border-l border-base-content/10">
-            <LanguageSwitcher compact />
+          <div className="flex items-center gap-2.5 pl-4 border-l border-cream-50/10">
+            <LanguageSwitcher compact className="[&_label]:text-cream-50" />
             {mounted && (
               <button
                 onClick={toggleTheme}
-                className="btn btn-ghost btn-sm btn-circle"
+                className="btn btn-ghost btn-sm btn-circle text-cream-50 hover:bg-cream-50/10"
                 aria-label="Toggle theme"
               >
                 {resolvedTheme === "dark" ? (
@@ -94,26 +102,26 @@ export function Navbar() {
             )}
             <Link
               href="/login"
-              className="btn btn-ghost btn-sm hover:bg-base-content/5"
+              className="btn btn-ghost btn-sm text-cream-50 hover:bg-cream-50/10"
             >
               {tNav("signIn")}
             </Link>
             <Link
               href="/register"
-              className="btn btn-primary btn-sm shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all hover:-translate-y-0.5"
+              className="btn btn-sm border-0 bg-gold-500 text-ink-950 hover:bg-gold-400 shadow-lg shadow-gold-500/25 transition-all hover:-translate-y-0.5 rounded-full px-5"
             >
               {tNav("getStarted")}
             </Link>
           </div>
         </div>
 
-        {/* Mobile Menu Button */}
+        {/* Mobile Button */}
         <div className="flex lg:hidden items-center gap-2">
-          <LanguageSwitcher compact />
+          <LanguageSwitcher compact className="[&_label]:text-cream-50" />
           {mounted && (
             <button
               onClick={toggleTheme}
-              className="btn btn-ghost btn-sm btn-circle"
+              className="btn btn-ghost btn-sm btn-circle text-cream-50 hover:bg-cream-50/10"
               aria-label="Toggle theme"
             >
               {resolvedTheme === "dark" ? (
@@ -125,7 +133,7 @@ export function Navbar() {
           )}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="btn btn-ghost btn-sm btn-circle"
+            className="btn btn-ghost btn-sm btn-circle text-gold-400 hover:bg-cream-50/10"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? (
@@ -139,30 +147,30 @@ export function Navbar() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden absolute top-full left-0 right-0 bg-base-100/95 backdrop-blur-lg border-b border-base-content/10 shadow-lg">
-          <div className="container mx-auto px-4 py-4 flex flex-col gap-2">
-            {SECTION_LINKS.map((link) => (
+        <div className="lg:hidden absolute top-full left-0 right-0 bg-ink-950/95 backdrop-blur-lg border-b border-cream-50/10 shadow-2xl">
+          <div className="container mx-auto px-4 py-4 flex flex-col gap-1">
+            {links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={closeMobileMenu}
-                className="btn btn-ghost justify-start"
+                className="btn btn-ghost justify-start text-cream-50 hover:bg-cream-50/10 hover:text-gold-300 rounded-xl"
               >
                 {t(link.key)}
               </Link>
             ))}
-            <div className="divider my-1"></div>
+            <div className="divider my-1 border-cream-50/10"></div>
             <Link
               href="/login"
               onClick={closeMobileMenu}
-              className="btn btn-ghost justify-start"
+              className="btn btn-ghost justify-start text-cream-50 hover:bg-cream-50/10 hover:text-gold-300 rounded-xl"
             >
               {tNav("signIn")}
             </Link>
             <Link
               href="/register"
               onClick={closeMobileMenu}
-              className="btn btn-primary"
+              className="btn border-0 bg-gold-500 text-ink-950 hover:bg-gold-400 rounded-xl"
             >
               {tNav("getStarted")}
             </Link>

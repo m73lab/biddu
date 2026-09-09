@@ -16,6 +16,13 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
 import { Footer } from "@/components/landing/Footer";
 
+const SECTION_LINKS = [
+  { href: "#caracteristicas", key: "features" },
+  { href: "#como-funciona", key: "howItWorks" },
+  { href: "#casos", key: "useCases" },
+  { href: "#faq", key: "faq" },
+] as const;
+
 // Dynamically import below-the-fold components to reduce initial bundle
 const FeatureGrid = dynamic(
   () =>
@@ -183,15 +190,15 @@ export default function LandingPage() {
         }}
       />
 
-      <div className="min-h-screen bg-base-100 text-base-content selection:bg-primary/20">
-        <Navbar />
+      <div className="min-h-screen bg-cream-50 text-ink-950 selection:bg-gold-500/30">
+        <Navbar links={SECTION_LINKS} />
 
         <main>
           <Hero />
           <FeatureGrid />
           <HowItWorks />
-          <UseCases />
           <ImpactVisualization />
+          <UseCases />
           <FaqSection />
           <CallToAction />
         </main>

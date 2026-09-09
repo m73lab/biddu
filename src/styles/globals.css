@@ -6,6 +6,21 @@
   prefixes: tabler;
 }
 
+/* SubastaYa brand palette — identidad del landing */
+@theme {
+  --color-ink-950: #0b1220;
+  --color-ink-900: #0f1830;
+  --color-ink-800: #1c2844;
+  --color-ink-700: #2c3a59;
+  --color-gold-300: #ffd98a;
+  --color-gold-400: #f5b940;
+  --color-gold-500: #e89b2d;
+  --color-gold-600: #c77e1b;
+  --color-live: #e11d48;
+  --color-cream-50: #faf6ee;
+  --color-cream-100: #f3ecde;
+}
+
 /* Base styles */
 body {
   min-height: 100vh;
@@ -35,4 +50,23 @@ body {
   100% {
     transform: translateX(400%);
   }
+}
+
+/* Floating chip animation for the landing hero */
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float-y {
+  animation: float-y 5s ease-in-out infinite;
+}
+
+.animate-float-y-delayed {
+  animation: float-y 6s ease-in-out 1.2s infinite;
 }
