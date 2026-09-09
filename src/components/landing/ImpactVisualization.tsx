@@ -5,20 +5,26 @@ import {
   useMotionValue,
   useTransform,
 } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
-interface Particle {
+interface Flyer {
   id: number;
+  side: "left" | "right";
   delay: number;
   duration: number;
-  xStart: number;
 }
 
 interface Sparkle {
   id: number;
   angle: number;
   delay: number;
+}
+
+interface Coin {
+  id: number;
+  x: number;
+  y: number;
 }
 
 function Counter({
@@ -61,23 +67,54 @@ function Counter({
   return <span>{displayValue}</span>;
 }
 
-const generateParticles = (): Particle[] =>
-  Array.from({ length: 10 }).map((_, i) => ({
+const POT_PATH =
+  "M 250 270 C 250 340, 318 356, 400 356 C 482 356, 550 340, 550 270 Z";
+const MOUTH = { cx: 400, cy: 268, rx: 148, ry: 22 };
+
+const generateFlyers = (): Flyer[] =>
+  Array.from({ length: 12 }).map((_, i) => ({
     id: i,
-    delay: -(i * 0.5),
-    duration: 3 + (i % 3),
-    xStart: (i * 10) % 100,
+    side: i % 2 === 0 ? "left" : "right",
+    delay: (i % 6) * 0.55,
+    duration: 1.9 + (i % 3) * 0.35,
   }));
 
 const generateSparkles = (): Sparkle[] =>
-  Array.from({ length: 12 }).map((_, i) => ({
+  Array.from({ length: 14 }).map((_, i) => ({
     id: i,
-    angle: (i * 360) / 12,
-    delay: (i % 6) * 0.1,
+    angle: (i * 360) / 14 + (i % 2) * 9,
+    delay: (i % 7) * 0.09,
   }));
 
-const PARTICLES = generateParticles();
+const generatePile = (): Coin[] => {
+  const coins: Coin[] = [];
+  let id = 0;
+  for (let row = 0; row < 6; row++) {
+    const count = 7 - row;
+    const width = (count - 1) * 19;
+    for (let i = 0; i < count; i++) {
+      const offset =
+        row % 2 === 0 ? -width / 2 + i * 19 : -width / 2 + i * 19 + 9.5;
+      coins.push({
+        id: id++,
+        x: 400 + offset + 4,
+        y: 336 - row * 11 + (row % 2) * 5,
+      });
+    }
+  }
+  return coins;
+};
+
+const orbitSamples = (rx: number, ry: number, count: number) =>
+  Array.from({ length: count }).map((_, i) => {
+    const a = (i / count) * Math.PI * 2;
+    return { x: 400 + Math.cos(a) * rx, y: 268 + Math.sin(a) * ry };
+  });
+
+const FLYERS = generateFlyers();
 const SPARKLES = generateSparkles();
+const PILE = generatePile();
+const ORBIT = orbitSamples(258, 84, 16);
 
 export function ImpactVisualization() {
   const t = useTranslations("landing.impact");
@@ -86,6 +123,11 @@ export function ImpactVisualization() {
   >("idle");
   const containerRef = useRef(null);
   const isInView = useInView(containerRef, { once: true, amount: 0.2 });
+
+  const reduceMotion = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }, []);
 
   const BUILD_DURATION = 8;
 
@@ -98,10 +140,9 @@ export function ImpactVisualization() {
     }
   }, [isInView, animationPhase]);
 
-  const particles = PARTICLES;
-  const sparkles = SPARKLES;
-  const showParticles = animationPhase === "building";
+  const showFly = animationPhase === "building";
   const showPulse = animationPhase === "active";
+  const flyRepeat = reduceMotion ? 0 : Infinity;
 
   return (
     <section
@@ -131,232 +172,478 @@ export function ImpactVisualization() {
             style={{ willChange: "transform" }}
           >
             <defs>
+              <linearGradient id="coinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#ffd98a" />
+                <stop offset="55%" stopColor="#f5b940" />
+                <stop offset="100%" stopColor="#e89b2d" />
+              </linearGradient>
               <linearGradient
-                id="flowGradient"
+                id="potGrad"
                 x1="0%"
-                y1="100%"
-                x2="50%"
-                y2="50%"
+                y1="0%"
+                x2="0%"
+                y2="100%"
               >
+                <stop
+                  offset="0%"
+                  className="text-secondary"
+                  stopColor="currentColor"
+                  stopOpacity="0.28"
+                />
+                <stop
+                  offset="100%"
+                  className="text-primary"
+                  stopColor="currentColor"
+                  stopOpacity="0.1"
+                />
+              </linearGradient>
+              <radialGradient id="potGlow" cx="50%" cy="40%" r="60%">
                 <stop
                   offset="0%"
                   className="text-primary"
                   stopColor="currentColor"
-                  stopOpacity="0"
-                />
-                <stop
-                  offset="50%"
-                  className="text-primary"
-                  stopColor="currentColor"
-                  stopOpacity="0.5"
+                  stopOpacity="0.35"
                 />
                 <stop
                   offset="100%"
-                  className="text-secondary"
+                  className="text-primary"
                   stopColor="currentColor"
-                  stopOpacity="1"
+                  stopOpacity="0"
                 />
-              </linearGradient>
+              </radialGradient>
               <filter id="glow">
-                <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+                <feGaussianBlur stdDeviation="5" result="coloredBlur" />
                 <feMerge>
                   <feMergeNode in="coloredBlur" />
                   <feMergeNode in="SourceGraphic" />
                 </feMerge>
               </filter>
+              <clipPath id="potBody">
+                <path d={POT_PATH} />
+              </clipPath>
             </defs>
 
-            <motion.circle
-              cx="400"
-              cy="200"
-              r="60"
-              fill="none"
-              className="stroke-base-content"
-              strokeOpacity="0.1"
-              strokeWidth="2"
-              initial={{ scale: 0.8, opacity: 0 }}
+            <motion.ellipse
+              cx={MOUTH.cx}
+              cy={MOUTH.cy}
+              rx="300"
+              ry="60"
+              fill="url(#potGlow)"
+              initial={{ opacity: 0 }}
+              animate={
+                animationPhase !== "idle" ? { opacity: 1 } : { opacity: 0 }
+              }
+              transition={{ duration: 1.5 }}
+            />
+
+            {/* comunidad tarjeta izquierda */}
+            <motion.g
+              initial={{ opacity: 0, x: -24 }}
               animate={
                 animationPhase !== "idle"
-                  ? { scale: 1, opacity: 1 }
-                  : { scale: 0.8, opacity: 0 }
+                  ? { opacity: 1, x: 0 }
+                  : { opacity: 0, x: -24 }
               }
-              transition={{ duration: 1 }}
-            />
-
-            <motion.circle
-              cx="400"
-              cy="200"
-              r={40}
-              className="fill-secondary"
-              fillOpacity="0.2"
-              style={{ transformOrigin: "400px 200px" }}
-              animate={
-                showPulse
-                  ? {
-                      scale: [1, 1.125, 1],
-                      opacity: [0.2, 0.4, 0.2],
-                    }
-                  : { scale: 1, opacity: 0.2 }
-              }
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            />
-
-            <motion.circle
-              cx="400"
-              cy="200"
-              r="30"
-              fill="url(#flowGradient)"
-              filter="url(#glow)"
-              animate={
-                showPulse
-                  ? {
-                      scale: [1, 1.1, 1],
-                    }
-                  : { scale: 1 }
-              }
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            />
-
-            {particles.slice(0, 8).map((p) => (
-              <motion.circle
-                key={`p-${p.id}`}
-                r="3"
-                className="fill-primary"
-                style={{ willChange: "transform, opacity" }}
-                initial={{
-                  cx: p.xStart > 50 ? 850 : -50,
-                  cy: 450,
-                  opacity: 0,
-                }}
-                animate={
-                  showParticles
-                    ? {
-                        cx: 400,
-                        cy: 200,
-                        opacity: [0, 1, 0],
-                        scale: [1, 1.5, 0.5],
-                      }
-                    : { opacity: 0 }
-                }
-                transition={{
-                  duration: showParticles ? p.duration : 0.5,
-                  repeat: showParticles ? Infinity : 0,
-                  delay: showParticles ? p.delay : 0,
-                  ease: "easeIn",
-                }}
-              />
-            ))}
-
-            {particles.slice(0, 8).map((p) => (
-              <motion.path
-                key={`t-${p.id}`}
-                d={`M ${p.xStart > 50 ? 800 : 0} 400 Q ${
-                  p.xStart > 50 ? 600 : 200
-                } 300 400 200`}
-                className="stroke-primary"
+              transition={{ duration: 0.8 }}
+            >
+              <rect
+                x="46"
+                y="106"
+                width="104"
+                height="52"
+                rx="14"
+                className="fill-base-100 stroke-base-content"
+                strokeOpacity="0.1"
                 strokeWidth="1"
-                fill="none"
-                style={{ willChange: "stroke-dashoffset, opacity" }}
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={
-                  showParticles
-                    ? {
-                        pathLength: [0, 1],
-                        opacity: [0, 0.3, 0],
-                      }
-                    : { opacity: 0 }
-                }
-                transition={{
-                  duration: showParticles ? p.duration : 0.5,
-                  repeat: showParticles ? Infinity : 0,
-                  delay: showParticles ? p.delay : 0,
-                  ease: "easeIn",
-                }}
               />
-            ))}
+              <circle
+                cx="70"
+                cy="124"
+                r="9"
+                className="fill-primary/20 stroke-base-content"
+                strokeOpacity="0.2"
+                strokeWidth="1"
+              />
+              <circle
+                cx="84"
+                cy="124"
+                r="9"
+                className="fill-secondary/20 stroke-base-content"
+                strokeOpacity="0.2"
+                strokeWidth="1"
+              />
+              <circle
+                cx="98"
+                cy="124"
+                r="9"
+                className="fill-accent/25 stroke-base-content"
+                strokeOpacity="0.2"
+                strokeWidth="1"
+              />
+              <rect
+                x="58"
+                y="140"
+                width="40"
+                height="9"
+                rx="5"
+                className="fill-base-content"
+                fillOpacity="0.18"
+              />
+              <rect
+                x="106"
+                y="140"
+                width="28"
+                height="9"
+                rx="5"
+                className="fill-base-content"
+                fillOpacity="0.12"
+              />
+            </motion.g>
 
-            {sparkles.slice(0, 6).map((s) => {
-              const rad = (s.angle * Math.PI) / 180;
-              const xEnd = 400 + Math.cos(rad) * 120;
-              const yEnd = 200 + Math.sin(rad) * 120;
+            {/* comunidad tarjeta derecha */}
+            <motion.g
+              initial={{ opacity: 0, x: 24 }}
+              animate={
+                animationPhase !== "idle"
+                  ? { opacity: 1, x: 0 }
+                  : { opacity: 0, x: 24 }
+              }
+              transition={{ duration: 0.8 }}
+            >
+              <rect
+                x="650"
+                y="106"
+                width="104"
+                height="52"
+                rx="14"
+                className="fill-base-100 stroke-base-content"
+                strokeOpacity="0.1"
+                strokeWidth="1"
+              />
+              <circle
+                cx="702"
+                cy="124"
+                r="9"
+                className="fill-secondary/20 stroke-base-content"
+                strokeOpacity="0.2"
+                strokeWidth="1"
+              />
+              <circle
+                cx="716"
+                cy="124"
+                r="9"
+                className="fill-primary/20 stroke-base-content"
+                strokeOpacity="0.2"
+                strokeWidth="1"
+              />
+              <circle
+                cx="730"
+                cy="124"
+                r="9"
+                className="fill-accent/25 stroke-base-content"
+                strokeOpacity="0.2"
+                strokeWidth="1"
+              />
+              <rect
+                x="692"
+                y="140"
+                width="36"
+                height="9"
+                rx="5"
+                className="fill-base-content"
+                fillOpacity="0.18"
+              />
+              <rect
+                x="736"
+                y="140"
+                width="28"
+                height="9"
+                rx="5"
+                className="fill-base-content"
+                fillOpacity="0.12"
+              />
+            </motion.g>
 
+            {/* órbita: anillo punteado */}
+            <ellipse
+              cx={MOUTH.cx}
+              cy={MOUTH.cy}
+              rx="258"
+              ry="84"
+              className="stroke-base-content"
+              strokeOpacity="0.12"
+              strokeWidth="1.5"
+              strokeDasharray="3 7"
+              fill="none"
+            />
+
+            {/* puntos orbitales */}
+            {[0, 1, 2].map((i) => {
+              const start = (i * 5) % ORBIT.length;
+              const cx = ORBIT.map((p) => p.x);
+              const cy = ORBIT.map((p) => p.y);
               return (
-                <motion.g key={`s-${s.id}`}>
+                <motion.circle
+                  key={`orbit-${i}`}
+                  r="3"
+                  className="fill-secondary"
+                  style={{ willChange: "transform, opacity" }}
+                  initial={{ cx: cx[start], cy: cy[start], opacity: 0 }}
+                  animate={
+                    animationPhase !== "idle"
+                      ? {
+                          cx: [...cx.slice(start), ...cx.slice(0, start)],
+                          cy: [...cy.slice(start), ...cy.slice(0, start)],
+                          opacity: reduceMotion
+                            ? 0.6
+                            : [0, 0.9, 0.9, 0, 0.9, 0.9, 0, 0.9],
+                        }
+                      : { opacity: 0 }
+                  }
+                  transition={{
+                    cx: {
+                      duration: 16,
+                      repeat: Infinity,
+                      ease: "linear",
+                    },
+                    cy: {
+                      duration: 16,
+                      repeat: Infinity,
+                      ease: "linear",
+                    },
+                    opacity: {
+                      duration: 16,
+                      repeat: Infinity,
+                      ease: "linear",
+                      times: [0, 0.1, 0.4, 0.5, 0.6, 0.9, 0.92, 1],
+                    },
+                  }}
+                />
+              );
+            })}
+
+            {/* monedas volando hacia la olla */}
+            {FLYERS.map((f) => {
+              const fromX = f.side === "left" ? 150 : 650;
+              const fromY = 128;
+              const toX = 400 + (f.id % 2 === 0 ? -28 : 28);
+              const toY = 262;
+              return (
+                <motion.g key={`fly-${f.id}`}>
                   <motion.circle
-                    cx="400"
-                    cy="200"
-                    r="2"
-                    className="fill-accent"
+                    r="7"
+                    fill="url(#coinGrad)"
+                    className="stroke-base-content"
+                    strokeOpacity="0.35"
+                    strokeWidth="0.8"
                     style={{ willChange: "transform, opacity" }}
-                    initial={{ opacity: 0 }}
+                    initial={{ cx: fromX, cy: fromY, opacity: 0 }}
                     animate={
-                      showParticles
+                      showFly
                         ? {
-                            cx: [400, xEnd],
-                            cy: [200, yEnd],
-                            opacity: [0, 1, 0],
-                            scale: [0, 1.5, 0],
+                            cx: [fromX, (fromX + toX) / 2 + 70, toX],
+                            cy: [fromY, fromY + 78, toY + 26],
+                            opacity: [0, 1, 1, 0],
+                            scale: [0.7, 1, 1, 0.9],
                           }
                         : { opacity: 0 }
                     }
                     transition={{
-                      duration: showParticles ? 2 : 0.5,
-                      repeat: showParticles ? Infinity : 0,
-                      delay: showParticles ? s.delay : 0,
-                      ease: "easeOut",
-                      repeatDelay: 1,
+                      duration: f.duration,
+                      repeat: flyRepeat,
+                      delay: f.delay,
+                      ease: ["easeOut", "easeIn"],
+                      times: [0, 0.45, 0.78, 1],
+                    }}
+                  />
+                  <motion.circle
+                    r="2.4"
+                    fill="#ffd98a"
+                    style={{ willChange: "opacity" }}
+                    initial={{ cx: fromX - 2, cy: fromY - 2, opacity: 0 }}
+                    animate={{
+                      cx: [fromX - 2, (fromX + toX) / 2 + 66, toX - 2],
+                      cy: [fromY - 2, fromY + 74, toY + 24],
+                      opacity: [0, 0.9, 0.9, 0],
+                    }}
+                    transition={{
+                      duration: f.duration,
+                      repeat: flyRepeat,
+                      delay: f.delay,
+                      ease: ["easeOut", "easeIn"],
+                      times: [0, 0.45, 0.78, 1],
                     }}
                   />
                 </motion.g>
               );
             })}
 
-            <text
-              x="400"
-              y="320"
-              textAnchor="middle"
-              className="text-sm font-bold uppercase tracking-widest opacity-50 fill-base-content"
-              style={{ fontSize: "12px" }}
+            {/* olla */}
+            <motion.g
+              initial={{ scale: 1 }}
+              animate={
+                showPulse ? { scale: [1, 1.025, 1] } : { scale: 1 }
+              }
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              style={{ transformOrigin: "400px 300px" }}
             >
-              {t("exampleAuctionName")}
-            </text>
+              <path
+                d={POT_PATH}
+                className="fill-base-content"
+                fillOpacity="0.07"
+              />
+              <path d={POT_PATH} fill="url(#potGrad)" fillOpacity="0.5" />
 
-            <path
-              d="M 320 200 A 80 80 0 1 1 480 200"
-              className="stroke-base-content"
-              strokeOpacity="0.1"
-              strokeWidth="8"
-              strokeLinecap="round"
-              fill="none"
-            />
+              {/* pila de monedas que sube */}
+              <g clipPath="url(#potBody)">
+                <motion.g
+                  initial={{ y: 190 }}
+                  animate={animationPhase !== "idle" ? { y: 0 } : { y: 190 }}
+                  transition={{
+                    duration: BUILD_DURATION,
+                    ease: "easeOut",
+                  }}
+                  style={{ willChange: "transform" }}
+                >
+                  {PILE.map((c) => (
+                    <g key={c.id} transform={`translate(${c.x} ${c.y})`}>
+                      <circle r="11" fill="url(#coinGrad)" />
+                      <circle
+                        r="8.5"
+                        fill="none"
+                        stroke="#e89b2d"
+                        strokeWidth="1.4"
+                        strokeOpacity="0.55"
+                      />
+                      <circle
+                        cx="-3.5"
+                        cy="-3.5"
+                        r="2.6"
+                        fill="#ffd98a"
+                        fillOpacity="0.75"
+                      />
+                    </g>
+                  ))}
+                </motion.g>
+              </g>
 
-            <motion.path
-              d="M 320 200 A 80 80 0 1 1 480 200"
-              className="stroke-accent"
-              strokeWidth="8"
-              strokeLinecap="round"
+              {/* borde de la boca */}
+              <ellipse
+                cx={MOUTH.cx}
+                cy={MOUTH.cy}
+                rx={MOUTH.rx}
+                ry={MOUTH.ry}
+                className="fill-base-content"
+                fillOpacity="0.16"
+              />
+              <ellipse
+                cx={MOUTH.cx}
+                cy={MOUTH.cy}
+                rx={MOUTH.rx - 11}
+                ry={MOUTH.ry - 4}
+                className="fill-base-content"
+                fillOpacity="0.1"
+              />
+
+              {/* asas */}
+              <circle
+                cx="256"
+                cy="288"
+                r="13"
+                className="fill-base-content"
+                fillOpacity="0.1"
+              />
+              <circle
+                cx="544"
+                cy="288"
+                r="13"
+                className="fill-base-content"
+                fillOpacity="0.1"
+              />
+            </motion.g>
+
+            {/* chispas al cerrar el remate */}
+            {SPARKLES.slice(0, 10).map((s) => {
+              const rad = (s.angle * Math.PI) / 180;
+              const xEnd = MOUTH.cx + Math.cos(rad) * (150 + (s.id % 3) * 26);
+              const yEnd =
+                MOUTH.cy - 18 + Math.sin(rad) * (110 + (s.id % 3) * 22);
+              return (
+                <motion.path
+                  key={`spark-${s.id}`}
+                  d={`M ${MOUTH.cx} ${MOUTH.cy - 10} L ${xEnd} ${yEnd}`}
+                  stroke="currentColor"
+                  className="text-accent"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  fill="none"
+                  initial={{ opacity: 0 }}
+                  animate={showPulse ? { opacity: [0, 0.9, 0] } : { opacity: 0 }}
+                  transition={{
+                    duration: 2.4,
+                    repeat: Infinity,
+                    delay: s.delay,
+                    repeatDelay: 2.2,
+                    ease: "easeOut",
+                  }}
+                />
+              );
+            })}
+
+            {/* ping del cierre */}
+            <motion.ellipse
+              cx={MOUTH.cx}
+              cy={MOUTH.cy}
+              rx={MOUTH.rx}
+              ry={MOUTH.ry}
+              className="stroke-secondary"
+              strokeOpacity="0.7"
+              strokeWidth="3"
               fill="none"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: animationPhase === "idle" ? 0 : 1 }}
+              initial={{ rx: MOUTH.rx, ry: MOUTH.ry, opacity: 0 }}
+              animate={
+                showPulse
+                  ? {
+                      rx: [MOUTH.rx, MOUTH.rx + 70],
+                      ry: [MOUTH.ry, MOUTH.ry + 58],
+                      opacity: [0.7, 0],
+                    }
+                  : { opacity: 0 }
+              }
               transition={{
-                duration: BUILD_DURATION,
+                duration: 2.6,
+                repeat: Infinity,
+                repeatDelay: 1.4,
                 ease: "easeOut",
               }}
             />
+
+            {/* etiqueta del remate */}
+            <g>
+              <rect
+                x="330"
+                y="378"
+                width="140"
+                height="18"
+                rx="9"
+                className="fill-base-content"
+                fillOpacity="0.9"
+              />
+              <text
+                x="400"
+                y="390"
+                textAnchor="middle"
+                className="fill-base-100"
+                style={{ fontSize: "11px", fontWeight: 700 }}
+                letterSpacing="1.5"
+              >
+                {t("exampleAuctionName")}
+              </text>
+            </g>
           </svg>
 
           <div className="absolute top-8 left-8 bg-base-100/80 backdrop-blur px-4 py-2 rounded-lg border border-base-content/5 shadow-lg">
-            <div className="text-xs text-base-content/60">
-              {t("totalValue")}
-            </div>
+            <div className="text-xs text-base-content/60">{t("totalValue")}</div>
             <div className="text-lg font-bold font-mono text-primary">
               <Counter
                 value={12450000}
