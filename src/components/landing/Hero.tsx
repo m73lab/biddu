@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { ConfettiBidButton } from "./ConfettiBidButton";
 
 export function Hero() {
   const t = useTranslations("landing.hero");
@@ -107,10 +108,7 @@ export function Hero() {
                     $125.000
                   </div>
                 </div>
-                <div className="btn border-0 bg-gold-500 text-ink-950 hover:bg-gold-400 rounded-full px-7 min-h-11 sm:ml-auto">
-                  <span className="icon-[tabler--gavel] size-5"></span>
-                  {t("previewButton")}
-                </div>
+                <ConfettiBidButton label={t("previewButton")} />
               </div>
             </div>
 
