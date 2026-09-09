@@ -59,7 +59,7 @@ export function CallToAction() {
           <div className="mockup-code bg-ink-950 text-cream-50 text-left border border-ink-800 shadow-xl">
             <pre data-prefix="$" className="flex items-center justify-between">
               <code className="flex-1 overflow-x-auto text-sm">
-                git clone https://github.com/m73lab/subastaya.git
+                git clone https://github.com/m73lab/biddu.git
               </code>
             </pre>
             <pre data-prefix="$" className="flex items-center justify-between">
