@@ -445,13 +445,28 @@ export default function DashboardPage({ user }: DashboardProps) {
               </p>
             </div>
           </div>
-          <Link
-            href="/auctions/create"
-            className="btn btn-primary w-full sm:w-auto"
-          >
-            <span className="icon-[tabler--plus] size-5"></span>
-            {t("createAuction")}
-          </Link>
+          {isAuctionLimitReached ? (
+            <div
+              className="tooltip tooltip-bottom"
+              data-tip={t("limitReached") || "Límite alcanzado"}
+            >
+              <button
+                disabled
+                className="btn btn-primary w-full sm:w-auto btn-disabled"
+              >
+                <span className="icon-[tabler--lock] size-5"></span>
+                {t("createAuction")}
+              </button>
+            </div>
+          ) : (
+            <Link
+              href="/auctions/create"
+              className="btn btn-primary w-full sm:w-auto"
+            >
+              <span className="icon-[tabler--plus] size-5"></span>
+              {t("createAuction")}
+            </Link>
+          )}
         </div>
 
         {/* Stats Cards */}
@@ -620,13 +635,28 @@ export default function DashboardPage({ user }: DashboardProps) {
                 <p className="text-sm text-base-content/60 mt-1 max-w-md mx-auto">
                   {t("myAuctions.joinedEmptyDescription")}
                 </p>
-                <Link
-                  href="/auctions/create"
-                  className="btn btn-primary btn-sm mt-4 gap-1.5"
-                >
-                  <span className="icon-[tabler--plus] size-4"></span>
-                  {t("createAuction")}
-                </Link>
+                {isAuctionLimitReached ? (
+                  <div
+                    className="tooltip tooltip-bottom"
+                    data-tip={t("limitReached") || "Límite alcanzado"}
+                  >
+                    <button
+                      disabled
+                      className="btn btn-primary btn-sm mt-4 gap-1.5 btn-disabled"
+                    >
+                      <span className="icon-[tabler--lock] size-5"></span>
+                      {t("createAuction")}
+                    </button>
+                  </div>
+                ) : (
+                  <Link
+                    href="/auctions/create"
+                    className="btn btn-primary btn-sm mt-4 gap-1.5"
+                  >
+                    <span className="icon-[tabler--plus] size-4"></span>
+                    {t("createAuction")}
+                  </Link>
+                )}
               </div>
             )}
           </div>
