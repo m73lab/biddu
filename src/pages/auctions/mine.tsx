@@ -25,6 +25,12 @@ interface DashboardData {
   auctions: Auction[];
 }
 
+interface SlotBalance {
+  extras: Record<string, number>;
+  perAuctionExtras: Record<string, Record<string, number>>;
+  items: any[];
+}
+
 interface MinePageProps {
   user: {
     id: string;
@@ -41,9 +47,46 @@ export default function MyAuctionsPage({ user }: MinePageProps) {
     fetcher,
   );
 
+  // Slots/cuotas son feature solo-cloud: si la ruta no existe (self-hosted),
+  // no hay límites que aplicar.
+  const { data: quotaSlots } = useSWR<SlotBalance>(
+    "/api/user/slots",
+    fetcher,
+    { shouldRetryOnError: false },
+  );
+
   const myAuctions = (data?.auctions ?? []).filter(
     (a) => a.role === "OWNER",
   );
+
+  const isCloudPanel = !!quotaSlots;
+  const auctionLimit = 1 + (quotaSlots?.extras?.maxAuctions || 0);
+  const isAuctionLimitReached =
+    isCloudPanel && myAuctions.length >= auctionLimit;
+
+  const createButton = (label: string, full?: boolean) =>
+    isAuctionLimitReached ? (
+      <div
+        className="tooltip tooltip-bottom"
+        data-tip={t("limitReached") || "Límite alcanzado"}
+      >
+        <button
+          disabled
+          className={`btn btn-primary btn-disabled ${full ? "w-full sm:w-auto" : ""}`}
+        >
+          <span className="icon-[tabler--lock] size-5"></span>
+          {label}
+        </button>
+      </div>
+    ) : (
+      <Link
+        href="/auctions/create"
+        className={`btn btn-primary ${full ? "w-full sm:w-auto" : ""}`}
+      >
+        <span className="icon-[tabler--plus] size-5"></span>
+        {label}
+      </Link>
+    );
 
   return (
     <>
@@ -64,13 +107,7 @@ export default function MyAuctionsPage({ user }: MinePageProps) {
               </p>
             </div>
           </div>
-          <Link
-            href="/auctions/create"
-            className="btn btn-primary w-full sm:w-auto"
-          >
-            <span className="icon-[tabler--plus] size-5"></span>
-            {t("createAuction")}
-          </Link>
+          {createButton(t("createAuction"), true)}
         </div>
 
         {isLoading ? (
@@ -84,12 +121,7 @@ export default function MyAuctionsPage({ user }: MinePageProps) {
                 icon="icon-[tabler--crown]"
                 title={t("myAuctions.title")}
                 description={t("myAuctions.description")}
-                action={
-                  <Link href="/auctions/create" className="btn btn-primary">
-                    <span className="icon-[tabler--plus] size-5"></span>
-                    {tEmpty("createFirst")}
-                  </Link>
-                }
+                action={createButton(tEmpty("createFirst"))}
               />
             </div>
           </div>
