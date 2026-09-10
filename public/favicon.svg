@@ -1,20 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" shape-rendering="geometricPrecision">
   <rect width="64" height="64" rx="14" fill="#0b1220"/>
   <defs>
-    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
-      <stop offset="0" stop-color="#f5b940" stop-opacity="0.3"/>
-      <stop offset="0.55" stop-color="#f5b940" stop-opacity="0.12"/>
-      <stop offset="1" stop-color="#f5b940" stop-opacity="0"/>
-    </radialGradient>
     <linearGradient id="bgold" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#ffd98a"/>
       <stop offset="0.5" stop-color="#f5b940"/>
       <stop offset="1" stop-color="#e89b2d"/>
     </linearGradient>
   </defs>
-  <circle cx="32" cy="32" r="30" fill="url(#glow)"/>
-  <g transform="translate(3 0)">
+  <g transform="translate(2 0)">
     <path d="M18 13 H27 C35 13 39.5 16.5 39.5 23 C39.5 29.5 35 33 27.5 33 C35 33.2 40.5 37 40.5 43.5 C40.5 49 35.5 52 27.5 52 H18 Z"
-          fill="none" stroke="url(#bgold)" stroke-width="7" stroke-linejoin="round"/>
+          fill="none" stroke="url(#bgold)" stroke-width="8.5" stroke-linejoin="round"/>
   </g>
 </svg>

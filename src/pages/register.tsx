@@ -196,7 +196,7 @@ export default function RegisterPage({
           <div className="relative z-10 flex flex-col items-center justify-center p-12 text-center max-w-lg">
             <Link href="/" className="mb-8 group">
               <div className="relative inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-base-100 shadow-2xl shadow-primary/10 border border-base-content/5 mb-6 group-hover:scale-105 transition-transform duration-300">
-                <span className="icon-[tabler--gavel] size-10 text-primary group-hover:-rotate-12 transition-transform duration-300"></span>
+                <img src="/logo.svg" alt="Biddu" className="h-12 w-12 transition-transform group-hover:-rotate-6 duration-300" />
               </div>
               <h1 className="text-4xl font-extrabold tracking-tight bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
                 {tCommon("appName")}
@@ -216,7 +216,7 @@ export default function RegisterPage({
             href="/"
             className="lg:hidden absolute top-8 left-6 flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
-            <span className="icon-[tabler--gavel] size-6 text-primary"></span>
+            <img src="/logo.svg" alt="Biddu" className="h-6 w-6" />
             <span className="text-lg font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
               {tCommon("appName")}
             </span>
