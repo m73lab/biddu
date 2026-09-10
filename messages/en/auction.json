@@ -1,5 +1,9 @@
 {
   "auction": {
+    "photos": {
+      "title": "Auction photos",
+      "subtitle": "Shared across all items in this auction"
+    },
     "create": {
       "title": "Create New Auction",
       "subtitle": "Set up your auction details",

@@ -11,18 +11,24 @@ interface UploadedImage {
 
 interface ImageUploadProps {
   auctionId: string;
-  itemId: string;
   images: UploadedImage[];
   onImagesChange: (images: UploadedImage[]) => void;
   maxImages?: number;
+  canUpload?: boolean;
+  canManage?: boolean;
 }
 
+/**
+ * Auction photo gallery manager.
+ * Photos belong to the auction and are shared by all its items.
+ */
 export function ImageUpload({
   auctionId,
-  itemId,
   images,
   onImagesChange,
   maxImages = 10,
+  canUpload = true,
+  canManage = true,
 }: ImageUploadProps) {
   const t = useTranslations("upload");
   const tErrors = useTranslations("errors");
@@ -31,27 +37,31 @@ export function ImageUpload({
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const remaining = Math.max(0, maxImages - images.length);
+
   const uploadFile = async (file: File) => {
     const formData = new FormData();
     formData.append("image", file);
 
-    const res = await fetch(
-      `/api/auctions/${auctionId}/items/${itemId}/images`,
-      {
-        method: "POST",
-        body: formData,
-      },
-    );
+    const res = await fetch(`/api/auctions/${auctionId}/images`, {
+      method: "POST",
+      body: formData,
+    });
 
     if (!res.ok) {
-      const data = await res.json();
-      throw new Error(data.message || tErrors("generic"));
+      const data = await res.json().catch(() => null);
+      if (data?.code === "QUOTA_EXCEEDED") {
+        showToast(data.message || tErrors("upload.imageFailed"), "error");
+        throw new Error("__QUOTA_SHOWN__");
+      }
+      throw new Error(data?.message || tErrors("generic"));
     }
 
     return res.json();
   };
 
   const handleFiles = async (files: FileList | File[]) => {
+    if (!canUpload) return;
     const fileArray = Array.from(files);
     const remainingSlots = maxImages - images.length;
 
@@ -68,6 +78,7 @@ export function ImageUpload({
       onImagesChange([...images, ...uploadedImages]);
       showToast(t("uploadSuccess"), "success");
     } catch (err) {
+      if (err instanceof Error && err.message === "__QUOTA_SHOWN__") return;
       showToast(
         err instanceof Error ? err.message : tErrors("upload.imageFailed"),
         "error",
@@ -111,7 +122,7 @@ export function ImageUpload({
   const handleDelete = async (imageId: string) => {
     try {
       const res = await fetch(
-        `/api/auctions/${auctionId}/items/${itemId}/images?imageId=${imageId}`,
+        `/api/auctions/${auctionId}/images?imageId=${imageId}`,
         { method: "DELETE" },
       );
 
@@ -139,14 +150,11 @@ export function ImageUpload({
 
     // Persist order to server
     try {
-      const res = await fetch(
-        `/api/auctions/${auctionId}/items/${itemId}/images`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ imageIds: newImages.map((img) => img.id) }),
-        },
-      );
+      const res = await fetch(`/api/auctions/${auctionId}/images`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageIds: newImages.map((img) => img.id) }),
+      });
       if (!res.ok) {
         throw new Error(tErrors("upload.reorderFailed"));
       }
@@ -163,51 +171,54 @@ export function ImageUpload({
   return (
     <div className="space-y-4">
       {/* Upload Area */}
-      <div
-        className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-          isDragging
-            ? "border-primary bg-primary/10"
-            : "border-base-300 hover:border-primary/50"
-        } ${images.length >= maxImages ? "opacity-50 pointer-events-none" : ""}`}
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-      >
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp,image/gif"
-          multiple
-          className="hidden"
-          onChange={handleFileSelect}
-          disabled={images.length >= maxImages}
-        />
+      {canUpload && (
+        <div
+          className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+            isDragging
+              ? "border-primary bg-primary/10"
+              : "border-base-300 hover:border-primary/50"
+          } ${images.length >= maxImages ? "opacity-50 pointer-events-none" : ""}`}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+        >
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            multiple
+            className="hidden"
+            onChange={handleFileSelect}
+            disabled={images.length >= maxImages}
+          />
 
-        {isUploading ? (
-          <div className="flex flex-col items-center gap-2">
-            <span className="loading loading-spinner loading-lg text-primary"></span>
-            <p className="text-sm text-base-content/60">{t("uploading")}</p>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center gap-2">
-            <span className="icon-[tabler--cloud-upload] size-12 text-base-content/40"></span>
-            <p className="text-sm text-base-content/60">
-              {t("dragDrop")}{" "}
-              <button
-                type="button"
-                className="link link-primary"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                {t("browse")}
-              </button>
-            </p>
-            <p className="text-xs text-base-content/40">
-              {t("imageFormats")} • {t("maxSize")} • {images.length}/{maxImages}{" "}
-              {t("images")}
-            </p>
-          </div>
-        )}
-      </div>
+          {isUploading ? (
+            <div className="flex flex-col items-center gap-2">
+              <span className="loading loading-spinner loading-lg text-primary"></span>
+              <p className="text-sm text-base-content/60">{t("uploading")}</p>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-2">
+              <span className="icon-[tabler--cloud-upload] size-12 text-base-content/40"></span>
+              <p className="text-sm text-base-content/60">
+                {t("dragDrop")}{" "}
+                <button
+                  type="button"
+                  className="link link-primary"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {t("browse")}
+                </button>
+              </p>
+              <p className="text-xs text-base-content/40">
+                {t("imageFormats")} • {t("maxSize")} • {images.length}/
+                {maxImages} {t("images")} •{" "}
+                {t("remaining", { count: remaining })}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Image Gallery */}
       {images.length > 0 && (
@@ -224,41 +235,43 @@ export function ImageUpload({
               />
 
               {/* Overlay with actions */}
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                {/* Move left */}
-                {index > 0 && (
+              {canManage && (
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                  {/* Move left */}
+                  {index > 0 && (
+                    <button
+                      type="button"
+                      className="btn btn-circle btn-sm btn-ghost text-white"
+                      onClick={() => moveImage(index, index - 1)}
+                      title={t("moveLeft")}
+                    >
+                      <span className="icon-[tabler--chevron-left] size-5"></span>
+                    </button>
+                  )}
+
+                  {/* Delete */}
                   <button
                     type="button"
-                    className="btn btn-circle btn-sm btn-ghost text-white"
-                    onClick={() => moveImage(index, index - 1)}
-                    title={t("moveLeft")}
+                    className="btn btn-circle btn-sm btn-error"
+                    onClick={() => handleDelete(image.id)}
+                    title={t("delete")}
                   >
-                    <span className="icon-[tabler--chevron-left] size-5"></span>
+                    <span className="icon-[tabler--trash] size-4"></span>
                   </button>
-                )}
 
-                {/* Delete */}
-                <button
-                  type="button"
-                  className="btn btn-circle btn-sm btn-error"
-                  onClick={() => handleDelete(image.id)}
-                  title={t("delete")}
-                >
-                  <span className="icon-[tabler--trash] size-4"></span>
-                </button>
-
-                {/* Move right */}
-                {index < images.length - 1 && (
-                  <button
-                    type="button"
-                    className="btn btn-circle btn-sm btn-ghost text-white"
-                    onClick={() => moveImage(index, index + 1)}
-                    title={t("moveRight")}
-                  >
-                    <span className="icon-[tabler--chevron-right] size-5"></span>
-                  </button>
-                )}
-              </div>
+                  {/* Move right */}
+                  {index < images.length - 1 && (
+                    <button
+                      type="button"
+                      className="btn btn-circle btn-sm btn-ghost text-white"
+                      onClick={() => moveImage(index, index + 1)}
+                      title={t("moveRight")}
+                    >
+                      <span className="icon-[tabler--chevron-right] size-5"></span>
+                    </button>
+                  )}
+                </div>
+              )}
 
               {/* Order badge */}
               {index === 0 && (

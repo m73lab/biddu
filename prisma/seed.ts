@@ -325,7 +325,7 @@ async function main() {
   console.log("🗑️  Clearing existing data...");
   await prisma.notification.deleteMany();
   await prisma.bid.deleteMany();
-  await prisma.auctionItemImage.deleteMany();
+  await prisma.auctionImage.deleteMany();
   await prisma.auctionItem.deleteMany();
   await prisma.auctionInvite.deleteMany();
   await prisma.auctionMember.deleteMany();
@@ -563,17 +563,7 @@ async function main() {
         },
       });
 
-      // Add placeholder images (1-3 per item)
-      const numImages = faker.number.int({ min: 1, max: 3 });
-      for (let imgIdx = 0; imgIdx < numImages; imgIdx++) {
-        await prisma.auctionItemImage.create({
-          data: {
-            auctionItemId: item.id,
-            url: `https://picsum.photos/seed/${item.id}-${imgIdx}/400/300`,
-            order: imgIdx,
-          },
-        });
-      }
+      // Placeholder images are skipped in seed (photos belong to the auction gallery)
 
       // Generate bids (skip some items to have items with no bids)
       const shouldHaveBids = i % 3 !== 0; // 2/3 of items have bids

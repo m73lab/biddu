@@ -73,6 +73,20 @@ export default function CreateItemPage({
   const [step, setStep] = useState(1);
   const [createdItemId, setCreatedItemId] = useState<string | null>(null);
   const [images, setImages] = useState<UploadedImage[]>([]);
+  const [imageLimit, setImageLimit] = useState(10);
+
+  // Photos belong to the auction: load the shared gallery when reaching step 2
+  useEffect(() => {
+    if (step !== 2 || !createdItemId) return;
+    fetch(`/api/auctions/${auction.id}/images`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!data) return;
+        setImages(data.images ?? []);
+        setImageLimit(data.limit ?? 10);
+      })
+      .catch(() => undefined);
+  }, [step, createdItemId, auction.id]);
 
   // Form state
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -199,7 +213,7 @@ export default function CreateItemPage({
     setShowPublishModal(true);
   };
 
-  // Skip images - show modal (will always be "cannot publish" since no images)
+  // Skip images - show modal (will warn since the auction has no photos yet)
   const handleSkipImages = () => {
     setCanPublish(false);
     setShowPublishModal(true);
@@ -684,10 +698,9 @@ export default function CreateItemPage({
 
               <ImageUpload
                 auctionId={auction.id}
-                itemId={createdItemId}
                 images={images}
                 onImagesChange={setImages}
-                maxImages={10}
+                maxImages={imageLimit}
               />
 
               <div className="divider opacity-50 mt-8"></div>

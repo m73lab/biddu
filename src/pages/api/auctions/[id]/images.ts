@@ -9,10 +9,10 @@ import type { ApiHandler, Middleware } from "@/lib/api";
 import { prisma } from "@/lib/prisma";
 import { getStorage, getPublicUrl } from "@/lib/storage";
 import { uploadLogger as logger } from "@/lib/logger";
+import { canUserCreateItems, isUserAdmin } from "@/utils/auction-helpers";
 import formidable from "formidable";
 import fs from "fs";
 import sharp from "sharp";
-import type { AuctionItem } from "@/generated/prisma/client";
 
 // Disable body parser for file uploads
 export const config = {
@@ -23,7 +23,8 @@ export const config = {
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-const MAX_IMAGES_PER_ITEM = 10;
+// Self-hosted: unlimited quota, hard cap per auction only
+const MAX_IMAGES_PER_AUCTION = 50;
 
 async function parseForm(
   req: Parameters<ApiHandler>[0],
@@ -74,14 +75,19 @@ async function processImage(filePath: string): Promise<Buffer> {
     .toBuffer();
 }
 
-type ContextWithItem = { item: AuctionItem & { _count: { images: number } } };
+interface AuctionImagePermissions {
+  canUpload: boolean;
+  canManage: boolean;
+}
+
+type ContextWithAuction = { auctionPerms: AuctionImagePermissions };
 
 /**
- * Middleware to check membership and item permissions
+ * Middleware to check membership and attach image permissions.
+ * Photos belong to the auction and are shared by all its items.
  */
-const withItemPermission: Middleware = (next) => async (req, res, ctx) => {
+const withAuctionPermission: Middleware = (next) => async (req, res, ctx) => {
   const auctionId = ctx.params.id;
-  const itemId = ctx.params.itemId;
 
   const membership = await prisma.auctionMember.findUnique({
     where: {
@@ -96,58 +102,82 @@ const withItemPermission: Middleware = (next) => async (req, res, ctx) => {
     throw new ForbiddenError("Not a member of this auction");
   }
 
-  const item = await prisma.auctionItem.findUnique({
-    where: { id: itemId },
-    include: {
-      _count: {
-        select: { images: true },
-      },
-    },
+  const auction = await prisma.auction.findUnique({
+    where: { id: auctionId },
+    select: { id: true },
   });
 
-  if (!item || item.auctionId !== auctionId) {
-    throw new NotFoundError("Item not found");
-  }
-
-  // Check permission (creator or admin)
-  const isCreator = item.creatorId === ctx.session!.user.id;
-  const isAdmin = ["OWNER", "ADMIN"].includes(membership.role);
-
-  if (!isCreator && !isAdmin) {
-    throw new ForbiddenError(
-      "You don't have permission to manage images for this item",
-    );
+  if (!auction) {
+    throw new NotFoundError("Auction not found");
   }
 
   ctx.membership = membership;
-  (ctx as typeof ctx & ContextWithItem).item = item;
+  (ctx as typeof ctx & ContextWithAuction).auctionPerms = {
+    // Same set of roles that could upload item photos before
+    canUpload: canUserCreateItems(membership.role),
+    canManage: isUserAdmin(membership.role),
+  };
 
   return next(req, res, ctx);
 };
 
-const getImages: ApiHandler = async (_req, res, ctx) => {
-  const itemId = ctx.params.itemId;
+const requireCanUpload: Middleware = (next) => async (req, res, ctx) => {
+  const { auctionPerms } = ctx as typeof ctx & ContextWithAuction;
+  if (!auctionPerms?.canUpload) {
+    throw new ForbiddenError(
+      "You don't have permission to upload images to this auction",
+    );
+  }
+  return next(req, res, ctx);
+};
 
-  const images = await prisma.auctionItemImage.findMany({
-    where: { auctionItemId: itemId },
+const requireCanManage: Middleware = (next) => async (req, res, ctx) => {
+  const { auctionPerms } = ctx as typeof ctx & ContextWithAuction;
+  if (!auctionPerms?.canManage) {
+    throw new ForbiddenError(
+      "You don't have permission to manage images for this auction",
+    );
+  }
+  return next(req, res, ctx);
+};
+
+const getImages: ApiHandler = async (_req, res, ctx) => {
+  const auctionId = ctx.params.id;
+  const { auctionPerms } = ctx as typeof ctx & ContextWithAuction;
+
+  const images = await prisma.auctionImage.findMany({
+    where: { auctionId },
     orderBy: { order: "asc" },
   });
 
-  res.status(200).json(images);
+  res.status(200).json({
+    images: images.map((img) => ({
+      id: img.id,
+      url: img.url,
+      publicUrl: getPublicUrl(img.url),
+      order: img.order,
+    })),
+    limit: MAX_IMAGES_PER_AUCTION,
+    used: images.length,
+    remaining: Math.max(0, MAX_IMAGES_PER_AUCTION - images.length),
+    canUpload: auctionPerms.canUpload,
+    canManage: auctionPerms.canManage,
+  });
 };
 
 const uploadImage: ApiHandler = async (req, res, ctx) => {
   const auctionId = ctx.params.id;
-  const itemId = ctx.params.itemId;
-  const { item } = ctx as typeof ctx & ContextWithItem;
 
-  logger.info({ itemId, auctionId }, "Starting image upload");
+  logger.info({ auctionId }, "Starting auction image upload");
 
-  // Check image limit
-  if (item._count.images >= MAX_IMAGES_PER_ITEM) {
-    logger.warn({ imageCount: item._count.images }, "Image limit reached");
+  // Check hard cap
+  const currentCount = await prisma.auctionImage.count({
+    where: { auctionId },
+  });
+  if (currentCount >= MAX_IMAGES_PER_AUCTION) {
+    logger.warn({ imageCount: currentCount }, "Auction image limit reached");
     throw new BadRequestError(
-      `Maximum ${MAX_IMAGES_PER_ITEM} images allowed per item`,
+      `Maximum ${MAX_IMAGES_PER_AUCTION} images allowed per auction`,
     );
   }
 
@@ -205,7 +235,7 @@ const uploadImage: ApiHandler = async (req, res, ctx) => {
 
   // Generate unique filename
   const ext = ".jpg"; // Always save as JPEG after processing
-  const filename = `${auctionId}/${itemId}/${Date.now()}-${Math.random()
+  const filename = `${auctionId}/${Date.now()}-${Math.random()
     .toString(36)
     .substring(7)}${ext}`;
   logger.debug({ filename }, "Generated filename");
@@ -248,15 +278,15 @@ const uploadImage: ApiHandler = async (req, res, ctx) => {
   }
 
   // Get current max order
-  const maxOrder = await prisma.auctionItemImage.aggregate({
-    where: { auctionItemId: itemId },
+  const maxOrder = await prisma.auctionImage.aggregate({
+    where: { auctionId },
     _max: { order: true },
   });
 
   // Save to database
-  const image = await prisma.auctionItemImage.create({
+  const image = await prisma.auctionImage.create({
     data: {
-      auctionItemId: itemId,
+      auctionId,
       url: filename,
       order: (maxOrder._max.order ?? -1) + 1,
     },
@@ -272,18 +302,18 @@ const uploadImage: ApiHandler = async (req, res, ctx) => {
 };
 
 const deleteImage: ApiHandler = async (req, res, ctx) => {
-  const itemId = ctx.params.itemId;
+  const auctionId = ctx.params.id;
   const { imageId } = req.query;
 
   if (!imageId || typeof imageId !== "string") {
     throw new BadRequestError("Image ID required");
   }
 
-  const image = await prisma.auctionItemImage.findUnique({
+  const image = await prisma.auctionImage.findUnique({
     where: { id: imageId },
   });
 
-  if (!image || image.auctionItemId !== itemId) {
+  if (!image || image.auctionId !== auctionId) {
     throw new NotFoundError("Image not found");
   }
 
@@ -292,7 +322,7 @@ const deleteImage: ApiHandler = async (req, res, ctx) => {
   await storage.removeFile(image.url);
 
   // Delete from database
-  await prisma.auctionItemImage.delete({
+  await prisma.auctionImage.delete({
     where: { id: imageId },
   });
 
@@ -300,7 +330,7 @@ const deleteImage: ApiHandler = async (req, res, ctx) => {
 };
 
 const reorderImages: ApiHandler = async (req, res, ctx) => {
-  const itemId = ctx.params.itemId;
+  const auctionId = ctx.params.id;
   const body = await parseJsonBody<{ imageIds?: string[] }>(req);
   const { imageIds } = body;
 
@@ -311,8 +341,8 @@ const reorderImages: ApiHandler = async (req, res, ctx) => {
   // Update order for each image
   await Promise.all(
     imageIds.map((id: string, index: number) =>
-      prisma.auctionItemImage.updateMany({
-        where: { id, auctionItemId: itemId },
+      prisma.auctionImage.updateMany({
+        where: { id, auctionId },
         data: { order: index },
       }),
     ),
@@ -322,8 +352,8 @@ const reorderImages: ApiHandler = async (req, res, ctx) => {
 };
 
 export default createHandler({
-  GET: [[withAuth, withItemPermission], getImages],
-  POST: [[withAuth, withItemPermission], uploadImage],
-  DELETE: [[withAuth, withItemPermission], deleteImage],
-  PATCH: [[withAuth, withItemPermission], reorderImages],
+  GET: [[withAuth, withAuctionPermission], getImages],
+  POST: [[withAuth, withAuctionPermission, requireCanUpload], uploadImage],
+  DELETE: [[withAuth, withAuctionPermission, requireCanManage], deleteImage],
+  PATCH: [[withAuth, withAuctionPermission, requireCanManage], reorderImages],
 });

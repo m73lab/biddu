@@ -572,10 +572,7 @@ export async function getAuctionResultsData(
       creator: {
         select: { id: true, name: true, email: true },
       },
-      images: {
-        orderBy: { order: "asc" },
-        take: 1,
-      },
+
       bids: {
         orderBy: { amount: "desc" },
         take: 1,
@@ -612,9 +609,7 @@ export async function getAuctionResultsData(
       return {
         itemId: item.id,
         itemName: item.name,
-        thumbnailUrl: item.images[0]?.url
-          ? getPublicUrl(item.images[0].url)
-          : null,
+        thumbnailUrl: null,
         winningBid: item.bids[0].amount,
         normalizedWinningBid: item.bids[0].normalizedAmount,
         enteredRepresentation: item.bids[0].enteredRepresentation,

@@ -211,7 +211,6 @@ export async function getUserBidHistory(userId: string) {
  * Get user's bid items for dashboard
  */
 export async function getUserBidItems(userId: string): Promise<UserBidItem[]> {
-  const { getPublicUrl } = await import("@/lib/storage");
 
   const userBids = await prisma.bid.findMany({
     where: { userId },
@@ -220,11 +219,7 @@ export async function getUserBidItems(userId: string): Promise<UserBidItem[]> {
         include: {
           currency: { select: { code: true, symbol: true } },
           auction: { select: { id: true, name: true } },
-          images: {
-            select: { url: true },
-            orderBy: { order: "asc" },
-            take: 1,
-          },
+
         },
       },
     },
@@ -249,7 +244,7 @@ export async function getUserBidItems(userId: string): Promise<UserBidItem[]> {
   return Array.from(itemsMap.values()).map((item) => ({
     id: item.id,
     name: item.name,
-    thumbnailUrl: item.images[0]?.url ? getPublicUrl(item.images[0].url) : null,
+    thumbnailUrl: null,
     currentBid: item.currentBid,
     startingBid: item.startingBid,
     highestBidderId: item.highestBidderId,

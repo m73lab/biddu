@@ -13,7 +13,9 @@ import { DurationInput } from "@/components/ui/duration-input";
 import { useConfirmDialog } from "@/hooks/ui";
 import { useToast } from "@/components/ui/toast";
 import { getMessages, Locale } from "@/i18n";
+import useSWR from "swr";
 import { useTranslations } from "next-intl";
+import { fetcher } from "@/lib/fetcher";
 import { inputStepForCurrency } from "@/utils/formatters";
 import { withAuth } from "@/lib/auth/withAuth";
 
@@ -21,13 +23,6 @@ interface Currency {
   code: string;
   name: string;
   symbol: string;
-}
-
-interface ItemImage {
-  id: string;
-  url: string;
-  publicUrl: string;
-  order: number;
 }
 
 interface EditItemProps {
@@ -73,7 +68,22 @@ interface EditItemProps {
     fractionMode: "INTEGER_ONLY" | "DECIMAL";
   }>;
   hasBids: boolean;
-  images: ItemImage[];
+}
+
+interface GalleryImage {
+  id: string;
+  url: string;
+  publicUrl: string;
+  order: number;
+}
+
+interface AuctionGallery {
+  images: GalleryImage[];
+  limit: number;
+  used: number;
+  remaining: number;
+  canUpload: boolean;
+  canManage: boolean;
 }
 
 export default function EditItemPage({
@@ -83,7 +93,6 @@ export default function EditItemPage({
   currencies,
   auctionCurrencyProfiles,
   hasBids,
-  images: initialImages,
   isItemOwner,
 }: EditItemProps) {
   const router = useRouter();
@@ -95,9 +104,12 @@ export default function EditItemPage({
   const tDiscussions = useTranslations("discussions");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const { data: gallery, mutate: mutateGallery } = useSWR<AuctionGallery>(
+    `/api/auctions/${auction.id}/images`,
+    fetcher,
+  );
   const [isDeleting, setIsDeleting] = useState(false);
   const { showToast } = useToast();
-  const [images, setImages] = useState<ItemImage[]>(initialImages);
   const [isEnding, setIsEnding] = useState(false);
   const [isPublished, setIsPublished] = useState(item.isPublished);
   const [isPublishing, setIsPublishing] = useState(false);
@@ -462,19 +474,35 @@ export default function EditItemPage({
               )}
             </div>
 
-            {/* Images */}
+            {/* Images (auction gallery, shared by all items) */}
             <div className="divider opacity-50"></div>
             <div className="space-y-4">
               <h2 className="text-lg font-semibold flex items-center gap-2 text-accent">
                 <span className="icon-[tabler--photo] size-5"></span>
                 {tCreate("images")}
               </h2>
-              <ImageUpload
-                auctionId={auction.id}
-                itemId={item.id}
-                images={images}
-                onImagesChange={setImages}
-              />
+              <p className="text-sm text-base-content/60">
+                {tAuction("photos.subtitle")}
+              </p>
+              {gallery ? (
+                <ImageUpload
+                  auctionId={auction.id}
+                  images={gallery.images}
+                  onImagesChange={(imgs) =>
+                    mutateGallery(
+                      { ...gallery, images: imgs, used: imgs.length },
+                      false,
+                    )
+                  }
+                  maxImages={gallery.limit}
+                  canUpload={gallery.canUpload}
+                  canManage={gallery.canManage}
+                />
+              ) : (
+                <div className="flex justify-center py-8">
+                  <span className="loading loading-spinner loading-lg text-primary"></span>
+                </div>
+              )}
             </div>
 
             {/* Pricing */}
@@ -982,7 +1010,6 @@ export const getServerSideProps = withAuth(async (context) => {
           fractionMode: profile.fractionMode,
         })),
       hasBids: editData.hasBids,
-      images: editData.images,
       messages: await getMessages(context.locale as Locale),
     },
   };
