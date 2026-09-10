@@ -27,3 +27,15 @@ export function assertEndDateWithinLimit(
     );
   }
 }
+
+/** Reject end dates in the past (5 min grace for clock skew). Ending early uses update paths. */
+export function assertEndDateNotPast(
+  value: string | Date,
+  field = "End date",
+): void {
+  const d = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(d.getTime())) return; // invalid handled by assertEndDateWithinLimit
+  if (d.getTime() < Date.now() - 5 * 60000) {
+    throw new BadRequestError(`${field} cannot be in the past`);
+  }
+}

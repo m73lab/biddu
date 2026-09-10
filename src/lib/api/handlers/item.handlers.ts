@@ -9,6 +9,7 @@ import * as itemService from "@/lib/services/item.service";
 import * as notificationService from "@/lib/services/notification.service";
 import {
   assertEndDateWithinLimit,
+  assertEndDateNotPast,
   getMaxEndDate,
 } from "@/lib/end-date-limit";
 import { prisma } from "@/lib/prisma";
@@ -103,6 +104,7 @@ export const createItem: ApiHandler = async (req, res, ctx) => {
     const raw = validatedBody.endDate;
     if (raw) {
       const d = new Date(raw);
+      assertEndDateNotPast(d, "Item end date");
       assertEndDateWithinLimit(d, "Item end date");
       if (auction.endDate && d > auction.endDate) {
         throw new BadRequestError(

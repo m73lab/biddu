@@ -4,6 +4,7 @@ import { NotFoundError, BadRequestError } from "@/lib/api/errors";
 import * as auctionService from "@/lib/services/auction.service";
 import {
   assertEndDateWithinLimit,
+  assertEndDateNotPast,
   getMaxEndDate,
 } from "@/lib/end-date-limit";
 import { z } from "zod";
@@ -62,6 +63,7 @@ export const createAuction: ApiHandler = async (req, res, ctx) => {
 
   // End-date policy: capped at 30 days out; empty defaults to the max
   if (validatedBody.endDate) {
+    assertEndDateNotPast(validatedBody.endDate, "Auction end date");
     assertEndDateWithinLimit(validatedBody.endDate, "Auction end date");
   } else {
     validatedBody.endDate = getMaxEndDate().toISOString();
