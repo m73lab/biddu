@@ -138,7 +138,6 @@
     "imageFormats": "JPEG, PNG, WebP, GIF",
     "maxSize": "Max 10MB",
     "images": "images",
-    "remaining": "{count} remaining",
     "maxImagesError": "Can only upload {count} more image(s)",
     "imageAlt": "Image {index}",
     "moveLeft": "Move left",

@@ -7,7 +7,6 @@ import { fetcher } from "@/lib/fetcher";
 import * as auctionService from "@/lib/services/auction.service";
 import { PageLayout, BackLink, EmptyState } from "@/components/common";
 import { AuctionSidebar } from "@/components/auction";
-import { ImageUpload } from "@/components/upload/image-upload";
 import { ItemCard, ItemListItem } from "@/components/item";
 import { SkeletonAuctionPage } from "@/components/ui/skeleton";
 import {
@@ -66,22 +65,6 @@ interface AuctionDetailsData {
   items: Item[];
 }
 
-interface GalleryImage {
-  id: string;
-  url: string;
-  publicUrl: string;
-  order: number;
-}
-
-interface AuctionPhotos {
-  images: GalleryImage[];
-  limit: number;
-  used: number;
-  remaining: number;
-  canUpload: boolean;
-  canManage: boolean;
-}
-
 interface AuctionDetailProps {
   user: {
     id: string;
@@ -127,12 +110,6 @@ export default function AuctionDetailPage({
 
   const auction = data?.auction;
   const items = useMemo(() => data?.items ?? [], [data?.items]);
-
-  // Auction photo gallery (shared by all items)
-  const { data: photosData, mutate: mutatePhotos } = useSWR<AuctionPhotos>(
-    hasLeft ? null : `/api/auctions/${auctionId}/images`,
-    fetcher,
-  );
 
   const sortedItems = useMemo(
     () => sortItems(items, currentSort),
@@ -245,38 +222,6 @@ export default function AuctionDetailPage({
           </h1>
         </div>
       </div>
-
-      {/* Auction photos */}
-      {photosData &&
-        (photosData.images.length > 0 || photosData.canUpload) && (
-          <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl mb-8">
-            <div className="card-body p-6">
-              <h2 className="card-title flex items-center gap-2 mb-1">
-                <span className="icon-[tabler--photo] size-5 text-primary"></span>
-                {t("photos.title")}
-                <span className="badge badge-secondary badge-sm shadow-sm">
-                  {photosData.used}/{photosData.limit}
-                </span>
-              </h2>
-              <p className="text-sm text-base-content/60 mb-4">
-                {t("photos.subtitle")}
-              </p>
-              <ImageUpload
-                auctionId={auctionId}
-                images={photosData.images}
-                onImagesChange={(imgs) =>
-                  mutatePhotos(
-                    { ...photosData, images: imgs, used: imgs.length },
-                    false,
-                  )
-                }
-                maxImages={photosData.limit}
-                canUpload={photosData.canUpload}
-                canManage={photosData.canManage}
-              />
-            </div>
-          </div>
-        )}
 
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Main Content - Items */}

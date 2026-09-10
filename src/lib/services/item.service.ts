@@ -358,13 +358,9 @@ export async function getItemDetailPageData(
     };
   });
 
-  // Get auction images (photos belong to the auction, shared by all items)
-  const parent = await prisma.auctionItem.findUnique({
-    where: { id: itemId },
-    select: { auctionId: true },
-  });
-  const images = await prisma.auctionImage.findMany({
-    where: { auctionId: parent?.auctionId ?? "" },
+  // Get item images
+  const images = await prisma.auctionItemImage.findMany({
+    where: { auctionItemId: itemId },
     orderBy: { order: "asc" },
   });
 
@@ -480,13 +476,9 @@ export async function getItemForEditPage(
   const isCreator = item.creatorId === viewerId;
   const canEdit = isCreator || (isViewerAdmin && item.isEditableByAdmin);
 
-  // Get auction images (photos belong to the auction, shared by all items)
-  const parent = await prisma.auctionItem.findUnique({
-    where: { id: itemId },
-    select: { auctionId: true },
-  });
-  const images = await prisma.auctionImage.findMany({
-    where: { auctionId: parent?.auctionId ?? "" },
+  // Get item images
+  const images = await prisma.auctionItemImage.findMany({
+    where: { auctionItemId: itemId },
     orderBy: { order: "asc" },
   });
 
@@ -558,7 +550,10 @@ export async function getAuctionItemsForListPage(
       currency: {
         select: { symbol: true, code: true },
       },
-
+      images: {
+        orderBy: { order: "asc" },
+        take: 1,
+      },
       _count: {
         select: { bids: true },
       },
@@ -591,7 +586,7 @@ export async function getAuctionItemsForListPage(
     createdAt: item.createdAt.toISOString(),
     creatorId: item.creatorId,
     isPublished: item.isPublished,
-    thumbnailUrl: null,
+    thumbnailUrl: item.images[0]?.url ? getPublicUrl(item.images[0].url) : null,
     currency: {
       symbol: item.currency.symbol,
       code: item.currency.code,
@@ -625,7 +620,11 @@ export async function getAuctionItemsForSidebar(
       currency: {
         select: { symbol: true, code: true },
       },
-
+      images: {
+        select: { url: true },
+        orderBy: { order: "asc" },
+        take: 1,
+      },
     },
     orderBy: { createdAt: "asc" },
   });
@@ -651,7 +650,7 @@ export async function getAuctionItemsForSidebar(
     createdAt: item.createdAt.toISOString(),
     creatorId: item.creatorId,
     highestBidderId: item.highestBidderId,
-    thumbnailUrl: null,
+    thumbnailUrl: item.images[0]?.url ? getPublicUrl(item.images[0].url) : null,
     userHasBid: userBidItemIds.has(item.id),
     currency: item.currency,
   }));
@@ -789,11 +788,11 @@ export async function getItemWinnerEmail(
 }
 
 /**
- * Get auction images (photos belong to the auction, shared by all items)
+ * Get item images
  */
-export async function getAuctionImages(auctionId: string) {
-  const images = await prisma.auctionImage.findMany({
-    where: { auctionId },
+export async function getItemImages(itemId: string) {
+  const images = await prisma.auctionItemImage.findMany({
+    where: { auctionItemId: itemId },
     orderBy: { order: "asc" },
   });
 
@@ -803,18 +802,6 @@ export async function getAuctionImages(auctionId: string) {
     publicUrl: getPublicUrl(img.url),
     order: img.order,
   }));
-}
-
-/**
- * @deprecated Photos are per-auction now. Use getAuctionImages(auctionId).
- */
-export async function getItemImages(itemId: string) {
-  const parent = await prisma.auctionItem.findUnique({
-    where: { id: itemId },
-    select: { auctionId: true },
-  });
-  if (!parent) return [];
-  return getAuctionImages(parent.auctionId);
 }
 
 // ============================================================================
@@ -861,30 +848,25 @@ export async function createItem(
       creator: {
         select: { id: true, name: true, email: true },
       },
-
+      images: {
+        orderBy: { order: "asc" },
+        take: 1,
+        select: { url: true },
+      },
       _count: {
         select: { bids: true },
       },
     },
   });
 
-  // Get the auction cover/first gallery image URL for notifications
-  // (photos belong to the auction, shared by all items)
+  // Get the first image URL for notifications
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://biddu.cl";
-  const auctionVisual = await prisma.auction.findUnique({
-    where: { id: auctionId },
-    select: {
-      thumbnailUrl: true,
-      images: { select: { url: true }, orderBy: { order: "asc" }, take: 1 },
-    },
-  });
-  const firstImageRaw =
-    auctionVisual?.thumbnailUrl ?? auctionVisual?.images[0]?.url ?? null;
-  const firstImageUrl = firstImageRaw
-    ? firstImageRaw.startsWith("http")
-      ? firstImageRaw
-      : `${appUrl}${firstImageRaw}`
-    : null;
+  const firstImageUrl =
+    item.images.length > 0
+      ? item.images[0].url.startsWith("http")
+        ? item.images[0].url
+        : `${appUrl}${item.images[0].url}`
+      : null;
 
   // Queue new item notification emails (await to ensure it completes on serverless)
   await queueNewItemEmails({
@@ -1159,7 +1141,10 @@ export async function getUserItemsForBulkEdit(
           name: true,
         },
       },
-
+      images: {
+        orderBy: { order: "asc" },
+        take: 1,
+      },
       _count: {
         select: { bids: true },
       },
@@ -1184,7 +1169,7 @@ export async function getUserItemsForBulkEdit(
     lastUpdatedByName: item.lastUpdatedBy?.name ?? null,
     auctionId: item.auction.id,
     auctionName: item.auction.name,
-    thumbnailUrl: null,
+    thumbnailUrl: item.images[0]?.url ? getPublicUrl(item.images[0].url) : null,
     bidCount: item._count.bids,
     currencySymbol: item.currency.symbol,
     creatorId: item.creator.id,
@@ -1339,7 +1324,10 @@ export async function getAdminEditableItems(
           name: true,
         },
       },
-
+      images: {
+        orderBy: { order: "asc" },
+        take: 1,
+      },
       _count: {
         select: { bids: true },
       },
@@ -1364,7 +1352,7 @@ export async function getAdminEditableItems(
     lastUpdatedByName: item.lastUpdatedBy?.name ?? null,
     auctionId: item.auction.id,
     auctionName: item.auction.name,
-    thumbnailUrl: null,
+    thumbnailUrl: item.images[0]?.url ? getPublicUrl(item.images[0].url) : null,
     bidCount: item._count.bids,
     currencySymbol: item.currency.symbol,
     creatorId: item.creator.id,
@@ -1399,7 +1387,10 @@ export async function getUserCreatedItems(userId: string) {
           code: true,
         },
       },
-
+      images: {
+        orderBy: { order: "asc" },
+        take: 1,
+      },
       bids: {
         orderBy: { amount: "desc" },
         take: 1,
@@ -1430,7 +1421,7 @@ export async function getUserCreatedItems(userId: string) {
     currentBid: item.bids[0]?.amount ?? null,
     endDate: item.endDate?.toISOString() ?? null,
     createdAt: item.createdAt.toISOString(),
-    thumbnailUrl: null,
+    thumbnailUrl: item.images[0]?.url ? getPublicUrl(item.images[0].url) : null,
     bidCount: item._count.bids,
     isPublished: item.isPublished,
     winner: item.bids[0]?.user

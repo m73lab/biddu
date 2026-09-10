@@ -176,7 +176,6 @@ model Auction {
   leaves            AuctionLeave[]
   customCurrencies  AuctionCurrencyProfile[]
 
-  images            AuctionImage[]
   @@map("auctions")
 }
 
@@ -382,6 +381,7 @@ model AuctionItem {
   discussionsEnabled Boolean   @default(true)  // Admin/creator can toggle
   
   // Relations
+  images          AuctionItemImage[]
   bids            Bid[]
   discussions     ItemDiscussion[]
 
@@ -392,18 +392,18 @@ model AuctionItem {
 // AUCTION ITEM IMAGES
 // ============================================
 
-model AuctionImage {
-  id            String   @id @default(cuid())
+model AuctionItemImage {
+  id            String      @id @default(cuid())
+  
+  auctionItemId String
+  auctionItem   AuctionItem @relation(fields: [auctionItemId], references: [id], onDelete: Cascade)
+  
+  url           String      // Path or URL to image
+  order         Int         @default(0)  // For ordering images
+  
+  createdAt     DateTime    @default(now())
 
-  auctionId String
-  auction   Auction @relation(fields: [auctionId], references: [id], onDelete: Cascade)
-
-  url           String   // Path or URL to image
-  order         Int      @default(0)  // For ordering images
-
-  createdAt DateTime @default(now())
-
-  @@map("auction_images")
+  @@map("auction_item_images")
 }
 
 // ============================================

@@ -295,7 +295,7 @@ function QuotaPanel({ auctions }: { auctions: any[] }) {
               members: a._count?.members || 0,
               photos: a.imageCount || 0,
             };
-            const photoCapacity = 50; // self-hosted hard cap per auction (photos belong to the auction)
+            const photoCapacity = used.items * limits.images;
             return (
               <div key={a.id} className="rounded-xl bg-base-200/50 p-4">
                 <div className="font-semibold truncate">{a.name}</div>
@@ -321,7 +321,7 @@ function QuotaPanel({ auctions }: { auctions: any[] }) {
                     {photoCapacity > 0 ? (
                       <progress className="progress progress-accent w-full h-1" value={used.photos} max={photoCapacity}></progress>
                     ) : (
-                      <div className="text-xs text-base-content/50">{t("fotosHint") || "Límite por subasta"}</div>
+                      <div className="text-xs text-base-content/50">{t("fotosHint") || "Límite por artículo"}</div>
                     )}
                   </div>
                 </div>

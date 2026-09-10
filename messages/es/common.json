@@ -139,7 +139,6 @@
     "maxSize": "Máx 10MB",
     "images": "imágenes",
     "maxImagesError": "Solo puedes subir {count} imagen(es) más",
-    "remaining": "quedan {count} disponibles",
     "imageAlt": "Imagen {index}",
     "moveLeft": "Mover a la izquierda",
     "moveRight": "Mover a la derecha",

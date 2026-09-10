@@ -1,9 +1,5 @@
 {
   "auction": {
-    "photos": {
-      "title": "Fotos de la subasta",
-      "subtitle": "Compartidas por todos los lotes de esta subasta"
-   },
     "create": {
       "title": "Crear Nueva Subasta",
       "subtitle": "Configura los detalles de tu subasta",
