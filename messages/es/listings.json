@@ -14,7 +14,8 @@
     },
     "drafts": {
       "title": "Borradores",
-      "description": "Estos artículos aún no son visibles para otros miembros de la subasta. Haz clic para editar y publicar."
+      "description": "Estos artículos aún no son visibles para otros miembros de la subasta. Haz clic para editar y publicar.",
+      "editAndPublish": "Haz clic para editar y publicar"
     },
     "justEnded": {
       "title": "Recién finalizados",

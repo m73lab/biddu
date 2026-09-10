@@ -286,6 +286,7 @@ export default function ListingsPage({ user }: ListingsPageProps) {
 }
 
 function DraftCard({ item }: { item: UserItem }) {
+  const tListings = useTranslations("listings");
   return (
     <Link
       href={`/auctions/${item.auctionId}/items/${item.id}/edit`}
@@ -319,7 +320,7 @@ function DraftCard({ item }: { item: UserItem }) {
         </div>
         <div className="flex items-center gap-1 text-xs text-warning mt-1">
           <span className="icon-[tabler--edit] size-3"></span>
-          <span>Click to edit & publish</span>
+          <span>{tListings("drafts.editAndPublish")}</span>
         </div>
       </div>
     </Link>

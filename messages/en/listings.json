@@ -14,7 +14,8 @@
     },
     "drafts": {
       "title": "Drafts",
-      "description": "These items are not yet visible to other auction members. Click to edit and publish them."
+      "description": "These items are not yet visible to other auction members. Click to edit and publish them.",
+      "editAndPublish": "Click to edit & publish"
     },
     "justEnded": {
       "title": "Just Ended",
