@@ -23,7 +23,7 @@
       "perBid": "Por Puja - Cada pujador decide",
       "timing": "Tiempos",
       "endDate": "Fecha de Fin de Subasta (opcional)",
-      "endDateHint": "Dejar vacío para sin fecha de fin",
+      "endDateHint": "Tope 30 días desde hoy. Vacío = 30 días al crear, sin fecha al editar.",
       "itemEndMode": "Modo de Fin de Artículo",
       "itemEndCustom": "Personalizado - Cada artículo puede tener su propia fecha de fin",
       "itemEndAuction": "Fin de Subasta - Todos los artículos terminan cuando la subasta termina",

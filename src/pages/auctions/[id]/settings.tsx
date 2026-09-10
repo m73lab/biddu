@@ -10,6 +10,8 @@ import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { getMessages, Locale } from "@/i18n";
 import { useConfirmDialog } from "@/hooks/ui";
 import { useTranslations } from "next-intl";
+import { toDateTimeLocalValue } from "@/utils/formatters";
+import { getMaxEndDate } from "@/lib/end-date-limit";
 import { withAuth } from "@/lib/auth/withAuth";
 
 interface AuctionSettingsProps {
@@ -598,6 +600,7 @@ export default function AuctionSettingsPage({
                     name="endDate"
                     value={formData.endDate}
                     onChange={handleChange}
+                    max={toDateTimeLocalValue(getMaxEndDate())}
                     className="input input-bordered flex-1 bg-base-100 focus:bg-base-100 transition-colors"
                   />
                   {formData.endDate && (

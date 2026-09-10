@@ -14,7 +14,8 @@ import { useConfirmDialog } from "@/hooks/ui";
 import { useToast } from "@/components/ui/toast";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
-import { inputStepForCurrency } from "@/utils/formatters";
+import { inputStepForCurrency, toDateTimeLocalValue } from "@/utils/formatters";
+import { getMaxEndDate } from "@/lib/end-date-limit";
 import { withAuth } from "@/lib/auth/withAuth";
 
 interface Currency {
@@ -620,6 +621,7 @@ export default function EditItemPage({
                   type="datetime-local"
                   value={itemEndDate}
                   onChange={(e) => setItemEndDate(e.target.value)}
+                  max={toDateTimeLocalValue(getMaxEndDate())}
                   className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                   disabled={!canSetCustomEndDate}
                 />

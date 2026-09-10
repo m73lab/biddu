@@ -91,3 +91,9 @@ export function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
   return text.substring(0, maxLength) + "...";
 }
+
+/** Format a Date as datetime-local input value (YYYY-MM-DDTHH:mm, local time). */
+export function toDateTimeLocalValue(date: Date): string {
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${p(date.getMonth() + 1)}-${p(date.getDate())}T${p(date.getHours())}:${p(date.getMinutes())}`;
+}

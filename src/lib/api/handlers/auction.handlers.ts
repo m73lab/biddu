@@ -2,6 +2,10 @@ import type { ApiHandler } from "@/lib/api/types";
 import type { ValidatedRequest } from "@/lib/api/middleware";
 import { NotFoundError, BadRequestError } from "@/lib/api/errors";
 import * as auctionService from "@/lib/services/auction.service";
+import {
+  assertEndDateWithinLimit,
+  getMaxEndDate,
+} from "@/lib/end-date-limit";
 import { z } from "zod";
 
 // ============================================================================
@@ -56,6 +60,13 @@ export const listAuctions: ApiHandler = async (_req, res, ctx) => {
 export const createAuction: ApiHandler = async (req, res, ctx) => {
   const { validatedBody } = req as ValidatedRequest<CreateAuctionBody>;
 
+  // End-date policy: capped at 30 days out; empty defaults to the max
+  if (validatedBody.endDate) {
+    assertEndDateWithinLimit(validatedBody.endDate, "Auction end date");
+  } else {
+    validatedBody.endDate = getMaxEndDate().toISOString();
+  }
+
   // Check if open auctions are allowed
   const allowOpenAuctions = process.env.ALLOW_OPEN_AUCTIONS === "true";
   if (validatedBody.joinMode === "FREE" && !allowOpenAuctions) {
@@ -92,6 +103,11 @@ export const getAuction: ApiHandler = async (_req, res, ctx) => {
  */
 export const updateAuction: ApiHandler = async (req, res, ctx) => {
   const { validatedBody } = req as ValidatedRequest<UpdateAuctionBody>;
+
+  // End-date policy: provided dates are capped at 30 days out (null clears it)
+  if (validatedBody.endDate) {
+    assertEndDateWithinLimit(validatedBody.endDate, "Auction end date");
+  }
 
   // Check if open auctions are allowed
   const allowOpenAuctions = process.env.ALLOW_OPEN_AUCTIONS === "true";

@@ -12,7 +12,8 @@ import { ImageUpload } from "@/components/upload/image-upload";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
-import { inputStepForCurrency } from "@/utils/formatters";
+import { inputStepForCurrency, toDateTimeLocalValue } from "@/utils/formatters";
+import { getMaxEndDate } from "@/lib/end-date-limit";
 import { withAuth } from "@/lib/auth/withAuth";
 
 interface Currency {
@@ -79,6 +80,13 @@ export default function CreateItemPage({
   const [currencyCode, setCurrencyCode] = useState("CLP");
   const amountStep = inputStepForCurrency(currencyCode);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Item end dates are capped at 30 days out (and never beyond the auction end)
+  const maxItemEndDate = getMaxEndDate();
+  const defaultItemEndDate =
+    auction.endDate && new Date(auction.endDate) < maxItemEndDate
+      ? new Date(auction.endDate)
+      : maxItemEndDate;
 
   // Publish modal state
   const [showPublishModal, setShowPublishModal] = useState(false);
@@ -518,6 +526,8 @@ export default function CreateItemPage({
                           id="endDate"
                           name="endDate"
                           type="datetime-local"
+                          max={toDateTimeLocalValue(maxItemEndDate)}
+                          defaultValue={toDateTimeLocalValue(defaultItemEndDate)}
                           className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                         />
                         <label className="label">

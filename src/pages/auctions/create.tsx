@@ -9,6 +9,8 @@ import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 import { withAuth } from "@/lib/auth/withAuth";
+import { getMaxEndDate } from "@/lib/end-date-limit";
+import { toDateTimeLocalValue } from "@/utils/formatters";
 
 interface CreateAuctionProps {
   user: {
@@ -230,6 +232,8 @@ export default function CreateAuctionPage({
                   id="endDate"
                   name="endDate"
                   type="datetime-local"
+                  max={toDateTimeLocalValue(getMaxEndDate())}
+                  defaultValue={toDateTimeLocalValue(getMaxEndDate())}
                   className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                 />
                 <label className="label">

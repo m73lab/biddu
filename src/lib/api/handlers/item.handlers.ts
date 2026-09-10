@@ -7,6 +7,10 @@ import {
 } from "@/lib/api/errors";
 import * as itemService from "@/lib/services/item.service";
 import * as notificationService from "@/lib/services/notification.service";
+import {
+  assertEndDateWithinLimit,
+  getMaxEndDate,
+} from "@/lib/end-date-limit";
 import { prisma } from "@/lib/prisma";
 import {
   formatCurrency,
@@ -84,6 +88,34 @@ export const createItem: ApiHandler = async (req, res, ctx) => {
   }
 
   const { validatedBody } = req as ValidatedRequest<CreateItemBody>;
+
+  // End-date policy: capped at 30 days out; CUSTOM items without a date
+  // default to the max (capped by the auction end when it is sooner).
+  // AUCTION_END / NONE items keep no date (they inherit or have none).
+  {
+    const auction = await prisma.auction.findUnique({
+      where: { id: ctx.params.id },
+      select: { itemEndMode: true, endDate: true },
+    });
+    if (!auction) {
+      throw new NotFoundError("Auction not found");
+    }
+    const raw = validatedBody.endDate;
+    if (raw) {
+      const d = new Date(raw);
+      assertEndDateWithinLimit(d, "Item end date");
+      if (auction.endDate && d > auction.endDate) {
+        throw new BadRequestError(
+          "Item end date cannot be after the auction end date",
+        );
+      }
+    } else if (auction.itemEndMode === "CUSTOM") {
+      const cap = getMaxEndDate();
+      const end =
+        auction.endDate && auction.endDate < cap ? auction.endDate : cap;
+      validatedBody.endDate = end.toISOString();
+    }
+  }
 
   // Verify currency exists
   const currency = await prisma.currency.findUnique({
@@ -237,6 +269,12 @@ export const updateItem: ApiHandler = async (req, res, ctx) => {
       throw new BadRequestError(
         "Item end date cannot be after the auction end date",
       );
+    }
+
+    // End-date policy: future dates are capped at 30 days out
+    // (ending early is always allowed)
+    if (newEndDate && newEndDate > now) {
+      assertEndDateWithinLimit(newEndDate, "Item end date");
     }
 
     // Allow ending items early (setting end date to now or past) regardless of itemEndMode
