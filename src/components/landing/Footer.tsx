@@ -110,10 +110,6 @@ export function Footer() {
             {t("footer.allRightsReserved")}
           </p>
           <div className="flex items-center gap-4">
-            <p className="flex items-center gap-2">
-              <span className="icon-[tabler--heart] size-4 text-live"></span>
-              Hecho en Chile
-            </p>
             <p className="flex items-center gap-1.5 text-cream-50/60">
               <span>by</span>
               <a
