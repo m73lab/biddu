@@ -4,6 +4,7 @@ import { BadRequestError } from "@/lib/api/errors";
 import * as userService from "@/lib/services/user.service";
 import { z } from "zod";
 import { isValidPhone } from "@/utils/phone";
+import { isValidRut } from "@/utils/rut";
 
 // ============================================================================
 // Schemas
@@ -17,6 +18,13 @@ export const updateProfileSchema = z.object({
     .optional()
     .refine((p) => !p || isValidPhone(p), {
       message: "Invalid phone",
+    }),
+  rut: z
+    .string()
+    .max(20)
+    .optional()
+    .refine((r) => !r || isValidRut(r), {
+      message: "Invalid RUT",
     }),
 });
 

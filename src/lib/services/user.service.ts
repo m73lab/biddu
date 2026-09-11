@@ -16,6 +16,7 @@ export interface UserProfile {
 export interface UpdateProfileInput {
   name?: string;
   phone?: string | null;
+  rut?: string | null;
 }
 
 export interface UpdatePasswordInput {
@@ -171,6 +172,9 @@ export async function updateUserProfile(
       ...(input.name !== undefined && { name: input.name }),
       ...(input.phone !== undefined && {
         phone: input.phone ? input.phone.trim() : null,
+      }),
+      ...(input.rut !== undefined && {
+        rut: input.rut ? input.rut.trim() : null,
       }),
     },
     select: { id: true, name: true, email: true },

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 import { isValidPhone } from "@/utils/phone";
+import { isValidRut } from "@/utils/rut";
 import { createLogger } from "@/lib/logger";
 import { useToast } from "@/components/ui/toast";
 import { withAuth } from "@/lib/auth/withAuth";
@@ -37,6 +38,7 @@ interface SettingsPageProps {
     name: string | null;
     email: string;
     phone: string | null;
+    rut: string | null;
   };
   initialSettings: UserSettings;
   connectedAccounts: ConnectedAccount[];
@@ -68,6 +70,7 @@ export default function SettingsPage({
   // Profile form state
   const [name, setName] = useState(user.name || "");
   const [phone, setPhone] = useState(user.phone || "");
+  const [rut, setRut] = useState(user.rut || "");
   const [profileError, setProfileError] = useState<string | null>(null);
   const [profileSuccess, setProfileSuccess] = useState<string | null>(null);
   const [profileLoading, setProfileLoading] = useState(false);
@@ -330,11 +333,17 @@ export default function SettingsPage({
       return;
     }
 
+    if (rut && !isValidRut(rut)) {
+      setProfileError(t("profile.rutInvalid"));
+      setProfileLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch("/api/user/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone: phone || null }),
+        body: JSON.stringify({ name, phone: phone || null, rut: rut || null }),
       });
 
       const result = await res.json();
@@ -576,14 +585,14 @@ export default function SettingsPage({
               <input
                 type="text"
                 placeholder="12.345.678-9"
-                defaultValue={(user as any).rut || ""}
-                className="input input-bordered w-full bg-base-200/50 opacity-70"
-                disabled
+                value={rut}
+                onChange={(e) => setRut(e.target.value)}
+                maxLength={20}
+                className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
               />
               <label className="label">
-                <span className="label-text-alt text-base-content/50 flex items-center gap-1">
-                  <span className="icon-[tabler--lock] size-3"></span>
-                  El RUT no se puede editar por seguridad
+                <span className="label-text-alt text-base-content/50">
+                  {t("profile.rutHint")}
                 </span>
               </label>
             </div>
@@ -1439,6 +1448,7 @@ export const getServerSideProps = withAuth(async (context) => {
         name: user.name,
         email: user.email,
         phone: user.phone || null,
+        rut: user.rut || null,
       },
       initialSettings: {
         emailOnNewItem: settings.emailOnNewItem,

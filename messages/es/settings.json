@@ -15,6 +15,8 @@
       "phonePlaceholder": "+56 9 1234 5678",
       "phoneHint": "Para que te contacten por tus pujas ganadas",
       "phoneInvalid": "Teléfono inválido. Ejemplo: +56 9 1234 5678",
+      "rutInvalid": "RUT inválido. Ejemplo: 12.345.678-9",
+      "rutHint": "Se valida el dígito verificador",
       "optional": "opcional"
     },
     "password": {
