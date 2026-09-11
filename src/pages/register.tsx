@@ -222,7 +222,7 @@ export default function RegisterPage({
             </span>
           </Link>
 
-          <div className="w-full max-w-[400px]">
+          <div className="w-full max-w-[400px] mt-14 lg:mt-0">
             {registrationSuccess ? (
               // Verification pending state
               <div className="text-center space-y-6">

@@ -154,7 +154,7 @@ export default function LoginPage({
             </span>
           </Link>
 
-          <div className="w-full max-w-[400px]">
+          <div className="w-full max-w-[400px] mt-14 lg:mt-0">
             <div className="mb-10">
               <h2 className="text-3xl font-bold text-base-content mb-2">
                 {t("title")}
