@@ -2,7 +2,7 @@ import { useState } from "react";
 import Link from "next/link";
 import * as auctionService from "@/lib/services/auction.service";
 import * as memberService from "@/lib/services/member.service";
-import { PageLayout, BackLink, AlertMessage } from "@/components/common";
+import { PageLayout, BackLink, AlertMessage, ConfirmModal } from "@/components/common";
 import { MemberCard, MemberRow } from "@/components/member";
 import { useToast } from "@/components/ui/toast";
 import { getMessages, Locale } from "@/i18n";
@@ -53,6 +53,10 @@ export default function MembersPage({
   const [members, setMembers] = useState(initialMembers);
   const [error, setError] = useState<string | null>(null);
   const [loadingMemberId, setLoadingMemberId] = useState<string | null>(null);
+  const [removeTarget, setRemoveTarget] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const { showToast } = useToast();
 
   const handleRoleChange = async (memberId: string, newRole: string) => {
@@ -87,10 +91,10 @@ export default function MembersPage({
   };
 
   const handleRemoveMember = async (memberId: string, memberName: string) => {
-    if (!confirm(t("confirmRemove", { name: memberName }))) {
-      return;
-    }
+    setRemoveTarget({ id: memberId, name: memberName });
+  };
 
+  const performRemoveMember = async (memberId: string) => {
     setError(null);
     setLoadingMemberId(memberId);
 
@@ -114,6 +118,7 @@ export default function MembersPage({
       setError(tErrors("generic"));
     } finally {
       setLoadingMemberId(null);
+      setRemoveTarget(null);
     }
   };
 
@@ -211,6 +216,24 @@ export default function MembersPage({
           </div>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={removeTarget !== null}
+        title={t("remove")}
+        message={
+          removeTarget
+            ? t("confirmRemove", { name: removeTarget.name })
+            : undefined
+        }
+        confirmLabel={t("remove")}
+        cancelLabel={tCommon("cancel")}
+        variant="error"
+        isLoading={removeTarget ? loadingMemberId === removeTarget.id : false}
+        onConfirm={() =>
+          removeTarget && performRemoveMember(removeTarget.id)
+        }
+        onClose={() => !loadingMemberId && setRemoveTarget(null)}
+      />
     </PageLayout>
   );
 }
