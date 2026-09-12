@@ -42,13 +42,14 @@ export default function CreateAuctionPage({
     setIsLoading(true);
 
     const formData = new FormData(e.currentTarget);
+    const endDateRaw = (formData.get("endDate") as string) || "";
     const data = {
       name: formData.get("name") as string,
       description: (formData.get("description") as string) || undefined,
       joinMode: formData.get("joinMode") as string,
       memberCanInvite: formData.get("memberCanInvite") === "on",
       bidderVisibility: formData.get("bidderVisibility") as string,
-      endDate: (formData.get("endDate") as string) || undefined,
+      endDate: endDateRaw ? new Date(endDateRaw).toISOString() : undefined,
       itemEndMode: formData.get("itemEndMode") as string,
       defaultAntiSnipe: antiSnipeEnabled,
       defaultAntiSnipeThreshold: antiSnipeThreshold,

@@ -122,6 +122,7 @@ export default function CreateItemPage({
     setIsLoading(true);
 
     const formData = new FormData(e.currentTarget);
+    const endDateRaw = (formData.get("endDate") as string) || "";
     const data = {
       name: formData.get("name") as string,
       description: (formData.get("description") as string) || undefined,
@@ -143,7 +144,7 @@ export default function CreateItemPage({
         }
       })(),
       bidderAnonymous: formData.get("bidderAnonymous") === "on",
-      endDate: (formData.get("endDate") as string) || undefined,
+      endDate: endDateRaw ? new Date(endDateRaw).toISOString() : undefined,
       discussionsEnabled: formData.get("discussionsEnabled") === "on",
       isEditableByAdmin: formData.get("isEditableByAdmin") === "on",
       antiSnipeEnabled: formData.get("antiSnipeEnabled") === "on",

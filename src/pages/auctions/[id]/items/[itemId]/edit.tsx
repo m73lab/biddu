@@ -105,7 +105,7 @@ export default function EditItemPage({
   const deleteDialog = useConfirmDialog();
   const endDialog = useConfirmDialog();
   const [itemEndDate, setItemEndDate] = useState(
-    item.endDate ? item.endDate.slice(0, 16) : "",
+    item.endDate ? toDateTimeLocalValue(new Date(item.endDate)) : "",
   );
   const [discussionsEnabled, setDiscussionsEnabled] = useState(
     item.discussionsEnabled,
@@ -133,6 +133,7 @@ export default function EditItemPage({
     setIsLoading(true);
 
     const formData = new FormData(e.currentTarget);
+    const endDateRaw = (formData.get("endDate") as string) || "";
     const data = {
       name: formData.get("name") as string,
       description: (formData.get("description") as string) || null,
@@ -154,7 +155,7 @@ export default function EditItemPage({
         }
       })(),
       bidderAnonymous: formData.get("bidderAnonymous") === "on",
-      endDate: (formData.get("endDate") as string) || null,
+      endDate: endDateRaw ? new Date(endDateRaw).toISOString() : null,
       discussionsEnabled,
       isEditableByAdmin,
       antiSnipeEnabled,

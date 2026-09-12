@@ -108,7 +108,9 @@ export default function AuctionSettingsPage({
     memberCanInvite: auction.memberCanInvite,
     bidderVisibility: auction.bidderVisibility,
     itemEndMode: auction.itemEndMode,
-    endDate: auction.endDate ? auction.endDate.slice(0, 16) : "",
+    endDate: auction.endDate
+      ? toDateTimeLocalValue(new Date(auction.endDate))
+      : "",
     defaultItemsEditableByAdmin: auction.defaultItemsEditableByAdmin,
     defaultAntiSnipe: auction.defaultAntiSnipe,
     defaultAntiSnipeThreshold: auction.defaultAntiSnipeThreshold,
@@ -282,7 +284,9 @@ export default function AuctionSettingsPage({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          endDate: formData.endDate || null,
+          endDate: formData.endDate
+            ? new Date(formData.endDate).toISOString()
+            : null,
         }),
       });
 
