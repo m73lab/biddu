@@ -707,12 +707,12 @@ export default function DashboardPage({ user }: DashboardProps) {
               />
             </div>
           </div>
-          ) : (
-            <div data-tour="joined-auctions">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
-                <h2 className="text-lg sm:text-xl font-semibold text-base-content">
-                  {t("auctions.title")}
-                </h2>
+        ) : (
+          <div data-tour="joined-auctions">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+              <h2 className="text-lg sm:text-xl font-semibold text-base-content">
+                {t("auctions.title")}
+              </h2>
               {otherAuctions.length > 0 && (
                 <SortDropdown
                   options={auctionSortOptions}
