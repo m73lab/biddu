@@ -1,6 +1,7 @@
 {
   "tour": {
     "skip": "Omitir",
+    "start": "Comenzar",
     "back": "Atrás",
     "next": "Siguiente",
     "finish": "Finalizar",

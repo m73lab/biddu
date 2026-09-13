@@ -1,6 +1,7 @@
 {
   "tour": {
     "skip": "Skip",
+    "start": "Start",
     "back": "Back",
     "next": "Next",
     "finish": "Finish",

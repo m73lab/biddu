@@ -28,16 +28,27 @@ export function useTourContext(): TourContextValue {
   return ctx;
 }
 
+interface WelcomeState {
+  id: TourId;
+  title: string;
+  content: string;
+  anchored: Step[];
+}
+
 /**
- * Global Joyride host. A single tour runs at a time; steps whose
- * target is missing from the DOM are filtered out before starting
- * (e.g. cloud-only panels on self-hosted, conditional sections).
+ * Global tour host. Each tour opens with its welcome step rendered in
+ * our own centered modal (Joyride v3 can't center body-anchored steps —
+ * Floating UI pins them to the page bottom). The remaining anchored
+ * steps run in Joyride. Steps whose target is missing from the DOM are
+ * filtered out before starting (e.g. cloud-only panels on self-hosted,
+ * conditional sections).
  */
 export function TourProvider({ children }: { children: ReactNode }) {
   const t = useTranslations("tour");
   const [run, setRun] = useState(false);
   const [steps, setSteps] = useState<Step[]>([]);
   const [tourId, setTourId] = useState<TourId | null>(null);
+  const [welcome, setWelcome] = useState<WelcomeState | null>(null);
 
   const markSeen = useCallback((id: TourId) => {
     try {
@@ -47,19 +58,31 @@ export function TourProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const beginAnchored = useCallback((id: TourId, anchored: Step[]) => {
+    setWelcome(null);
+    if (anchored.length === 0) {
+      markSeen(id);
+      return;
+    }
+    setSteps(anchored);
+    setTourId(id);
+    setRun(true);
+  }, [markSeen]);
+
   const startTour = useCallback(
     (id: TourId) => {
       const defs = TOURS[id];
-      const built: Step[] = [];
-      for (const d of defs) {
+      const first = defs[0];
+      const rest = first && first.target === "body" ? defs.slice(1) : defs;
+      const anchored: Step[] = [];
+      for (const d of rest) {
         if (
-          d.target !== "body" &&
-          (typeof document === "undefined" ||
-            !document.querySelector(d.target))
+          typeof document === "undefined" ||
+          !document.querySelector(d.target)
         ) {
           continue;
         }
-        built.push({
+        anchored.push({
           target: d.target,
           title: t(d.titleKey),
           content: t(d.contentKey),
@@ -67,12 +90,19 @@ export function TourProvider({ children }: { children: ReactNode }) {
           skipBeacon: true,
         });
       }
-      if (built.length === 0) return;
-      setSteps(built);
-      setTourId(id);
-      setRun(true);
+      if (first && first.target === "body") {
+        setTourId(id);
+        setWelcome({
+          id,
+          title: t(first.titleKey),
+          content: t(first.contentKey),
+          anchored,
+        });
+        return;
+      }
+      beginAnchored(id, anchored);
     },
-    [t],
+    [t, beginAnchored],
   );
 
   const handleEvent = useCallback(
@@ -90,6 +120,45 @@ export function TourProvider({ children }: { children: ReactNode }) {
   return (
     <TourContext.Provider value={value}>
       {children}
+      {welcome && (
+        <div className="modal modal-open">
+          <div className="modal-box max-w-sm">
+            <h3 className="font-bold text-lg flex items-center gap-2">
+              <span className="icon-[tabler--sparkles] size-5 text-primary"></span>
+              {welcome.title}
+            </h3>
+            <p className="py-4 text-sm text-base-content/70">
+              {welcome.content}
+            </p>
+            <div className="modal-action">
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() => {
+                  setWelcome(null);
+                  markSeen(welcome.id);
+                }}
+              >
+                {t("skip")}
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => beginAnchored(welcome.id, welcome.anchored)}
+              >
+                {t("start")}
+              </button>
+            </div>
+          </div>
+          <div
+            className="modal-backdrop bg-black/50"
+            onClick={() => {
+              setWelcome(null);
+              markSeen(welcome.id);
+            }}
+          ></div>
+        </div>
+      )}
       <Joyride
         run={run}
         steps={steps}
