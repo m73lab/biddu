@@ -63,11 +63,12 @@ export function MemberCard({
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          <UserAvatar
-            name={member.user.name}
-            email={member.user.email}
-            size="md"
-          />
+            <UserAvatar
+              name={member.user.name}
+              email={member.user.email}
+              seed={member.user.id}
+              size="md"
+            />
           <div>
             <div className="font-bold text-sm">
               {member.user.name || t("noName")}

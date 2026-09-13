@@ -61,7 +61,7 @@ export function BidHistory({
             >
               <div className="flex items-center gap-3">
                 {bid.user && !bid.isAnonymous ? (
-                  <UserAvatar name={bid.user.name} size="sm" />
+                  <UserAvatar name={bid.user.name} seed={bid.user.id} size="sm" />
                 ) : (
                   <AnonymousAvatar size="sm" />
                 )}

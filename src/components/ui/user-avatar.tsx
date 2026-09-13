@@ -1,57 +1,51 @@
 /**
- * UserAvatar - Consistent avatar display with monogram and gradient colors
+ * UserAvatar - Deterministic generated avatar (Avatune, yanliu theme)
  *
- * Matches the style used in the navbar profile dropdown
+ * Same seed always renders the same face: pass the stable user id as
+ * `seed` so the avatar never changes. Falls back to email, then name.
  */
+
+import { Avatar } from "@avatune/react";
+import theme from "@avatune/yanliu-theme/react";
 
 interface UserAvatarProps {
   name?: string | null;
   email?: string | null;
+  /** Stable identifier (user id). Preferred seed; falls back to email/name. */
+  seed?: string | null;
   size?: "xs" | "sm" | "md" | "lg";
   className?: string;
 }
 
 const sizeClasses = {
-  xs: "w-6 h-6 text-[10px]",
-  sm: "w-8 h-8 text-xs",
-  md: "w-10 h-10 text-sm",
-  lg: "w-12 h-12 text-base",
+  xs: "w-6 h-6",
+  sm: "w-8 h-8",
+  md: "w-10 h-10",
+  lg: "w-12 h-12",
 };
 
-/**
- * Get initials from name or email
- */
-function getInitials(name?: string | null, email?: string | null): string {
-  const trimmedName = name?.trim();
-  if (trimmedName) {
-    const parts = trimmedName.split(/\s+/);
-    if (parts.length >= 2) {
-      return (
-        parts[0].charAt(0) + parts[parts.length - 1].charAt(0)
-      ).toUpperCase();
-    }
-    return trimmedName.substring(0, 2).toUpperCase();
-  }
-  return email?.charAt(0).toUpperCase() || "?";
-}
+const sizePx = {
+  xs: 24,
+  sm: 32,
+  md: 40,
+  lg: 48,
+};
 
 export function UserAvatar({
   name,
   email,
+  seed,
   size = "sm",
   className = "",
 }: UserAvatarProps) {
-  const initials = getInitials(name, email);
+  const resolvedSeed = seed || email || name || "biddu";
 
   return (
     <div
-      className={`rounded-full bg-linear-to-br from-primary to-secondary p-[2px] shrink-0 ${sizeClasses[size]} ${className}`}
+      className={`rounded-full overflow-hidden shrink-0 ring-2 ring-primary/20 bg-base-200 ${sizeClasses[size]} ${className}`}
+      title={name || email || undefined}
     >
-      <div className="w-full h-full rounded-full bg-base-100 flex items-center justify-center">
-        <span className="font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
-          {initials}
-        </span>
-      </div>
+      <Avatar theme={theme} seed={resolvedSeed} size={sizePx[size]} />
     </div>
   );
 }

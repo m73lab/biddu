@@ -152,7 +152,7 @@ export function Navbar({ user }: NavbarProps) {
               tabIndex={0}
               className="group flex items-center gap-2 pl-1 pr-2 py-1 rounded-full hover:bg-base-content/5 transition-all cursor-pointer ring-offset-2 focus:ring-2 focus:ring-primary/20 outline-none"
             >
-              <UserAvatar name={user.name} email={user.email} size="sm" />
+              <UserAvatar name={user.name} email={user.email} seed={user.id} size="sm" />
               <span className="icon-[tabler--chevron-down] size-4 text-base-content/40 group-hover:text-base-content/60 transition-colors"></span>
             </button>
             <ul

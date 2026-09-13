@@ -63,11 +63,12 @@ export function MemberRow({
     <tr className={isCurrentUser ? "bg-base-200" : ""}>
       <td>
         <div className="flex items-center gap-3">
-          <UserAvatar
-            name={member.user.name}
-            email={member.user.email}
-            size="md"
-          />
+            <UserAvatar
+              name={member.user.name}
+              email={member.user.email}
+              seed={member.user.id}
+              size="md"
+            />
           <div>
             <div className="font-bold">
               {member.user.name || t("noName")}
