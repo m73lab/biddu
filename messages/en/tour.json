@@ -1,0 +1,46 @@
+{
+  "tour": {
+    "skip": "Skip",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Finish",
+    "progress": "{current} of {total}",
+    "help": "Replay this page's tour",
+    "dashboard": {
+      "welcomeTitle": "Welcome to Biddu",
+      "welcome": "A quick walkthrough of the essentials. You can skip anytime.",
+      "createTitle": "Create your auction",
+      "create": "Create an auction in under a minute from here: name, description and end date.",
+      "quotaTitle": "Usage and limits",
+      "quota": "Each auction shows its used lots, people and photos. The red badge marks finished ones.",
+      "myAuctionsTitle": "My auctions",
+      "myAuctions": "Auctions you created. The trash icon on the top right deletes them with confirmation.",
+      "bidsTitle": "Your bids",
+      "bids": "Track your active bids here and whether you're winning or outbid."
+    },
+    "create": {
+      "welcomeTitle": "Create an auction",
+      "welcome": "Only the name is required. The end date defaults to 30 days.",
+      "nameTitle": "Name",
+      "name": "A clear name sells better: what is auctioned and for whom.",
+      "endDateTitle": "End date",
+      "endDate": "Optional. Left as is, it closes in 30 days. It can never exceed that cap.",
+      "itemEndModeTitle": "Item endings",
+      "itemEndMode": "Choose whether your lots end with the auction, on a custom date, or never.",
+      "submitTitle": "Done",
+      "submit": "Create the auction, then add items from its page."
+    },
+    "item": {
+      "welcomeTitle": "How to bid",
+      "welcome": "This is an item at auction. Here's where to bid and follow along.",
+      "bidTitle": "Your bid",
+      "bid": "Enter your amount above the minimum and confirm. Bids are binding: they can't be retracted.",
+      "historyTitle": "History",
+      "history": "All bids in order, highest highlighted. The yellow badge marks new accounts.",
+      "fulfillmentTitle": "Payment and delivery",
+      "fulfillment": "Once closed with a winner, payment and delivery are coordinated here, and both sides can rate each other.",
+      "discussionsTitle": "Discussions",
+      "discussions": "Ask the owner or chat with other members. They lock once the item ends."
+    }
+  }
+}

@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/toast";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
+import { useTour } from "@/components/tour";
 import { withAuth } from "@/lib/auth/withAuth";
 import { getMaxEndDate } from "@/lib/end-date-limit";
 import { toDateTimeLocalValue } from "@/utils/formatters";
@@ -29,6 +30,8 @@ export default function CreateAuctionPage({
   const t = useTranslations("auction.create");
   const tCommon = useTranslations("common");
   const tErrors = useTranslations("errors");
+  const tTour = useTranslations("tour");
+  const { restartTour } = useTour("auction-create");
   const { showToast } = useToast();
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -95,11 +98,20 @@ export default function CreateAuctionPage({
             <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
               <span className="icon-[tabler--gavel] size-7"></span>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold">{t("title")}</h1>
-              <p className="text-base-content/60">{t("subtitle")}</p>
+              <div>
+                <h1 className="text-2xl font-bold">{t("title")}</h1>
+                <p className="text-base-content/60">{t("subtitle")}</p>
+              </div>
+              <button
+                type="button"
+                onClick={restartTour}
+                title={tTour("help")}
+                aria-label={tTour("help")}
+                className="btn btn-ghost btn-square ml-auto shrink-0"
+              >
+                <span className="icon-[tabler--help] size-5"></span>
+              </button>
             </div>
-          </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Basic Info */}
@@ -115,9 +127,10 @@ export default function CreateAuctionPage({
                     {t("auctionName")} *
                   </span>
                 </label>
-                <input
-                  id="name"
-                  name="name"
+                  <input
+                    id="name"
+                    data-tour="auction-name"
+                    name="name"
                   type="text"
                   placeholder={t("auctionNamePlaceholder")}
                   className={`input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors ${
@@ -229,9 +242,10 @@ export default function CreateAuctionPage({
                 <label className="label" htmlFor="endDate">
                   <span className="label-text font-medium">{t("endDate")}</span>
                 </label>
-                <input
-                  id="endDate"
-                  name="endDate"
+                  <input
+                    id="endDate"
+                    data-tour="end-date"
+                    name="endDate"
                   type="datetime-local"
                   max={toDateTimeLocalValue(getMaxEndDate())}
                   defaultValue={toDateTimeLocalValue(getMaxEndDate())}
@@ -250,9 +264,10 @@ export default function CreateAuctionPage({
                     {t("itemEndMode")}
                   </span>
                 </label>
-                <select
-                  id="itemEndMode"
-                  name="itemEndMode"
+                  <select
+                    id="itemEndMode"
+                    data-tour="item-end-mode"
+                    name="itemEndMode"
                   className="select select-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                   defaultValue="CUSTOM"
                 >
@@ -330,9 +345,10 @@ export default function CreateAuctionPage({
               >
                 {tCommon("cancel")}
               </Link>
-              <Button
-                type="submit"
-                variant="primary"
+                <Button
+                  type="submit"
+                  data-tour="submit"
+                  variant="primary"
                 className="w-full sm:flex-1 shadow-lg shadow-primary/20"
                 isLoading={isLoading}
                 loadingText={t("submitting")}

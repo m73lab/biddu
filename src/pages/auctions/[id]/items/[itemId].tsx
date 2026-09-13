@@ -22,6 +22,7 @@ import { withAuth } from "@/lib/auth/withAuth";
 import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
 import { useTranslations } from "next-intl";
+import { useTour } from "@/components/tour";
 import {
   formatCurrency,
   formatDate,
@@ -190,6 +191,8 @@ export default function ItemDetailPage({
   const tTime = useTranslations("time");
   const tErrors = useTranslations("errors");
   const tAuction = useTranslations("auction");
+  const tTour = useTranslations("tour");
+  const { restartTour } = useTour("item-detail");
   const tEdit = useTranslations("item.edit");
   const { showToast } = useToast();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -775,11 +778,21 @@ export default function ItemDetailPage({
                             </span>
                           )}
                           {isEnded && (
-                            <div className="badge badge-error gap-1 font-bold w-auto sm:w-full">
-                              <span className="icon-[tabler--flag-filled] size-3"></span>
-                              {tStatus("ended")}
-                            </div>
-                          )}
+                              <div className="badge badge-error gap-1 font-bold w-auto sm:w-full">
+                                <span className="icon-[tabler--flag-filled] size-3"></span>
+                                {tStatus("ended")}
+                              </div>
+                            )}
+                            <button
+                              type="button"
+                              onClick={restartTour}
+                              title={tTour("help")}
+                              aria-label={tTour("help")}
+                              className="btn btn-ghost btn-sm gap-2 w-auto"
+                            >
+                              <span className="icon-[tabler--help] size-4"></span>
+                              {tTour("help")}
+                            </button>
                           {canEdit && (
                             <Link
                               href={`/auctions/${auction.id}/items/${item.id}/edit`}
@@ -891,7 +904,7 @@ export default function ItemDetailPage({
                       <div className="divider opacity-50"></div>
 
                       {/* Bid History */}
-                      <div>
+                        <div data-tour="bid-history">
                         <div className="flex items-center justify-between mb-6">
                           <h2 className="font-bold text-lg flex items-center gap-2">
                             <span className="icon-[tabler--history] size-5 text-secondary"></span>
@@ -1021,21 +1034,23 @@ export default function ItemDetailPage({
                       <div className="divider opacity-50"></div>
 
                       {/* Discussions Section */}
-                      <DiscussionSection
-                          auctionId={auction.id}
-                          itemId={initialItem.id}
-                          currentUserId={user.id}
-                          itemCreatorId={initialItem.creator.id}
-                          isOwnerOrAdmin={isOwnerOrAdmin}
-                          initialDiscussions={initialDiscussions}
-                          discussionsEnabled={initialItem.discussionsEnabled}
-                          locked={!!isEnded}
-                        />
+                        <div data-tour="discussions">
+                          <DiscussionSection
+                            auctionId={auction.id}
+                            itemId={initialItem.id}
+                            currentUserId={user.id}
+                            itemCreatorId={initialItem.creator.id}
+                            isOwnerOrAdmin={isOwnerOrAdmin}
+                            initialDiscussions={initialDiscussions}
+                            discussionsEnabled={initialItem.discussionsEnabled}
+                            locked={!!isEnded}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Sidebar - Bidding */}
+                  {/* Sidebar - Bidding */}
                 <div className="w-full xl:w-96 shrink-0">
                   <div className="card bg-base-100/80 backdrop-blur-sm border border-base-content/5 shadow-xl sticky top-4">
                     <div className="card-body p-6">
@@ -1139,7 +1154,11 @@ export default function ItemDetailPage({
                       )}
 
                       {canBid && !isEnded ? (
-                        <form onSubmit={handleBid} className="space-y-4">
+                        <form
+                          onSubmit={handleBid}
+                          data-tour="bid-form"
+                          className="space-y-4"
+                        >
                           <div className="form-control">
                             <label className="label">
                               <span className="label-text font-medium">
@@ -1444,9 +1463,9 @@ export default function ItemDetailPage({
                         item.highestBidderId &&
                         (isItemOwner ||
                           isOwnerOrAdmin ||
-                          isHighestBidder) && (
-                          <div className="mt-6">
-                            <FulfillmentCard
+                            isHighestBidder) && (
+                            <div className="mt-6" data-tour="fulfillment">
+                              <FulfillmentCard
                                 auctionId={auction.id}
                                 itemId={item.id}
                                 initialStatus={item.fulfillmentStatus}

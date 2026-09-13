@@ -16,6 +16,7 @@ import {
   sortItems,
 } from "@/components/ui/sort-dropdown";
 import { useSortFilter, usePollingInterval } from "@/hooks/ui";
+import { useTour } from "@/components/tour";
 import { withAuth } from "@/lib/auth/withAuth";
 import { isItemEnded, isAuctionEnded, getBidStatus } from "@/utils/auction-helpers";
 import { useTranslations } from "next-intl";
@@ -263,7 +264,10 @@ function QuotaPanel({ auctions }: { auctions: any[] }) {
   if (owned.length === 0) return null;
   const visible = expanded ? owned : owned.slice(0, 2);
   return (
-    <div className="card bg-base-100 border border-base-content/5 shadow-sm mb-8">
+    <div
+      data-tour="quota-panel"
+      className="card bg-base-100 border border-base-content/5 shadow-sm mb-8"
+    >
       <div className="card-body p-5">
         <div className="flex items-center justify-between gap-2">
           <h2 className="font-bold flex items-center gap-2">
@@ -360,8 +364,10 @@ function QuotaPanel({ auctions }: { auctions: any[] }) {
 
 export default function DashboardPage({ user }: DashboardProps) {
   const t = useTranslations("dashboard");
+  const tTour = useTranslations("tour");
   const tStats = useTranslations("dashboard.stats");
   const tEmpty = useTranslations("dashboard.empty");
+  const { restartTour } = useTour("dashboard");
   const tAuctionSettings = useTranslations("auction.settings");
   const tErrors = useTranslations("errors");
   const { showToast } = useToast();
@@ -527,12 +533,22 @@ export default function DashboardPage({ user }: DashboardProps) {
           ) : (
             <Link
               href="/auctions/create"
+              data-tour="create-auction"
               className="btn btn-primary w-full sm:w-auto"
             >
               <span className="icon-[tabler--plus] size-5"></span>
               {t("createAuction")}
             </Link>
           )}
+          <button
+            type="button"
+            onClick={restartTour}
+            title={tTour("help")}
+            aria-label={tTour("help")}
+            className="btn btn-ghost btn-square shrink-0"
+          >
+            <span className="icon-[tabler--help] size-5"></span>
+          </button>
         </div>
 
         {/* Stats Cards */}
@@ -593,7 +609,7 @@ export default function DashboardPage({ user }: DashboardProps) {
 
         {/* Your Bids Section */}
         {bidItems.length > 0 && (
-          <div className="mb-8">
+          <div className="mb-8" data-tour="my-bids">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
               <h2 className="text-lg sm:text-xl font-semibold text-base-content">
                 {t("activeBids.title")}
@@ -620,7 +636,7 @@ export default function DashboardPage({ user }: DashboardProps) {
 
         {/* My Auctions Section */}
         {myAuctions.length > 0 && (
-          <div className="mb-12">
+          <div className="mb-12" data-tour="my-auctions">
             <div className="mb-4">
               <h2 className="text-lg sm:text-xl font-semibold text-base-content">
                 {t("myAuctions.title")}

@@ -1,0 +1,46 @@
+{
+  "tour": {
+    "skip": "Omitir",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "finish": "Finalizar",
+    "progress": "{current} de {total}",
+    "help": "Ver tour de esta página",
+    "dashboard": {
+      "welcomeTitle": "Bienvenido a Biddu",
+      "welcome": "Te mostramos lo esencial en pocos pasos. Puedes omitir el tour cuando quieras.",
+      "createTitle": "Crea tu subasta",
+      "create": "Desde aquí creas una subasta en menos de un minuto: nombre, descripción y fecha de cierre.",
+      "quotaTitle": "Uso y límites",
+      "quota": "Cada subasta muestra sus lotes, personas y fotos usadas. El badge rojo marca las finalizadas.",
+      "myAuctionsTitle": "Mis subastas",
+      "myAuctions": "Las subastas que creaste. El icono de papelera arriba a la derecha las elimina con confirmación.",
+      "bidsTitle": "Tus pujas",
+      "bids": "Aquí sigues tus pujas activas y si vas ganando o te superaron."
+    },
+    "create": {
+      "welcomeTitle": "Crear una subasta",
+      "welcome": "Solo el nombre es obligatorio. La fecha de fin por defecto es 30 días.",
+      "nameTitle": "Nombre",
+      "name": "Un nombre claro vende mejor: qué se remata y para quién.",
+      "endDateTitle": "Fecha de fin",
+      "endDate": "Opcional. Si la dejas como está, cierra en 30 días. Nunca puede superar ese tope.",
+      "itemEndModeTitle": "Fin de los artículos",
+      "itemEndMode": "Define si tus lotes cierran con la subasta, con fecha propia o sin fecha.",
+      "submitTitle": "Listo",
+      "submit": "Crea la subasta y después agrega artículos desde su página."
+    },
+    "item": {
+      "welcomeTitle": "Cómo pujar",
+      "welcome": "Este es un artículo en subasta. Te mostramos dónde pujar y seguir el remate.",
+      "bidTitle": "Tu puja",
+      "bid": "Ingresa tu monto sobre la puja mínima y confirma. Las pujas son vinculantes: no se pueden retractar.",
+      "historyTitle": "Historial",
+      "history": "Todas las pujas en orden, con la más alta destacada. La insignia amarilla marca cuentas nuevas.",
+      "fulfillmentTitle": "Pago y entrega",
+      "fulfillment": "Al cerrar con ganador, aquí se coordinan pago y entrega, y ambas partes pueden calificarse.",
+      "discussionsTitle": "Discusiones",
+      "discussions": "Pregunta al dueño o conversa con otros miembros. Se cierran cuando el artículo finaliza."
+    }
+  }
+}

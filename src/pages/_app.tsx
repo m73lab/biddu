@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import { UpdateBanner } from "@/components/common";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { AppProvider } from "@/contexts/AppContext";
+import { TourProvider } from "@/components/tour";
 
 export default function App({
   Component,
@@ -26,8 +27,10 @@ export default function App({
           <NotificationProvider>
             <ThemeProvider>
               <ToastProvider>
-                <UpdateBanner />
-                <Component {...pageProps} />
+                <TourProvider>
+                  <UpdateBanner />
+                  <Component {...pageProps} />
+                </TourProvider>
               </ToastProvider>
             </ThemeProvider>
           </NotificationProvider>
