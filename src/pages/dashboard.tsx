@@ -517,38 +517,40 @@ export default function DashboardPage({ user }: DashboardProps) {
               </p>
             </div>
           </div>
-          {isAuctionLimitReached ? (
-            <div
-              className="tooltip tooltip-bottom"
-              data-tip={t("limitReached") || "Límite alcanzado"}
-            >
-              <button
-                disabled
-                className="btn btn-primary w-full sm:w-auto btn-disabled"
+          <div className="flex items-center gap-2">
+            {isAuctionLimitReached ? (
+              <div
+                className="tooltip tooltip-bottom"
+                data-tip={t("limitReached") || "Límite alcanzado"}
               >
-                <span className="icon-[tabler--lock] size-5"></span>
+                <button
+                  disabled
+                  className="btn btn-primary w-full sm:w-auto btn-disabled"
+                >
+                  <span className="icon-[tabler--lock] size-5"></span>
+                  {t("createAuction")}
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/auctions/create"
+                data-tour="create-auction"
+                className="btn btn-primary w-full sm:w-auto"
+              >
+                <span className="icon-[tabler--plus] size-5"></span>
                 {t("createAuction")}
-              </button>
-            </div>
-          ) : (
-            <Link
-              href="/auctions/create"
-              data-tour="create-auction"
-              className="btn btn-primary w-full sm:w-auto"
+              </Link>
+            )}
+            <button
+              type="button"
+              onClick={restartTour}
+              title={tTour("help")}
+              aria-label={tTour("help")}
+              className="btn btn-ghost btn-square shrink-0"
             >
-              <span className="icon-[tabler--plus] size-5"></span>
-              {t("createAuction")}
-            </Link>
-          )}
-          <button
-            type="button"
-            onClick={restartTour}
-            title={tTour("help")}
-            aria-label={tTour("help")}
-            className="btn btn-ghost btn-square shrink-0"
-          >
-            <span className="icon-[tabler--help] size-5"></span>
-          </button>
+              <span className="icon-[tabler--help] size-5"></span>
+            </button>
+          </div>
         </div>
 
         {/* Stats Cards */}
