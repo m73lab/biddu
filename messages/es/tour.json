@@ -16,6 +16,8 @@
       "quota": "Cada subasta muestra sus lotes, personas y fotos usadas. El badge rojo marca las finalizadas.",
       "myAuctionsTitle": "Mis subastas",
       "myAuctions": "Las subastas que creaste. El icono de papelera arriba a la derecha las elimina con confirmación.",
+      "joinedTitle": "Subastas a las que te has unido",
+      "joined": "Aquí aparecen las subastas de otros cuando aceptas una invitación o te unes con un enlace.",
       "bidsTitle": "Tus pujas",
       "bids": "Aquí sigues tus pujas activas y si vas ganando o te superaron."
     },

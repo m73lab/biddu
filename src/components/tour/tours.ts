@@ -39,6 +39,12 @@ export const TOURS: Record<TourId, TourStepDef[]> = {
       contentKey: "dashboard.myAuctions",
     },
     {
+      target: '[data-tour="joined-auctions"]',
+      titleKey: "dashboard.joinedTitle",
+      contentKey: "dashboard.joined",
+      optional: true,
+    },
+    {
       target: '[data-tour="my-bids"]',
       titleKey: "dashboard.bidsTitle",
       contentKey: "dashboard.bids",

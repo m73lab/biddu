@@ -16,6 +16,8 @@
       "quota": "Each auction shows its used lots, people and photos. The red badge marks finished ones.",
       "myAuctionsTitle": "My auctions",
       "myAuctions": "Auctions you created. The trash icon on the top right deletes them with confirmation.",
+      "joinedTitle": "Auctions you joined",
+      "joined": "Other people's auctions show up here when you accept an invitation or join with a link.",
       "bidsTitle": "Your bids",
       "bids": "Track your active bids here and whether you're winning or outbid."
     },
