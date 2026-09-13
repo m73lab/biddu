@@ -53,10 +53,11 @@ interface Bid {
   isAnonymous: boolean;
   ipHash?: string | null;
   userAgent?: string | null;
-    user: {
-      id: string;
-      name: string | null;
+      user: {
+        id: string;
+        name: string | null;
       createdAt?: string | null;
+      avatarSeed?: string | null;
       avgSellerRating?: number | null;
       sellerRatingCount?: number;
       avgBuyerRating?: number | null;
@@ -123,6 +124,7 @@ interface ItemDetailProps {
         id: string;
         name: string | null;
         email: string;
+        avatarSeed?: string | null;
         avgSellerRating?: number | null;
         sellerRatingCount?: number;
         avgBuyerRating?: number | null;

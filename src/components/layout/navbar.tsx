@@ -190,13 +190,22 @@ export function Navbar({ user }: NavbarProps) {
                   href="/auctions/mine"
                   className="active:bg-primary/10 active:text-primary"
                 >
-                  <span className="icon-[tabler--crown] size-4 opacity-70"></span>
-                  {t("myAuctions")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/settings"
+                    <span className="icon-[tabler--crown] size-4 opacity-70"></span>
+                    {t("myAuctions")}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/profile"
+                    className="active:bg-primary/10 active:text-primary"
+                  >
+                    <span className="icon-[tabler--user] size-4 opacity-70"></span>
+                    {t("profile")}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/settings"
                   className="active:bg-primary/10 active:text-primary"
                 >
                   <span className="icon-[tabler--settings] size-4 opacity-70"></span>

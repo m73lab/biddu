@@ -9,12 +9,13 @@ interface MemberRowProps {
     id: string;
     role: string;
     joinedAt: string;
-    user: {
-      id: string;
-      name: string | null;
-      email: string;
-      createdAt: string;
-      avgSellerRating: number | null;
+      user: {
+        id: string;
+        name: string | null;
+        email: string;
+        createdAt: string;
+        avatarSeed: string | null;
+        avgSellerRating: number | null;
       sellerRatingCount: number;
       avgBuyerRating: number | null;
       buyerRatingCount: number;
@@ -67,6 +68,7 @@ export function MemberRow({
               name={member.user.name}
               email={member.user.email}
               seed={member.user.id}
+              avatarSeed={member.user.avatarSeed}
               size="md"
             />
           <div>

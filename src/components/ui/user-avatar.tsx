@@ -13,7 +13,9 @@ interface UserAvatarProps {
   email?: string | null;
   /** Stable identifier (user id). Preferred seed; falls back to email/name. */
   seed?: string | null;
-  size?: "xs" | "sm" | "md" | "lg";
+  /** Custom avatar seed from DB (user-chosen). Takes precedence over seed. */
+  avatarSeed?: string | null;
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
   className?: string;
 }
 
@@ -22,6 +24,7 @@ const sizeClasses = {
   sm: "w-8 h-8",
   md: "w-10 h-10",
   lg: "w-12 h-12",
+  xl: "w-24 h-24",
 };
 
 const sizePx = {
@@ -29,16 +32,18 @@ const sizePx = {
   sm: 32,
   md: 40,
   lg: 48,
+  xl: 96,
 };
 
 export function UserAvatar({
   name,
   email,
   seed,
+  avatarSeed,
   size = "sm",
   className = "",
 }: UserAvatarProps) {
-  const resolvedSeed = seed || email || name || "biddu";
+  const resolvedSeed = avatarSeed || seed || email || name || "biddu";
 
   return (
     <div

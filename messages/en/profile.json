@@ -1,0 +1,26 @@
+{
+  "profile": {
+    "title": "My profile",
+    "subtitle": "Your avatar, reputation and activity",
+    "backToDashboard": "Back to dashboard",
+    "avatarTitle": "Profile picture",
+    "avatarHint": "Your avatar is generated automatically. Try your luck with shuffle, or go back to the original.",
+    "random": "Shuffle",
+    "reset": "Reset",
+    "save": "Save changes",
+    "saving": "Saving...",
+    "saveSuccess": "Avatar updated",
+    "saveFailed": "Could not save the avatar",
+    "ratingTitle": "My reputation",
+    "noRatings": "No ratings yet. Complete your first sale or purchase.",
+    "asSeller": "as seller",
+    "asBuyer": "as buyer",
+    "anonymous": "Anonymous",
+    "statsTitle": "Activity",
+    "bidsPlaced": "Bids placed",
+    "auctionsWon": "Auctions won",
+    "itemsSold": "Items sold",
+    "auctionsCreated": "Auctions created",
+    "auctionsJoined": "Auctions joined"
+  }
+}

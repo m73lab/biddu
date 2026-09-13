@@ -1,0 +1,26 @@
+{
+  "profile": {
+    "title": "Mi perfil",
+    "subtitle": "Tu avatar, reputación y actividad",
+    "backToDashboard": "Volver al panel",
+    "avatarTitle": "Foto de perfil",
+    "avatarHint": "Tu avatar se genera automáticamente. Prueba suerte con el botón aleatorio o vuelve al original.",
+    "random": "Aleatorio",
+    "reset": "Restablecer",
+    "save": "Guardar cambios",
+    "saving": "Guardando...",
+    "saveSuccess": "Avatar actualizado",
+    "saveFailed": "No se pudo guardar el avatar",
+    "ratingTitle": "Mi reputación",
+    "noRatings": "Aún no tienes calificaciones. Completa tu primera venta o compra.",
+    "asSeller": "como vendedor",
+    "asBuyer": "como comprador",
+    "anonymous": "Anónimo",
+    "statsTitle": "Actividad",
+    "bidsPlaced": "Pujas realizadas",
+    "auctionsWon": "Subastas ganadas",
+    "itemsSold": "Artículos vendidos",
+    "auctionsCreated": "Subastas creadas",
+    "auctionsJoined": "Subastas unidas"
+  }
+}

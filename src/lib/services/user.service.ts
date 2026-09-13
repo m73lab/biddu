@@ -7,11 +7,12 @@ import * as systemService from "@/lib/services/system.service";
 // Types
 // ============================================================================
 
-export interface UserProfile {
-  id: string;
-  name: string | null;
-  email: string;
-}
+  export interface UserProfile {
+    id: string;
+    name: string | null;
+    email: string;
+    avatarSeed: string | null;
+  }
 
 export interface UpdateProfileInput {
   name?: string;
@@ -93,16 +94,16 @@ export async function userHasPassword(userId: string): Promise<boolean> {
 /**
  * Get user profile
  */
-export async function getUserProfile(
-  userId: string,
-): Promise<UserProfile | null> {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { id: true, name: true, email: true },
-  });
+  export async function getUserProfile(
+    userId: string,
+  ): Promise<UserProfile | null> {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, name: true, email: true, avatarSeed: true },
+    });
 
-  return user;
-}
+    return user;
+  }
 
 /**
  * Get user settings
@@ -177,11 +178,71 @@ export async function updateUserProfile(
         rut: input.rut ? input.rut.trim() : null,
       }),
     },
-    select: { id: true, name: true, email: true },
-  });
+      select: { id: true, name: true, email: true, avatarSeed: true },
+    });
 
-  return user;
-}
+    return user;
+  }
+
+  /**
+   * Set a custom avatar seed (null clears it back to the derived avatar).
+   */
+  export async function updateUserAvatar(
+    userId: string,
+    avatarSeed: string | null,
+  ): Promise<{ id: string; avatarSeed: string | null }> {
+    const clean = avatarSeed?.trim().slice(0, 120) || null;
+    return prisma.user.update({
+      where: { id: userId },
+      data: { avatarSeed: clean },
+      select: { id: true, avatarSeed: true },
+    });
+  }
+
+  export interface UserStats {
+    bidsPlaced: number;
+    auctionsWon: number;
+    itemsSold: number;
+    auctionsCreated: number;
+    auctionsJoined: number;
+    memberSince: string;
+  }
+
+  /**
+   * Simple per-user analytics for the profile page.
+   */
+  export async function getUserStats(userId: string): Promise<UserStats> {
+    const now = new Date();
+    const [bidsPlaced, auctionsWon, itemsSold, auctionsCreated, memberships, user] =
+      await Promise.all([
+        prisma.bid.count({ where: { userId } }),
+        prisma.auctionItem.count({
+          where: { highestBidderId: userId, endDate: { lt: now } },
+        }),
+        prisma.auctionItem.count({
+          where: {
+            creatorId: userId,
+            highestBidderId: { not: null },
+            endDate: { lt: now },
+          },
+        }),
+        prisma.auction.count({ where: { creatorId: userId } }),
+        prisma.auctionMember.count({ where: { userId } }),
+        prisma.user.findUnique({
+          where: { id: userId },
+          select: { createdAt: true },
+        }),
+      ]);
+    return {
+      bidsPlaced,
+      auctionsWon,
+      itemsSold,
+      auctionsCreated,
+      auctionsJoined: memberships,
+      memberSince:
+        user?.createdAt.toISOString() ?? new Date().toISOString(),
+    };
+  }
 
 /**
  * Update user password

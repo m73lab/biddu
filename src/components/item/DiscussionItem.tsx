@@ -101,6 +101,7 @@ export function DiscussionItem({
           <UserAvatar
             name={discussion.user.name}
             seed={discussion.user.id}
+            avatarSeed={discussion.user.avatarSeed}
             size={depth > 0 ? "sm" : "md"}
           />
 

@@ -130,18 +130,19 @@ export interface ItemDetailForPage {
   antiSnipeEnabled: boolean;
   antiSnipeThresholdSeconds: number;
   antiSnipeExtensionSeconds: number;
-  creator: {
-    id: string;
-    name: string | null;
-    email: string;
-    avgSellerRating?: number | null;
-    sellerRatingCount?: number;
-    avgBuyerRating?: number | null;
-    buyerRatingCount?: number;
-  };
-}
+    creator: {
+      id: string;
+      name: string | null;
+      email: string;
+      avatarSeed?: string | null;
+      avgSellerRating?: number | null;
+      sellerRatingCount?: number;
+      avgBuyerRating?: number | null;
+      buyerRatingCount?: number;
+    };
+  }
 
-export interface BidForDisplay {
+  export interface BidForDisplay {
   id: string;
   amount: number;
   normalizedAmount: number | null;
@@ -159,9 +160,10 @@ export interface BidForDisplay {
     ipHash?: string | null;
     userAgent?: string | null;
     user: {
-      id: string;
-      name: string | null;
+        id: string;
+        name: string | null;
       createdAt?: string | null;
+      avatarSeed?: string | null;
       avgSellerRating?: number | null;
       sellerRatingCount?: number;
       avgBuyerRating?: number | null;
@@ -272,6 +274,7 @@ function toBidUser(
     id: string;
     name: string | null;
     createdAt: Date;
+    avatarSeed: string | null;
     avgSellerRating: number | null;
     sellerRatingCount: number;
     avgBuyerRating: number | null;
@@ -281,6 +284,7 @@ function toBidUser(
   id: string;
   name: string | null;
   createdAt: string;
+  avatarSeed: string | null;
   avgSellerRating: number | null;
   sellerRatingCount: number;
   avgBuyerRating: number | null;
@@ -291,6 +295,7 @@ function toBidUser(
         id: u.id,
         name: u.name,
         createdAt: u.createdAt.toISOString(),
+        avatarSeed: u.avatarSeed,
         avgSellerRating: u.avgSellerRating,
         sellerRatingCount: u.sellerRatingCount,
         avgBuyerRating: u.avgBuyerRating,
@@ -314,14 +319,15 @@ export async function getItemDetailPageData(
       include: {
         currency: true,
         creator: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            avgSellerRating: true,
-            sellerRatingCount: true,
-            avgBuyerRating: true,
-            buyerRatingCount: true,
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              avatarSeed: true,
+              avgSellerRating: true,
+              sellerRatingCount: true,
+              avgBuyerRating: true,
+              buyerRatingCount: true,
           },
         },
       },
@@ -349,7 +355,7 @@ export async function getItemDetailPageData(
         },
       },
       user: {
-          select: { id: true, name: true, createdAt: true, avgSellerRating: true, sellerRatingCount: true, avgBuyerRating: true, buyerRatingCount: true },
+          select: { id: true, name: true, createdAt: true, avatarSeed: true, avgSellerRating: true, sellerRatingCount: true, avgBuyerRating: true, buyerRatingCount: true },
       },
     },
     orderBy: { amount: "desc" },
@@ -769,7 +775,7 @@ export async function getItemBidsForDisplay(
         },
       },
       user: {
-          select: { id: true, name: true, createdAt: true, avgSellerRating: true, sellerRatingCount: true, avgBuyerRating: true, buyerRatingCount: true },
+          select: { id: true, name: true, createdAt: true, avatarSeed: true, avgSellerRating: true, sellerRatingCount: true, avgBuyerRating: true, buyerRatingCount: true },
       },
     },
     orderBy: { amount: "desc" },

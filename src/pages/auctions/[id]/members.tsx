@@ -14,10 +14,11 @@ interface Member {
     role: string;
       joinedAt: string;
     user: {
-        id: string;
-        name: string | null;
-        email: string;
+          id: string;
+          name: string | null;
+          email: string;
       createdAt: string;
+      avatarSeed: string | null;
       avgSellerRating: number | null;
       sellerRatingCount: number;
       avgBuyerRating: number | null;

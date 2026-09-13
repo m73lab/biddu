@@ -48,11 +48,13 @@ export { banMemberSchema, type BanMemberBody } from "./member.handlers";
 export { createInviteSchema, type CreateInviteBody } from "./invite.handlers";
 
 export {
-  updateProfileSchema,
-  updatePasswordSchema,
-  updateSettingsSchema,
-  deleteAccountSchema,
-  type UpdateProfileBody,
+    updateProfileSchema,
+    updatePasswordSchema,
+    updateSettingsSchema,
+    deleteAccountSchema,
+    updateAvatarSchema,
+    type UpdateProfileBody,
+    type UpdateAvatarBody,
   type UpdatePasswordBody,
   type UpdateSettingsBody,
   type DeleteAccountBody,

@@ -241,41 +241,45 @@ export const authOptions: NextAuthOptions = {
           const dbUser = await prisma.user.findUnique({
             where: { email: user.email.toLowerCase() },
           });
-          if (dbUser) {
+            if (dbUser) {
+              token.id = dbUser.id;
+              token.tokenVersion = dbUser.tokenVersion;
+              token.avatarSeed = dbUser.avatarSeed ?? null;
+            }
+          } else {
+            const dbUser = await prisma.user.findUnique({
+              where: { id: user.id },
+              select: { id: true, tokenVersion: true, avatarSeed: true },
+            });
+            if (!dbUser) {
+              return null as any;
+            }
             token.id = dbUser.id;
             token.tokenVersion = dbUser.tokenVersion;
+            token.avatarSeed = dbUser.avatarSeed ?? null;
           }
-        } else {
+        } else if (token.id) {
+          // Validate session freshness: password changes bump tokenVersion
+          // and revoke all previously issued tokens. Runs on every session
+          // access (local SQLite PK lookup, sub-millisecond).
           const dbUser = await prisma.user.findUnique({
-            where: { id: user.id },
-            select: { id: true, tokenVersion: true },
+            where: { id: token.id as string },
+            select: { tokenVersion: true, avatarSeed: true },
           });
-          if (!dbUser) {
+          if (!dbUser || dbUser.tokenVersion !== token.tokenVersion) {
             return null as any;
           }
-          token.id = dbUser.id;
-          token.tokenVersion = dbUser.tokenVersion;
+          token.avatarSeed = dbUser.avatarSeed ?? null;
         }
-      } else if (token.id) {
-        // Validate session freshness: password changes bump tokenVersion
-        // and revoke all previously issued tokens. Runs on every session
-        // access (local SQLite PK lookup, sub-millisecond).
-        const dbUser = await prisma.user.findUnique({
-          where: { id: token.id as string },
-          select: { tokenVersion: true },
-        });
-        if (!dbUser || dbUser.tokenVersion !== token.tokenVersion) {
-          return null as any;
+        return token;
+      },
+      async session({ session, token }) {
+        if (session.user && token.id) {
+          session.user.id = token.id as string;
+          session.user.avatarSeed = (token.avatarSeed as string | null) ?? null;
         }
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user && token.id) {
-        session.user.id = token.id as string;
-      }
-      return session;
-    },
+        return session;
+      },
   },
   session: {
     strategy: "jwt",

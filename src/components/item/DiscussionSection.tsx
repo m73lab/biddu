@@ -8,20 +8,21 @@ import type {
   DiscussionDeletedEvent,
 } from "@/lib/realtime/events";
 
-export interface Discussion {
-  id: string;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
-  isEdited: boolean;
-  parentId: string | null;
-  user: {
+  export interface Discussion {
     id: string;
-    name: string | null;
-    image: string | null;
-  };
-  replies: Discussion[];
-}
+    content: string;
+    createdAt: string;
+    updatedAt: string;
+    isEdited: boolean;
+    parentId: string | null;
+    user: {
+      id: string;
+      name: string | null;
+      image: string | null;
+      avatarSeed?: string | null;
+    };
+    replies: Discussion[];
+  }
 
 interface DiscussionSectionProps {
   auctionId: string;

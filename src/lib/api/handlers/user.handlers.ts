@@ -39,8 +39,7 @@ export const updateSettingsSchema = z.object({
   itemSidebarCollapsed: z.boolean().optional(),
 });
 
-export const deleteAccountSchema = z.object({
-  password: z.string().optional(),
+export const deleteAccountSchema = z.object({  password: z.string().optional(),
   confirmEmail: z.string().optional(),
   auctionTransfers: z
     .array(
@@ -54,6 +53,12 @@ export const deleteAccountSchema = z.object({
 });
 
 export type UpdateProfileBody = z.infer<typeof updateProfileSchema>;
+
+export const updateAvatarSchema = z.object({
+  avatarSeed: z.string().max(120).nullable(),
+});
+
+export type UpdateAvatarBody = z.infer<typeof updateAvatarSchema>;
 export type UpdatePasswordBody = z.infer<typeof updatePasswordSchema>;
 export type UpdateSettingsBody = z.infer<typeof updateSettingsSchema>;
 export type DeleteAccountBody = z.infer<typeof deleteAccountSchema>;
@@ -80,6 +85,26 @@ export const updateProfile: ApiHandler = async (req, res, ctx) => {
     validatedBody,
   );
   res.status(200).json(profile);
+};
+
+/**
+ * PATCH /api/user/avatar - Set a custom avatar seed (null to clear)
+ */
+export const updateAvatar: ApiHandler = async (req, res, ctx) => {
+  const { validatedBody } = req as ValidatedRequest<UpdateAvatarBody>;
+  const result = await userService.updateUserAvatar(
+    ctx.session!.user.id,
+    validatedBody.avatarSeed,
+  );
+  res.status(200).json(result);
+};
+
+/**
+ * GET /api/user/stats - Simple per-user analytics
+ */
+export const getUserStats: ApiHandler = async (_req, res, ctx) => {
+  const stats = await userService.getUserStats(ctx.session!.user.id);
+  res.status(200).json(stats);
 };
 
 /**

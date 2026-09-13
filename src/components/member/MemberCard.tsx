@@ -14,6 +14,7 @@ interface MemberCardProps {
       name: string | null;
       email: string;
       createdAt: string;
+      avatarSeed: string | null;
       avgSellerRating: number | null;
       sellerRatingCount: number;
       avgBuyerRating: number | null;
@@ -67,6 +68,7 @@ export function MemberCard({
               name={member.user.name}
               email={member.user.email}
               seed={member.user.id}
+              avatarSeed={member.user.avatarSeed}
               size="md"
             />
           <div>

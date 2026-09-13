@@ -13,24 +13,34 @@ import * as notificationService from "./notification.service";
 // ============================================================================
 
 export interface MemberWithUser extends AuctionMember {
-  user: {
-      id: string;
-      name: string | null;
-      email: string;
+    user: {
+        id: string;
+        name: string | null;
+        email: string;
       createdAt: Date | string;
-    };
+      avatarSeed: string | null;
+      avgSellerRating: number | null;
+      sellerRatingCount: number;
+      avgBuyerRating: number | null;
+      buyerRatingCount: number;
+      };
 }
 
 export interface MemberForList {
   id: string;
   role: string;
   joinedAt: string;
-  user: {
-      id: string;
-      name: string | null;
-      email: string;
+    user: {
+        id: string;
+        name: string | null;
+        email: string;
       createdAt: Date | string;
-    };
+      avatarSeed: string | null;
+      avgSellerRating: number | null;
+      sellerRatingCount: number;
+      avgBuyerRating: number | null;
+      buyerRatingCount: number;
+      };
   invitedBy: {
     name: string | null;
     email: string;
@@ -51,7 +61,7 @@ export async function getAuctionMembers(
     where: { auctionId },
     include: {
       user: {
-        select: { id: true, name: true, email: true, createdAt: true },
+        select: { id: true, name: true, email: true, createdAt: true, avatarSeed: true, avgSellerRating: true, sellerRatingCount: true, avgBuyerRating: true, buyerRatingCount: true },
       },
     },
     orderBy: [{ role: "asc" }, { joinedAt: "asc" }],
@@ -68,7 +78,7 @@ export async function getAuctionMembersForListPage(
     where: { auctionId },
     include: {
       user: {
-        select: { id: true, name: true, email: true, createdAt: true },
+        select: { id: true, name: true, email: true, createdAt: true, avatarSeed: true, avgSellerRating: true, sellerRatingCount: true, avgBuyerRating: true, buyerRatingCount: true },
       },
     },
     orderBy: [{ role: "asc" }, { joinedAt: "asc" }],
@@ -83,7 +93,7 @@ export async function getAuctionMembersForListPage(
     inviterIds.length > 0
       ? await prisma.user.findMany({
           where: { id: { in: inviterIds } },
-          select: { id: true, name: true, email: true, createdAt: true },
+          select: { id: true, name: true, email: true, createdAt: true, avatarSeed: true, avgSellerRating: true, sellerRatingCount: true, avgBuyerRating: true, buyerRatingCount: true },
         })
       : [];
 
@@ -108,7 +118,7 @@ export async function getMemberById(
     where: { id: memberId },
     include: {
       user: {
-        select: { id: true, name: true, email: true, createdAt: true },
+        select: { id: true, name: true, email: true, createdAt: true, avatarSeed: true, avgSellerRating: true, sellerRatingCount: true, avgBuyerRating: true, buyerRatingCount: true },
       },
     },
   });
@@ -130,7 +140,7 @@ export async function getMemberById(
     data: { role: newRole },
     include: {
       user: {
-        select: { id: true, name: true, email: true, createdAt: true },
+        select: { id: true, name: true, email: true, createdAt: true, avatarSeed: true, avgSellerRating: true, sellerRatingCount: true, avgBuyerRating: true, buyerRatingCount: true },
       },
     },
   });

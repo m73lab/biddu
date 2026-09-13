@@ -23,6 +23,7 @@ model User {
   image         String?   // Profile image from OAuth provider
   rut           String?   // RUT chileno (opcional)
   phone         String?   // WhatsApp / teléfono (opcional)
+  avatarSeed    String?   // Custom avatar seed (null = derived from id/email)
   emailVerified DateTime? // When email was verified (null = unverified)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt

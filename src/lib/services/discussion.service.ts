@@ -15,6 +15,7 @@ export interface DiscussionUser {
   id: string;
   name: string | null;
   image: string | null;
+  avatarSeed?: string | null;
 }
 
 export interface DiscussionWithReplies {
@@ -54,13 +55,14 @@ export async function getItemDiscussions(
     where: { auctionItemId: itemId },
     orderBy: { createdAt: "asc" }, // Always asc for building tree, we'll sort top-level later
     include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          image: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+            avatarSeed: true,
+          },
         },
-      },
     },
   });
 
@@ -217,13 +219,14 @@ export async function createDiscussion(
       parentId: input.parentId || null,
     },
     include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          image: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+            avatarSeed: true,
+          },
         },
-      },
       auctionItem: {
         select: {
           auctionId: true,
@@ -279,13 +282,14 @@ export async function updateDiscussion(
       content: input.content,
     },
     include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          image: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+            avatarSeed: true,
+          },
         },
-      },
     },
   });
 

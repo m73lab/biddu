@@ -15,9 +15,10 @@ interface Bid {
   ipHash?: string | null;
   userAgent?: string | null;
     user: {
-      id: string;
-      name: string | null;
+        id: string;
+        name: string | null;
       createdAt?: string | null;
+      avatarSeed?: string | null;
       avgSellerRating?: number | null;
       sellerRatingCount?: number;
       avgBuyerRating?: number | null;
@@ -60,11 +61,16 @@ export function BidHistory({
               }`}
             >
               <div className="flex items-center gap-3">
-                {bid.user && !bid.isAnonymous ? (
-                  <UserAvatar name={bid.user.name} seed={bid.user.id} size="sm" />
-                ) : (
-                  <AnonymousAvatar size="sm" />
-                )}
+                  {bid.user && !bid.isAnonymous ? (
+                    <UserAvatar
+                      name={bid.user.name}
+                      seed={bid.user.id}
+                      avatarSeed={bid.user.avatarSeed}
+                      size="sm"
+                    />
+                  ) : (
+                    <AnonymousAvatar size="sm" />
+                  )}
                 <div className="flex items-center gap-2">
                   <span className="font-medium">
                     {bid.user && !bid.isAnonymous
