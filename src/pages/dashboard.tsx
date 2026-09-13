@@ -300,7 +300,9 @@ function QuotaPanel({ auctions }: { auctions: any[] }) {
             const limits = { items: 3 + (extras.maxItems || 0), members: 10 + (extras.maxMembers || 0), images: 3 + (extras.maxImages || 0) };
             const used = {
               items: a._count?.items || 0,
-              members: a._count?.members || 0,
+              // The owner doesn't consume quota: this panel only lists
+              // owned auctions, so the viewer is always one of the members
+              members: Math.max(0, (a._count?.members || 0) - 1),
               photos: a.imageCount || 0,
             };
             const photoCapacity = used.items * limits.images;
