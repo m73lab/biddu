@@ -42,8 +42,8 @@
     "postversion": "git push && git push --tags"
   },
   "dependencies": {
+    "@avatune/nevmstas-theme": "^3.2.2",
     "@avatune/react": "^2.2.0",
-    "@avatune/yanliu-theme": "^3.1.1",
     "@aws-sdk/client-ses": "^3.982.0",
     "@getbrevo/brevo": "^3.0.1",
     "@hookform/resolvers": "^5.2.2",

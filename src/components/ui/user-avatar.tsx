@@ -1,12 +1,12 @@
 /**
- * UserAvatar - Deterministic generated avatar (Avatune, yanliu theme)
+ * UserAvatar - Deterministic generated avatar (Avatune, nevmstas theme)
  *
  * Same seed always renders the same face: pass the stable user id as
  * `seed` so the avatar never changes. Falls back to email, then name.
  */
 
 import { Avatar } from "@avatune/react";
-import theme from "@avatune/yanliu-theme/react";
+import theme from "@avatune/nevmstas-theme/react";
 
 interface UserAvatarProps {
   name?: string | null;
