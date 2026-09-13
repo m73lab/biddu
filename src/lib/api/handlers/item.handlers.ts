@@ -502,5 +502,17 @@ export const setFulfillmentStatus: ApiHandler = async (req, res, ctx) => {
       });
   }
 
+    // Delivered: invite both parties to rate each other (fire and forget)
+    if (validatedBody.status === "DELIVERED" && item.highestBidderId) {
+      const parties = [...new Set([item.creatorId, item.highestBidderId])];
+      Promise.all(
+        parties.map((partyId) =>
+          notificationService
+            .notifyRatingRequest(partyId, item.name, auctionId, itemId)
+            .catch(() => undefined),
+        ),
+      ).catch(() => undefined);
+    }
+
   res.status(200).json({ fulfillmentStatus: updated.fulfillmentStatus });
 };

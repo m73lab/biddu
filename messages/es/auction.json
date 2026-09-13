@@ -83,6 +83,7 @@
       "admin": "Admin",
       "creator": "Creador",
       "bidder": "Pujador",
+      "pending": "Pendiente",
       "open": "Abierto",
       "left": "Abandonada"
     },
