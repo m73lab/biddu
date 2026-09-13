@@ -52,9 +52,17 @@ interface ResultsPageProps {
   };
   winners: Winner[];
   userWins: Winner[];
+  unsoldItems: UnsoldItem[];
   totalItems: number;
   totalBids: number;
   isAdmin: boolean;
+}
+
+interface UnsoldItem {
+  itemId: string;
+  itemName: string;
+  thumbnailUrl: string | null;
+  isItemCreator: boolean;
 }
 
 export default function ResultsPage({
@@ -62,6 +70,7 @@ export default function ResultsPage({
   auction,
   winners,
   userWins,
+  unsoldItems,
   totalItems,
   totalBids,
   isAdmin,
@@ -283,7 +292,7 @@ export default function ResultsPage({
                   <EmptyState
                     icon="icon-[tabler--hammer-off]"
                     title={t("noItemsSold")}
-                    description="No items received bids in this auction."
+                    description={t("noItemsSoldDescription")}
                   />
                 </div>
               ) : (
@@ -420,6 +429,54 @@ export default function ResultsPage({
             </div>
           </div>
         </div>
+
+        {/* Unsold items (ended with no bids) */}
+        {unsoldItems.length > 0 && (
+          <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl overflow-hidden mt-8">
+            <div className="card-body p-0 min-w-0">
+              <div className="p-6 border-b border-base-content/5">
+                <h2 className="card-title text-lg flex items-center gap-2">
+                  <span className="icon-[tabler--hammer-off] size-5"></span>
+                  {t("unsoldTitle")}
+                </h2>
+              </div>
+              <ul className="divide-y divide-base-content/5">
+                {unsoldItems.map((item) => (
+                  <li key={item.itemId}>
+                    <Link
+                      href={`/auctions/${auction.id}/items/${item.itemId}`}
+                      className="flex items-center gap-3 sm:gap-4 px-4 sm:px-8 py-3 hover:bg-base-content/5 transition-colors"
+                    >
+                      {item.thumbnailUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={item.thumbnailUrl}
+                          alt={item.itemName}
+                          className="w-10 h-10 object-cover rounded-lg shadow-sm grayscale shrink-0"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 bg-base-200 rounded-lg flex items-center justify-center shrink-0">
+                          <span className="icon-[tabler--package] size-5 text-base-content/30"></span>
+                        </div>
+                      )}
+                      <span className="font-medium truncate flex-1 min-w-0">
+                        {item.itemName}
+                      </span>
+                      {item.isItemCreator && (
+                        <span className="badge badge-secondary badge-sm shrink-0">
+                          {t("yourListing")}
+                        </span>
+                      )}
+                      <span className="badge badge-ghost badge-sm shrink-0">
+                        {t("noBids")}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
       </div>
     </PageLayout>
   );
@@ -471,6 +528,7 @@ export const getServerSideProps = withAuth(async (context) => {
       auction: resultsData.auction,
       winners: resultsData.winners,
       userWins: resultsData.userWins,
+      unsoldItems: resultsData.unsoldItems,
       totalItems: resultsData.totalItems,
       totalBids: resultsData.totalBids,
       isAdmin,

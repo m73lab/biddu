@@ -3,6 +3,7 @@
     "title": "Discusiones",
     "empty": "Aún no hay discusiones. ¡Sé el primero en compartir tus pensamientos!",
     "disabled": "Las discusiones están deshabilitadas para este artículo.",
+    "locked": "Las discusiones están cerradas porque el artículo finalizó.",
     "placeholder": "Comparte tus pensamientos sobre este artículo...",
     "replyPlaceholder": "Escribe una respuesta...",
     "submit": "Publicar",

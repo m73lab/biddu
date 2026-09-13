@@ -360,6 +360,57 @@ export const deleteItem: ApiHandler = async (_req, res, ctx) => {
   res.status(200).json({ message: "Item deleted successfully" });
 };
 
+export const relistItemSchema = z.object({
+  auctionId: z.string().min(1).optional(),
+});
+
+export type RelistItemBody = z.infer<typeof relistItemSchema>;
+
+/**
+ * POST /api/auctions/[id]/items/[itemId]/relist - Relist an ended,
+ * bidless item as a fresh draft copy (optionally into another auction).
+ */
+export const relistItem: ApiHandler = async (req, res, ctx) => {
+  const auctionId = ctx.params.id;
+  const itemId = ctx.params.itemId;
+
+  const { validatedBody } = req as ValidatedRequest<RelistItemBody>;
+  const targetAuctionId = validatedBody.auctionId || auctionId;
+
+  const item = await prisma.auctionItem.findUnique({
+    where: { id: itemId },
+    include: { _count: { select: { bids: true } } },
+  });
+
+  if (!item || item.auctionId !== auctionId) {
+    throw new NotFoundError("Item not found");
+  }
+
+  if (
+    !itemService.canEditItem(
+      ctx.session!.user.id,
+      item.creatorId,
+      ctx.membership!,
+      item.isEditableByAdmin,
+    )
+  ) {
+    throw new ForbiddenError("You don't have permission to relist this item");
+  }
+
+  try {
+    const copy = await itemService.relistItem(
+      itemId,
+      ctx.session!.user.id,
+      targetAuctionId,
+    );
+    res.status(201).json(copy);
+  } catch (err) {
+    throw new BadRequestError(
+      err instanceof Error ? err.message : "Cannot relist item",
+    );
+  }
+};
+
 // ============================================================================
 // Fulfillment (offline payment & delivery tracking)
 // ============================================================================

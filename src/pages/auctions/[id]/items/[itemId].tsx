@@ -1,10 +1,12 @@
 import { useState, useCallback } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { getMessages, Locale } from "@/i18n";
 import { Navbar } from "@/components/layout/navbar";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { ItemsSidebar, SidebarItem } from "@/components/item/ItemsSidebar";
 import { DiscussionSection } from "@/components/item/DiscussionSection";
+import { ConfirmModal } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { RichTextRenderer } from "@/components/ui/rich-text-editor";
 import { useToast } from "@/components/ui/toast";
@@ -190,6 +192,12 @@ export default function ItemDetailPage({
   );
   const [showEndModal, setShowEndModal] = useState(false);
   const [isEndingItem, setIsEndingItem] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeletingItem, setIsDeletingItem] = useState(false);
+  const [showRelistModal, setShowRelistModal] = useState(false);
+  const [relistAuctionId, setRelistAuctionId] = useState(auction.id);
+  const [isRelisting, setIsRelisting] = useState(false);
+  const router = useRouter();
 
   // Check if item has ended (use initialItem for initial polling config)
   const initialIsEnded =
@@ -228,6 +236,21 @@ export default function ItemDetailPage({
       revalidateOnFocus: false,
       dedupingInterval: 30000,
     },
+  );
+
+  // Owner's active auctions as relist targets (loaded only when the modal opens)
+  const { data: relistTargetsData } = useSWR<{
+    auctions: Array<{
+      id: string;
+      name: string;
+      endDate: string | null;
+      role: string;
+    }>;
+  }>(showRelistModal ? "/api/user/dashboard" : null, fetcher);
+  const relistTargets = (relistTargetsData?.auctions ?? []).filter(
+    (a) =>
+      a.role === "OWNER" &&
+      (!a.endDate || new Date(a.endDate) > new Date()),
   );
 
   // Subscribe to item channel for realtime bid updates
@@ -534,6 +557,58 @@ export default function ItemDetailPage({
     }
   };
 
+  const handleDeleteItem = async () => {
+    setIsDeletingItem(true);
+    try {
+      const res = await fetch(
+        `/api/auctions/${auction.id}/items/${item.id}`,
+        { method: "DELETE" },
+      );
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        showToast(data.message || tErrors("generic"), "error");
+        return;
+      }
+      showToast(tEdit("deleteSuccess"), "success");
+      setShowDeleteModal(false);
+      router.push(`/auctions/${auction.id}`);
+    } catch {
+      showToast(tErrors("generic"), "error");
+    } finally {
+      setIsDeletingItem(false);
+    }
+  };
+
+  const handleRelist = async () => {
+    setIsRelisting(true);
+    try {
+      const res = await fetch(
+        `/api/auctions/${auction.id}/items/${item.id}/relist`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(
+            relistAuctionId === auction.id
+              ? {}
+              : { auctionId: relistAuctionId },
+          ),
+        },
+      );
+      const result = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        showToast(result.message || t("detail.relistFailed"), "error");
+        return;
+      }
+      showToast(t("detail.relistSuccess"), "success");
+      setShowRelistModal(false);
+      router.push(`/auctions/${relistAuctionId}/items/${result.id}`);
+    } catch {
+      showToast(tErrors("generic"), "error");
+    } finally {
+      setIsRelisting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-base-100 relative overflow-x-hidden selection:bg-primary/20">
       {/* Background decorations */}
@@ -748,9 +823,11 @@ export default function ItemDetailPage({
                             <div className="bg-base-200 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
                               <span className="icon-[tabler--gavel] size-6 text-base-content/30"></span>
                             </div>
-                            <p className="text-base-content/60 font-medium">
-                              {t("history.noBids")}
-                            </p>
+                              <p className="text-base-content/60 font-medium">
+                                {isEnded
+                                  ? t("history.noBidsEnded")
+                                  : t("history.noBids")}
+                              </p>
                           </div>
                         ) : (
                           <div className="space-y-3">
@@ -822,14 +899,15 @@ export default function ItemDetailPage({
 
                       {/* Discussions Section */}
                       <DiscussionSection
-                        auctionId={auction.id}
-                        itemId={initialItem.id}
-                        currentUserId={user.id}
-                        itemCreatorId={initialItem.creator.id}
-                        isOwnerOrAdmin={isOwnerOrAdmin}
-                        initialDiscussions={initialDiscussions}
-                        discussionsEnabled={initialItem.discussionsEnabled}
-                      />
+                          auctionId={auction.id}
+                          itemId={initialItem.id}
+                          currentUserId={user.id}
+                          itemCreatorId={initialItem.creator.id}
+                          isOwnerOrAdmin={isOwnerOrAdmin}
+                          initialDiscussions={initialDiscussions}
+                          discussionsEnabled={initialItem.discussionsEnabled}
+                          locked={!!isEnded}
+                        />
                     </div>
                   </div>
                 </div>
@@ -1073,16 +1151,63 @@ export default function ItemDetailPage({
                           </Button>
                         </form>
                       ) : isEnded ? (
-                        <div className="space-y-4">
-                          <div className="text-center py-6 bg-base-200/30 rounded-xl border border-base-content/5">
-                            <span className="icon-[tabler--hammer-off] size-8 text-base-content/20 mb-2"></span>
-                            <div className="text-base-content/60 font-medium">
-                              {isAuctionEnded && !isItemEnded
-                                ? tAuction("settings.endedMessage")
-                                : t("bid.biddingEnded")}
+                        bids.length === 0 ? (
+                          <div className="space-y-4">
+                            <div className="text-center py-6 bg-base-200/30 rounded-xl border border-dashed border-base-content/10">
+                              <span className="icon-[tabler--hammer-off] size-8 text-base-content/20 mb-2"></span>
+                              <div className="font-bold">
+                                {t("detail.endedNoBidsTitle")}
+                              </div>
+                              <div className="text-sm text-base-content/60 mt-1">
+                                {isItemOwner
+                                  ? t("detail.endedNoBidsOwner")
+                                  : t("detail.endedNoBidsVisitor")}
+                              </div>
                             </div>
+                            {isItemOwner && (
+                              <div className="flex flex-col gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setRelistAuctionId(auction.id);
+                                    setShowRelistModal(true);
+                                  }}
+                                  className="btn btn-primary btn-block gap-2"
+                                >
+                                  <span className="icon-[tabler--refresh] size-5"></span>
+                                  {t("detail.relist")}
+                                </button>
+                                <div className="flex gap-2">
+                                  <Link
+                                    href={`/auctions/${auction.id}/items/${item.id}/edit`}
+                                    className="btn btn-outline flex-1 gap-2"
+                                  >
+                                    <span className="icon-[tabler--edit] size-4"></span>
+                                    {tCommon("edit")}
+                                  </Link>
+                                  <button
+                                    type="button"
+                                    onClick={() => setShowDeleteModal(true)}
+                                    className="btn btn-error btn-outline flex-1 gap-2"
+                                  >
+                                    <span className="icon-[tabler--trash] size-4"></span>
+                                    {tCommon("delete")}
+                                  </button>
+                                </div>
+                              </div>
+                            )}
                           </div>
-                          {winnerEmail && (
+                        ) : (
+                          <div className="space-y-4">
+                            <div className="text-center py-6 bg-base-200/30 rounded-xl border border-base-content/5">
+                              <span className="icon-[tabler--hammer-off] size-8 text-base-content/20 mb-2"></span>
+                              <div className="text-base-content/60 font-medium">
+                                {isAuctionEnded && !isItemEnded
+                                  ? tAuction("settings.endedMessage")
+                                  : t("bid.biddingEnded")}
+                              </div>
+                            </div>
+                            {winnerEmail && (
                             <Link
                               href={`/auctions/${auction.id}/items/${item.id}/contact`}
                               className="btn btn-info btn-block gap-2 shadow-sm"
@@ -1091,7 +1216,8 @@ export default function ItemDetailPage({
                               {t("detail.contactWinner")}
                             </Link>
                           )}
-                        </div>
+                          </div>
+                        )
                       ) : isItemOwner ? (
                         <div className="space-y-4">
                           <div className="alert alert-info shadow-sm">
@@ -1242,6 +1368,73 @@ export default function ItemDetailPage({
           ></div>
         </div>
       )}
+
+      {/* Relist Modal */}
+      {showRelistModal && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg flex items-center gap-2">
+              <span className="icon-[tabler--refresh] size-5 text-primary"></span>
+              {t("detail.relistTitle")}
+            </h3>
+            <p className="py-4 text-base-content/70 text-sm">
+              {t("detail.relistChooseAuction")}
+            </p>
+            {relistTargets.length === 0 ? (
+              <div className="alert alert-warning text-sm">
+                <span className="icon-[tabler--alert-triangle] size-5"></span>
+                <span>{t("detail.relistNoAuctions")}</span>
+              </div>
+            ) : (
+              <select
+                className="select select-bordered w-full"
+                value={relistAuctionId}
+                onChange={(e) => setRelistAuctionId(e.target.value)}
+              >
+                {relistTargets.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.name}
+                  </option>
+                ))}
+              </select>
+            )}
+            <div className="modal-action">
+              <button
+                className="btn btn-ghost"
+                onClick={() => setShowRelistModal(false)}
+                disabled={isRelisting}
+              >
+                {tCommon("cancel")}
+              </button>
+              <Button
+                onClick={handleRelist}
+                variant="primary"
+                isLoading={isRelisting}
+                loadingText={t("detail.relisting")}
+                disabled={relistTargets.length === 0}
+              >
+                <span className="icon-[tabler--refresh] size-4"></span>
+                {t("detail.relist")}
+              </Button>
+            </div>
+          </div>
+          <div
+            className="modal-backdrop bg-black/50"
+            onClick={() => !isRelisting && setShowRelistModal(false)}
+          ></div>
+        </div>
+      )}
+
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        title={tEdit("delete")}
+        message={tEdit("confirmDelete", { name: item.name })}
+        confirmLabel={tCommon("delete")}
+        variant="error"
+        isLoading={isDeletingItem}
+        onConfirm={handleDeleteItem}
+        onClose={() => !isDeletingItem && setShowDeleteModal(false)}
+      />
     </div>
   );
 }

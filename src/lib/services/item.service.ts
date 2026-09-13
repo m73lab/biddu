@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getPublicUrl } from "@/lib/storage";
+import { getMaxEndDate } from "@/lib/end-date-limit";
 import { queueNewItemEmails } from "@/lib/email/service";
 import * as notificationService from "./notification.service";
 import { publish, Events, Channels } from "@/lib/realtime";
@@ -1042,6 +1043,108 @@ export async function deleteItem(itemId: string): Promise<void> {
   await prisma.auctionItem.delete({
     where: { id: itemId },
   });
+}
+
+/**
+ * Relist an ended, bidless item as a fresh draft copy.
+ * - Only ended items with zero bids can be relisted.
+ * - The copy is created unpublished (draft, no notifications/emails/events);
+ *   publishing later follows the normal publish flow.
+ * - Images are duplicated as new rows pointing at the same stored files.
+ * - The copy's end date follows the target auction's itemEndMode
+ *   (CUSTOM: capped at 30 days out and never beyond the auction end).
+ */
+export async function relistItem(
+  sourceItemId: string,
+  requesterId: string,
+  targetAuctionId: string,
+): Promise<{ id: string; name: string }> {
+  const source = await prisma.auctionItem.findUnique({
+    where: { id: sourceItemId },
+    include: {
+      images: { orderBy: { order: "asc" } },
+      _count: { select: { bids: true } },
+      auction: { select: { id: true, endDate: true } },
+    },
+  });
+
+  if (!source) {
+    throw new Error("Item not found");
+  }
+
+  const now = new Date();
+  const sourceEnded =
+    (!!source.endDate && source.endDate < now) ||
+    (!!source.auction.endDate && source.auction.endDate < now);
+  if (!sourceEnded) {
+    throw new Error("Only ended items can be relisted");
+  }
+  if (source._count.bids > 0) {
+    throw new Error("Only items with no bids can be relisted");
+  }
+
+  const target = await prisma.auction.findUnique({
+    where: { id: targetAuctionId },
+    select: { id: true, endDate: true, itemEndMode: true },
+  });
+  if (!target) {
+    throw new Error("Target auction not found");
+  }
+  if (target.endDate && target.endDate < now) {
+    throw new Error("Cannot relist into an ended auction");
+  }
+
+  const targetMembership = await prisma.auctionMember.findUnique({
+    where: {
+      auctionId_userId: { auctionId: targetAuctionId, userId: requesterId },
+    },
+    select: { role: true },
+  });
+  if (
+    !targetMembership ||
+    !["OWNER", "ADMIN"].includes(targetMembership.role)
+  ) {
+    throw new Error("You don't have permission to relist into this auction");
+  }
+
+  let endDate: Date | null = null;
+  if (target.itemEndMode === "CUSTOM") {
+    const cap = getMaxEndDate();
+    endDate = target.endDate && target.endDate < cap ? target.endDate : cap;
+  }
+
+  const copy = await prisma.auctionItem.create({
+    data: {
+      auctionId: targetAuctionId,
+      name: source.name,
+      description: source.description,
+      currencyCode: source.currencyCode,
+      startingBid: source.startingBid,
+      minBidIncrement: source.minBidIncrement,
+      minBidConstraint: (source.minBidConstraint ?? null) as never,
+      minBidNormalized: source.minBidNormalized,
+      minIncrementNormalized: source.minIncrementNormalized,
+      bidderAnonymous: source.bidderAnonymous,
+      endDate,
+      isPublished: false,
+      isEditableByAdmin: source.isEditableByAdmin,
+      antiSnipeEnabled: source.antiSnipeEnabled,
+      antiSnipeThresholdSeconds: source.antiSnipeThresholdSeconds,
+      antiSnipeExtensionSeconds: source.antiSnipeExtensionSeconds,
+      discussionsEnabled: source.discussionsEnabled,
+      creatorId: requesterId,
+      lastUpdatedById: requesterId,
+      images: {
+        create: source.images.map((img) => ({
+          url: img.url,
+          order: img.order,
+        })),
+      },
+    },
+    select: { id: true, name: true },
+  });
+
+  return copy;
 }
 
 // ============================================================================

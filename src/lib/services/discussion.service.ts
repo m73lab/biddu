@@ -124,6 +124,8 @@ export async function getDiscussionById(discussionId: string) {
           auctionId: true,
           creatorId: true,
           discussionsEnabled: true,
+          endDate: true,
+          auction: { select: { endDate: true } },
         },
       },
     },

@@ -3,6 +3,7 @@
     "title": "Discussions",
     "empty": "No discussions yet. Be the first to share your thoughts!",
     "disabled": "Discussions are disabled for this item.",
+    "locked": "Discussions are locked because the item has ended.",
     "placeholder": "Share your thoughts about this item...",
     "replyPlaceholder": "Write a reply...",
     "submit": "Post",

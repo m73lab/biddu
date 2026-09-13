@@ -142,6 +142,8 @@ export const createDiscussion: ApiHandler = async (req, res, ctx) => {
       discussionsEnabled: true,
       isPublished: true,
       creatorId: true,
+      endDate: true,
+      auction: { select: { endDate: true } },
     },
   });
 
@@ -162,6 +164,14 @@ export const createDiscussion: ApiHandler = async (req, res, ctx) => {
 
   if (!item.discussionsEnabled) {
     throw new BadRequestError("Discussions are disabled for this item");
+  }
+
+  // Discussions are locked once the item (or its auction) has ended
+  const itemEnded = !!item.endDate && item.endDate < new Date();
+  const auctionEnded =
+    !!item.auction?.endDate && item.auction.endDate < new Date();
+  if (itemEnded || auctionEnded) {
+    throw new BadRequestError("Discussions are locked for ended items");
   }
 
   const { validatedBody } = req as ValidatedRequest<CreateDiscussionBody>;
@@ -230,6 +240,17 @@ export const updateDiscussion: ApiHandler = async (req, res, ctx) => {
     )
   ) {
     throw new ForbiddenError("You can only edit your own discussions");
+  }
+
+  // Discussions are locked once the item (or its auction) has ended
+  const itemEnded =
+    !!discussion.auctionItem.endDate &&
+    discussion.auctionItem.endDate < new Date();
+  const auctionEnded =
+    !!discussion.auctionItem.auction?.endDate &&
+    discussion.auctionItem.auction.endDate < new Date();
+  if (itemEnded || auctionEnded) {
+    throw new BadRequestError("Discussions are locked for ended items");
   }
 
   const { validatedBody } = req as ValidatedRequest<UpdateDiscussionBody>;

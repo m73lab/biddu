@@ -241,6 +241,28 @@ export async function notifyAuctionWon(
 }
 
 /**
+ * Notify the item creator that their item ended with no bids.
+ * In-app only (no email). Reuses the AUCTION_ENDED type so no
+ * Prisma migration is needed.
+ */
+export async function notifyItemEndedNoBids(
+  ownerId: string,
+  itemName: string,
+  auctionId: string,
+  itemId: string,
+  auctionName: string,
+): Promise<Notification> {
+  return createNotification({
+    userId: ownerId,
+    type: "AUCTION_ENDED",
+    title: "Tu artículo terminó sin pujas",
+    message: `"${itemName}" no recibió pujas en "${auctionName}". Puedes eliminarlo o republicarlo.`,
+    auctionId,
+    itemId,
+  });
+}
+
+/**
  * Notify auction owner that a member joined
  */
 export async function notifyMemberJoined(

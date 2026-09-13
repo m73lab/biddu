@@ -28,77 +28,116 @@ export async function processEndedItems(): Promise<number> {
       take: 50, // Process max 50 at a time to avoid long-running queries
     });
 
-    if (endedItems.length === 0) {
-      return 0;
+    if (endedItems.length > 0) {
+      auctionEndLogger.info(
+        { count: endedItems.length },
+        "Processing ended items",
+      );
+
+      // Process each ended item
+      await Promise.all(
+        endedItems.map(async (item) => {
+          try {
+            // Create winner notification (in-app)
+            await notificationService.notifyAuctionWon(
+              item.highestBidderId!,
+              item.name,
+              item.auction.id,
+              item.id,
+              item.currentBid!,
+              item.currency.symbol,
+              undefined,
+              item.currency.code,
+            );
+
+            // Fetch winner info for email
+            const winner = await prisma.user.findUnique({
+              where: { id: item.highestBidderId! },
+              select: { id: true, email: true, name: true },
+            });
+
+            // Queue item won email (respects user preference)
+            if (winner) {
+              await queueItemWonEmail({
+                winnerId: winner.id,
+                winnerEmail: winner.email,
+                winnerName: winner.name,
+                itemId: item.id,
+                itemName: item.name,
+                auctionId: item.auction.id,
+                auctionName: item.auction.name,
+                winningAmount: item.currentBid!,
+                currencySymbol: item.currency.symbol,
+              });
+            }
+
+            // Mark as notified
+            await prisma.auctionItem.update({
+              where: { id: item.id },
+              data: { winnerNotified: true },
+            });
+
+            auctionEndLogger.debug(
+              { itemId: item.id, winnerId: item.highestBidderId },
+              "Processed ended item",
+            );
+          } catch (err) {
+            auctionEndLogger.error(
+              { err, itemId: item.id },
+              "Failed to notify winner for item",
+            );
+          }
+        }),
+      );
+
+      auctionEndLogger.info(
+        { processed: endedItems.length },
+        "Completed processing ended items",
+      );
     }
 
-    auctionEndLogger.info(
-      { count: endedItems.length },
-      "Processing ended items",
-    );
+    // Items that ended with NO bids: notify the creator once (in-app only).
+    // winnerNotified doubles as the "end-of-life processed" flag here.
+    const bidlessItems = await prisma.auctionItem.findMany({
+      where: {
+        endDate: { lt: new Date() },
+        highestBidderId: null,
+        winnerNotified: false,
+      },
+      include: {
+        auction: { select: { id: true, name: true } },
+      },
+      take: 50,
+    });
 
-    // Process each ended item
     await Promise.all(
-      endedItems.map(async (item) => {
+      bidlessItems.map(async (item) => {
         try {
-          // Create winner notification (in-app)
-          await notificationService.notifyAuctionWon(
-            item.highestBidderId!,
+          await notificationService.notifyItemEndedNoBids(
+            item.creatorId,
             item.name,
             item.auction.id,
             item.id,
-            item.currentBid!,
-            item.currency.symbol,
-            undefined,
-            item.currency.code,
+            item.auction.name,
           );
-
-          // Fetch winner info for email
-          const winner = await prisma.user.findUnique({
-            where: { id: item.highestBidderId! },
-            select: { id: true, email: true, name: true },
-          });
-
-          // Queue item won email (respects user preference)
-          if (winner) {
-            await queueItemWonEmail({
-              winnerId: winner.id,
-              winnerEmail: winner.email,
-              winnerName: winner.name,
-              itemId: item.id,
-              itemName: item.name,
-              auctionId: item.auction.id,
-              auctionName: item.auction.name,
-              winningAmount: item.currentBid!,
-              currencySymbol: item.currency.symbol,
-            });
-          }
-
-          // Mark as notified
           await prisma.auctionItem.update({
             where: { id: item.id },
             data: { winnerNotified: true },
           });
-
           auctionEndLogger.debug(
-            { itemId: item.id, winnerId: item.highestBidderId },
-            "Processed ended item",
+            { itemId: item.id },
+            "Notified creator of bidless ended item",
           );
         } catch (err) {
           auctionEndLogger.error(
             { err, itemId: item.id },
-            "Failed to notify winner for item",
+            "Failed to notify creator for bidless item",
           );
         }
       }),
     );
 
-    auctionEndLogger.info(
-      { processed: endedItems.length },
-      "Completed processing ended items",
-    );
-
-    return endedItems.length;
+    return endedItems.length + bidlessItems.length;
   } catch (err) {
     auctionEndLogger.error({ err }, "Failed to process ended items");
     return 0;

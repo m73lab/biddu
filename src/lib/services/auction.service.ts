@@ -629,6 +629,17 @@ export async function getAuctionResultsData(
 
   const userWins = winners.filter((w) => w.isCurrentUser);
 
+  const unsoldItems = items
+    .filter((item) => item.bids.length === 0)
+    .map((item) => ({
+      itemId: item.id,
+      itemName: item.name,
+      thumbnailUrl: item.images[0]?.url
+        ? getPublicUrl(item.images[0].url)
+        : null,
+      isItemCreator: item.creatorId === userId,
+    }));
+
   const isEnded = auction.endDate
     ? new Date(auction.endDate) < new Date()
     : false;
@@ -643,6 +654,7 @@ export async function getAuctionResultsData(
     },
     winners,
     userWins,
+    unsoldItems,
     totalItems: items.length,
     totalBids,
   };

@@ -192,6 +192,9 @@
       "winner": "Ganador",
       "winningBid": "Puja Ganadora",
       "noItemsSold": "Ningún artículo vendido",
+      "noItemsSoldDescription": "Ningún artículo recibió pujas en esta subasta.",
+      "unsoldTitle": "Sin vender",
+      "noBids": "Sin pujas",
       "you": "Tú",
       "anonymous": "Anónimo",
       "yourListing": "Tu artículo"

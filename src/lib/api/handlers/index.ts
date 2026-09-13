@@ -31,9 +31,11 @@ export {
   createItemSchema,
   updateItemSchema,
   fulfillmentSchema,
+  relistItemSchema,
   type CreateItemBody,
   type UpdateItemBody,
   type FulfillmentBody,
+  type RelistItemBody,
 } from "./item.handlers";
 
 export { createBidSchema, type CreateBidBody } from "./bid.handlers";

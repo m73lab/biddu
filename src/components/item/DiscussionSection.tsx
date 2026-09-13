@@ -31,6 +31,7 @@ interface DiscussionSectionProps {
   isOwnerOrAdmin: boolean;
   initialDiscussions: Discussion[];
   discussionsEnabled: boolean;
+  locked?: boolean;
 }
 
 type SortOrder = "newest" | "oldest";
@@ -43,6 +44,7 @@ export function DiscussionSection({
   isOwnerOrAdmin,
   initialDiscussions,
   discussionsEnabled,
+  locked = false,
 }: DiscussionSectionProps) {
   const t = useTranslations("discussions");
   const tErrors = useTranslations("errors");
@@ -318,7 +320,12 @@ export function DiscussionSection({
       )}
 
       {/* New Discussion Form */}
-      {discussionsEnabled ? (
+      {locked ? (
+        <div className="alert alert-info">
+          <span className="icon-[tabler--message-off] size-5"></span>
+          <span>{t("locked")}</span>
+        </div>
+      ) : discussionsEnabled ? (
         <DiscussionForm
           onSubmit={(content) => handleSubmit(content)}
           isSubmitting={isSubmitting && !replyingTo}
@@ -342,7 +349,7 @@ export function DiscussionSection({
               currentUserId={currentUserId}
               itemCreatorId={itemCreatorId}
               isOwnerOrAdmin={isOwnerOrAdmin}
-              discussionsEnabled={discussionsEnabled}
+              discussionsEnabled={discussionsEnabled && !locked}
               onDelete={handleDelete}
               onReply={handleSubmit}
               onEdit={handleEdit}
