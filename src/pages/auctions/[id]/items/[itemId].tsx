@@ -49,6 +49,8 @@ interface Bid {
   } | null;
   createdAt: string;
   isAnonymous: boolean;
+  ipHash?: string | null;
+  userAgent?: string | null;
   user: {
     id: string;
     name: string | null;
@@ -195,6 +197,8 @@ export default function ItemDetailPage({
   const [isEndingItem, setIsEndingItem] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeletingItem, setIsDeletingItem] = useState(false);
+  const [showVoidModal, setShowVoidModal] = useState(false);
+  const [isVoiding, setIsVoiding] = useState(false);
   const [showRelistModal, setShowRelistModal] = useState(false);
   const [relistAuctionId, setRelistAuctionId] = useState(auction.id);
   const [isRelisting, setIsRelisting] = useState(false);
@@ -610,6 +614,39 @@ export default function ItemDetailPage({
     }
   };
 
+  const handleVoidWinner = async () => {
+    setIsVoiding(true);
+    try {
+      const res = await fetch(
+        `/api/auctions/${auction.id}/items/${item.id}/void-winner`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({}),
+        },
+      );
+      const result = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        showToast(result.message || t("detail.voidFailed"), "error");
+        return;
+      }
+      showToast(
+        result.newHighestBidderName
+          ? t("detail.voidSuccessRunnerUp", {
+              name: result.newHighestBidderName,
+            })
+          : t("detail.voidSuccessUnsold"),
+        "success",
+      );
+      setShowVoidModal(false);
+      await mutate();
+    } catch {
+      showToast(tErrors("generic"), "error");
+    } finally {
+      setIsVoiding(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-base-100 relative overflow-x-hidden selection:bg-primary/20">
       {/* Background decorations */}
@@ -867,29 +904,52 @@ export default function ItemDetailPage({
                                             t("history.anonymous")
                                           : t("history.anonymous")}
                                       </span>
-                                      {index === 0 && (
-                                        <span className="badge badge-primary badge-xs">
-                                          {t("history.highest")}
-                                        </span>
+                                        {index === 0 && (
+                                          <span className="badge badge-primary badge-xs">
+                                            {t("history.highest")}
+                                          </span>
+                                        )}
+                                        {bid.user &&
+                                          bid.user.createdAt &&
+                                          Date.now() -
+                                            new Date(
+                                              bid.user.createdAt,
+                                            ).getTime() <
+                                            7 * 24 * 60 * 60 * 1000 && (
+                                            <span
+                                              className="badge badge-warning badge-xs"
+                                              title={t("history.newAccount")}
+                                            >
+                                              {t("history.newAccount")}
+                                            </span>
+                                          )}
+                                      </div>
+                                      <div className="text-xs text-base-content/50">
+                                        {formatDate(bid.createdAt)}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="text-right">
+                                    <div className="font-bold font-mono text-lg">
+                                      {formatAuctionBidDisplay({
+                                        amount: bid.amount,
+                                        enteredRepresentation:
+                                          bid.enteredRepresentation,
+                                        profile: bid.currencyProfile,
+                                        fallbackSymbol: item.currency.symbol,
+                                        fallbackCode: item.currency.code,
+                                      })}
+                                    </div>
+                                    {(isItemOwner || isOwnerOrAdmin) &&
+                                      bid.ipHash && (
+                                        <div
+                                          className="text-[10px] font-mono text-base-content/40"
+                                          title={bid.userAgent || undefined}
+                                        >
+                                          ip {bid.ipHash.slice(0, 8)}
+                                        </div>
                                       )}
-                                    </div>
-                                    <div className="text-xs text-base-content/50">
-                                      {formatDate(bid.createdAt)}
-                                    </div>
                                   </div>
-                                </div>
-                                <div className="text-right">
-                                  <div className="font-bold font-mono text-lg">
-                                    {formatAuctionBidDisplay({
-                                      amount: bid.amount,
-                                      enteredRepresentation:
-                                        bid.enteredRepresentation,
-                                      profile: bid.currencyProfile,
-                                      fallbackSymbol: item.currency.symbol,
-                                      fallbackCode: item.currency.code,
-                                    })}
-                                  </div>
-                                </div>
                               </div>
                             ))}
                           </div>
@@ -1217,6 +1277,16 @@ export default function ItemDetailPage({
                               {t("detail.contactWinner")}
                             </Link>
                           )}
+                            {(isItemOwner || isOwnerOrAdmin) && (
+                              <button
+                                type="button"
+                                onClick={() => setShowVoidModal(true)}
+                                className="btn btn-error btn-outline btn-block gap-2"
+                              >
+                                <span className="icon-[tabler--ban] size-5"></span>
+                                {t("detail.voidWinner")}
+                              </button>
+                            )}
                           </div>
                         )
                       ) : isItemOwner ? (
@@ -1435,6 +1505,17 @@ export default function ItemDetailPage({
         isLoading={isDeletingItem}
         onConfirm={handleDeleteItem}
         onClose={() => !isDeletingItem && setShowDeleteModal(false)}
+      />
+
+      <ConfirmModal
+        isOpen={showVoidModal}
+        title={t("detail.voidWinnerTitle")}
+        message={t("detail.confirmVoidWinner")}
+        confirmLabel={t("detail.voidWinner")}
+        variant="error"
+        isLoading={isVoiding}
+        onConfirm={handleVoidWinner}
+        onClose={() => !isVoiding && setShowVoidModal(false)}
       />
     </div>
   );

@@ -39,8 +39,10 @@ export {
 } from "./item.handlers";
 
 export { createBidSchema, type CreateBidBody } from "./bid.handlers";
+export { voidWinnerSchema, type VoidWinnerBody } from "./bid.handlers";
 
 export { updateRoleSchema, type UpdateRoleBody } from "./member.handlers";
+export { banMemberSchema, type BanMemberBody } from "./member.handlers";
 
 export { createInviteSchema, type CreateInviteBody } from "./invite.handlers";
 

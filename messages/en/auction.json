@@ -175,7 +175,14 @@
       "leave": "Leave Auction",
       "confirmLeave": "Are you sure you want to leave this auction?",
       "updateSuccess": "Role updated successfully",
-      "removeSuccess": "Member removed successfully"
+      "removeSuccess": "Member removed successfully",
+      "ban": "Block",
+      "unban": "Unblock",
+      "confirmBan": "Are you sure you want to block {name}? They will not be able to rejoin or bid in this auction.",
+      "banSuccess": "Member blocked",
+      "unbanSuccess": "Block lifted",
+      "bannedTitle": "Blocked",
+      "bannedEmpty": "Nobody blocked in this auction."
     },
     "results": {
       "title": "Auction Results",

@@ -130,6 +130,7 @@ export default function CreateItemPage({
       startingBid: parseFloat(formData.get("startingBid") as string) || 0,
       minBidIncrement:
         parseFloat(formData.get("minBidIncrement") as string) || 1,
+      maxBid: parseFloat(formData.get("maxBid") as string) || undefined,
       minBidNormalized:
         parseFloat(formData.get("minBidNormalized") as string) || undefined,
       minIncrementNormalized:
@@ -463,16 +464,37 @@ export default function CreateItemPage({
                           {t("minBidIncrement")}
                         </span>
                       </label>
-                      <input
-                        id="minBidIncrement"
-                        name="minBidIncrement"
-                        type="number"
-                        min={amountStep}
-                        step={amountStep}
-                        defaultValue="1"
-                        className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
-                      />
-                    </div>
+                        <input
+                          id="minBidIncrement"
+                          name="minBidIncrement"
+                          type="number"
+                          min={amountStep}
+                          step={amountStep}
+                          defaultValue="1"
+                          className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                        />
+                      </div>
+                      <div className="form-control">
+                        <label className="label" htmlFor="maxBid">
+                          <span className="label-text font-medium">
+                            {t("maxBid")}
+                          </span>
+                        </label>
+                        <input
+                          id="maxBid"
+                          name="maxBid"
+                          type="number"
+                          min={0}
+                          step={amountStep}
+                          placeholder="—"
+                          className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                        />
+                        <label className="label">
+                          <span className="label-text-alt text-base-content/60">
+                            {t("maxBidHint")}
+                          </span>
+                        </label>
+                      </div>
                   </div>
                 </div>
 

@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { ForbiddenError } from "../api/errors";
 import {
   formatCurrency,
   decimalsForCurrency,
@@ -153,6 +154,111 @@ export async function removeMember(memberId: string): Promise<void> {
 
   // Publish realtime events and notify restored bidders (fire-and-forget)
   publishBidUpdatesAndNotify(member.auctionId, affectedItems);
+}
+
+// ============================================================================
+// Auction Bans (anti-fraud: blocked users cannot join or bid)
+// ============================================================================
+
+export interface BanForList {
+  id: string;
+  reason: string | null;
+  createdAt: string;
+  createdById: string | null;
+  user: {
+    id: string;
+    name: string | null;
+    email: string;
+  };
+}
+
+/**
+ * Check if a user is banned from an auction.
+ */
+export async function isUserBanned(
+  auctionId: string,
+  userId: string,
+): Promise<boolean> {
+  const ban = await prisma.auctionBan.findUnique({
+    where: { auctionId_userId: { auctionId, userId } },
+  });
+  return !!ban;
+}
+
+/**
+ * Throw if the user is banned from the auction.
+ * Called on every join path (invite accept, auto-join, rejoin) and on bid.
+ */
+export async function assertNotBanned(
+  auctionId: string,
+  userId: string,
+): Promise<void> {
+  if (await isUserBanned(auctionId, userId)) {
+    throw new ForbiddenError("Has sido bloqueado en esta subasta.");
+  }
+}
+
+/**
+ * Ban a user from an auction (admin action).
+ * Removes any existing membership (cleaning active bids) and records
+ * the ban so invite/link/rejoin/bid paths all reject them afterwards.
+ */
+export async function banMember(
+  auctionId: string,
+  userId: string,
+  createdById: string,
+  reason?: string | null,
+): Promise<void> {
+  const existing = await prisma.auctionMember.findUnique({
+    where: { auctionId_userId: { auctionId, userId } },
+  });
+  if (existing?.role === "OWNER") {
+    throw new ForbiddenError("No se puede bloquear al dueño de la subasta.");
+  }
+  if (existing) {
+    const { affectedItems } = await cleanupMemberBidsAndRemove(
+      auctionId,
+      userId,
+    );
+    publishBidUpdatesAndNotify(auctionId, affectedItems);
+  }
+  await prisma.auctionBan.upsert({
+    where: { auctionId_userId: { auctionId, userId } },
+    update: { reason: reason ?? null, createdById },
+    create: { auctionId, userId, reason: reason ?? null, createdById },
+  });
+}
+
+/**
+ * Lift a ban (admin action).
+ */
+export async function unbanMember(
+  auctionId: string,
+  userId: string,
+): Promise<void> {
+  await prisma.auctionBan.deleteMany({
+    where: { auctionId, userId },
+  });
+}
+
+/**
+ * List bans of an auction with user info (admin view).
+ */
+export async function listBans(auctionId: string): Promise<BanForList[]> {
+  const bans = await prisma.auctionBan.findMany({
+    where: { auctionId },
+    include: {
+      user: { select: { id: true, name: true, email: true } },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+  return bans.map((b) => ({
+    id: b.id,
+    reason: b.reason,
+    createdAt: b.createdAt.toISOString(),
+    createdById: b.createdById,
+    user: b.user,
+  }));
 }
 
 // ============================================================================

@@ -49,9 +49,10 @@ interface EditItemProps {
     name: string;
     description: string | null;
     currencyCode: string;
-    startingBid: number;
-    minBidIncrement: number;
-    bidderAnonymous: boolean;
+      startingBid: number;
+      minBidIncrement: number;
+      maxBid: number | null;
+      bidderAnonymous: boolean;
     endDate: string | null;
     currentBid: number | null;
     isPublished: boolean;
@@ -141,6 +142,7 @@ export default function EditItemPage({
       startingBid: parseFloat(formData.get("startingBid") as string) || 0,
       minBidIncrement:
         parseFloat(formData.get("minBidIncrement") as string) || 1,
+      maxBid: parseFloat(formData.get("maxBid") as string) || null,
       minBidNormalized:
         parseFloat(formData.get("minBidNormalized") as string) || undefined,
       minIncrementNormalized:
@@ -563,10 +565,32 @@ export default function EditItemPage({
                     type="number"
                     min={inputStepForCurrency(item.currencyCode)}
                     step={inputStepForCurrency(item.currencyCode)}
-                    defaultValue={item.minBidIncrement}
-                    className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
-                  />
-                </div>
+                      defaultValue={item.minBidIncrement}
+                      className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                    />
+                  </div>
+                  <div className="form-control">
+                    <label className="label" htmlFor="maxBid">
+                      <span className="label-text font-medium">
+                        {tCreate("maxBid")}
+                      </span>
+                    </label>
+                    <input
+                      id="maxBid"
+                      name="maxBid"
+                      type="number"
+                      min={0}
+                      step={inputStepForCurrency(item.currencyCode)}
+                      defaultValue={item.maxBid ?? ""}
+                      placeholder="—"
+                      className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                    />
+                    <label className="label">
+                      <span className="label-text-alt text-base-content/60">
+                        {tCreate("maxBidHint")}
+                      </span>
+                    </label>
+                  </div>
               </div>
             </div>
 

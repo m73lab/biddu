@@ -10,13 +10,15 @@ import type { Bid } from "@/generated/prisma/client";
 // Types
 // ============================================================================
 
-export interface CreateBidInput {
-  amount: number;
-  normalizedAmount?: number;
-  enteredRepresentation?: unknown;
-  currencyProfileId?: string;
-  isAnonymous?: boolean;
-}
+  export interface CreateBidInput {
+    amount: number;
+    normalizedAmount?: number;
+    enteredRepresentation?: unknown;
+    currencyProfileId?: string;
+    isAnonymous?: boolean;
+    ipHash?: string | null;
+    userAgent?: string | null;
+  }
 
 export interface BidWithUser extends Bid {
   user: {
@@ -349,17 +351,19 @@ export async function placeBid(
   }
 
   const [bid] = await prisma.$transaction([
-    prisma.bid.create({
-      data: {
-        auctionItemId: itemId,
-        userId,
-        amount: input.amount,
-        normalizedAmount: input.normalizedAmount ?? input.amount,
-        enteredRepresentation: input.enteredRepresentation as never,
-        currencyProfileId: input.currencyProfileId,
-        isAnonymous: shouldBeAnonymous,
-      },
-    }),
+      prisma.bid.create({
+        data: {
+          auctionItemId: itemId,
+          userId,
+          amount: input.amount,
+          normalizedAmount: input.normalizedAmount ?? input.amount,
+          enteredRepresentation: input.enteredRepresentation as never,
+          currencyProfileId: input.currencyProfileId,
+          isAnonymous: shouldBeAnonymous,
+          ipHash: input.ipHash ?? null,
+          userAgent: input.userAgent ?? null,
+        },
+      }),
     prisma.auctionItem.update({
       where: { id: itemId },
       data: itemUpdateData,
@@ -416,6 +420,119 @@ export async function placeBid(
   });
 
   return bid;
+}
+
+// ============================================================================
+// Anti-fraud: void winner, strikes
+// ============================================================================
+
+/**
+ * Ghost winners voided across the platform before bidding is blocked.
+ */
+export const MAX_VOID_STRIKES = 2;
+
+/**
+ * Whether the user is blocked from bidding platform-wide
+ * (too many voided winning bids as a no-show).
+ */
+export async function isBiddingBlocked(userId: string): Promise<boolean> {
+  const voids = await prisma.bidVoid.count({ where: { userId } });
+  return voids >= MAX_VOID_STRIKES;
+}
+
+export interface VoidWinnerResult {
+  voidedBidId: string;
+  voidedUserId: string;
+  voidedAmount: number;
+  newHighestBid: number | null;
+  newHighestBidderId: string | null;
+  newHighestBidderName: string | null;
+}
+
+/**
+ * Void the winning bid of an ENDED item (ghost-bid remedy).
+ * - Only ended items (item or auction end in the past).
+ * - Deletes the top bid, promotes the runner-up (or leaves the item
+ *   unsold), resets fulfillment, and re-arms winner notification so the
+ *   runner-up is notified by the existing ended-items flow.
+ * - Records a BidVoid row (audit trail + strike for the ghost bidder).
+ */
+export async function voidWinningBid(
+  itemId: string,
+  actorId: string,
+  reason?: string | null,
+  auctionId?: string,
+): Promise<VoidWinnerResult> {
+  const item = await prisma.auctionItem.findUnique({
+    where: { id: itemId },
+    include: {
+      auction: { select: { id: true, endDate: true } },
+      bids: { orderBy: { amount: "desc" }, take: 2 },
+    },
+  });
+
+  if (!item || (auctionId && item.auctionId !== auctionId)) {
+    throw new Error("Item not found");
+  }
+
+  const now = new Date();
+  const itemEnded = !!item.endDate && item.endDate < now;
+  const auctionEnded =
+    !!item.auction.endDate && item.auction.endDate < now;
+  if (!itemEnded && !auctionEnded) {
+    throw new Error("Only ended items can void their winner");
+  }
+
+  const [top, runnerUp] = item.bids;
+  if (!top || !item.highestBidderId) {
+    throw new Error("Item has no winning bid to void");
+  }
+
+  const result = await prisma.$transaction(async (tx) => {
+    await tx.bid.delete({ where: { id: top.id } });
+
+    await tx.bidVoid.create({
+      data: {
+        auctionItemId: itemId,
+        auctionId: item.auction.id,
+        bidId: top.id,
+        userId: top.userId,
+        amount: top.amount,
+        reason: reason ?? null,
+        createdById: actorId,
+      },
+    });
+
+    let newName: string | null = null;
+    if (runnerUp) {
+      const runnerUser = await tx.user.findUnique({
+        where: { id: runnerUp.userId },
+        select: { name: true },
+      });
+      newName = runnerUser?.name ?? null;
+    }
+
+    await tx.auctionItem.update({
+      where: { id: itemId },
+      data: {
+        currentBid: runnerUp ? runnerUp.amount : null,
+        highestBidderId: runnerUp ? runnerUp.userId : null,
+        fulfillmentStatus: null,
+        winnerNotified: false,
+      },
+    });
+
+    return {
+      voidedBidId: top.id,
+      voidedUserId: top.userId,
+      voidedAmount: top.amount,
+      newHighestBid: runnerUp ? runnerUp.amount : null,
+      newHighestBidderId: runnerUp ? runnerUp.userId : null,
+      newHighestBidderName: newName,
+    };
+  });
+
+  return result;
 }
 
 /**

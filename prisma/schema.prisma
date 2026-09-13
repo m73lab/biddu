@@ -33,14 +33,16 @@ model User {
   createdAuctions           Auction[]                  @relation("AuctionCreator")
   createdItems              AuctionItem[]              @relation("ItemCreator")
   updatedItems              AuctionItem[]              @relation("ItemUpdater")
-  bids                      Bid[]
-  itemDiscussions           ItemDiscussion[]
+    bids                      Bid[]
+    bidVoids                  BidVoid[]
+    itemDiscussions           ItemDiscussion[]
   sentInvites               AuctionInvite[]            @relation("InviteSender")
   notifications             Notification[]
   settings                  UserSettings?
   passwordResetTokens       PasswordResetToken[]
   emailVerificationTokens   EmailVerificationToken[]
-  auctionLeaves             AuctionLeave[]
+    auctionLeaves             AuctionLeave[]
+    bans                      AuctionBan[]
   slotCodesRedeemed         SlotCode[]        @relation("SlotCodeRedeemer")
   slotRedemptions           SlotRedemption[]
 
@@ -169,11 +171,12 @@ model Auction {
   creatorId         String
   creator           User              @relation("AuctionCreator", fields: [creatorId], references: [id], onDelete: Cascade)
   
-  // Relations
-  members           AuctionMember[]
-  items             AuctionItem[]
-  invites           AuctionInvite[]
-  leaves            AuctionLeave[]
+    // Relations
+    members           AuctionMember[]
+    items             AuctionItem[]
+    invites           AuctionInvite[]
+    leaves            AuctionLeave[]
+    bans              AuctionBan[]
   customCurrencies  AuctionCurrencyProfile[]
 
   @@map("auctions")
@@ -339,6 +342,7 @@ model AuctionItem {
   minBidConstraint Json?
   minBidNormalized Float?
   minIncrementNormalized Float?
+  maxBid           Float?    // Owner-set maximum bid cap (anti-joke bids)
   
   // Current state
   currentBid      Float?    // null if no bids yet
@@ -380,10 +384,11 @@ model AuctionItem {
   // Discussions
   discussionsEnabled Boolean   @default(true)  // Admin/creator can toggle
   
-  // Relations
-  images          AuctionItemImage[]
-  bids            Bid[]
-  discussions     ItemDiscussion[]
+    // Relations
+    images          AuctionItemImage[]
+    bids            Bid[]
+    bidVoids        BidVoid[]
+    discussions     ItemDiscussion[]
 
   @@map("auction_items")
 }
@@ -428,12 +433,64 @@ model Bid {
   
   // Per-bid anonymity (only used when auction.bidderVisibility = PER_BID)
   isAnonymous   Boolean     @default(false)
-  
+
+  // Anti-fraud audit (hashed IP + user agent, visible to item owner/admin)
+  ipHash        String?
+  userAgent     String?
+
   createdAt     DateTime    @default(now())
 
   @@index([auctionItemId, amount])
   @@index([auctionItemId, normalizedAmount])
   @@map("bids")
+}
+
+// ============================================
+// AUCTION BANS (blocked users cannot join or bid)
+// ============================================
+
+model AuctionBan {
+  id          String   @id @default(cuid())
+
+  auctionId   String
+  auction     Auction  @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  reason      String?
+  createdById String?  // Owner/admin who issued the ban
+  createdAt   DateTime @default(now())
+
+  @@unique([auctionId, userId])
+  @@index([auctionId])
+  @@map("auction_bans")
+}
+
+// ============================================
+// BID VOIDS (voided winning bids: audit trail + strikes)
+// ============================================
+
+model BidVoid {
+  id            String      @id @default(cuid())
+
+  auctionItemId String
+  auctionItem   AuctionItem @relation(fields: [auctionItemId], references: [id], onDelete: Cascade)
+
+  auctionId     String     // Denormalized for quick lookups (no FK)
+
+  bidId         String     // Original winning bid id (row deleted on void)
+  userId        String     // Ghost bidder
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount        Float      // Voided amount
+
+  reason        String?
+  createdById   String     // Owner/admin who voided
+  createdAt     DateTime   @default(now())
+
+  @@index([userId, createdAt])
+  @@index([auctionItemId])
+  @@map("bid_voids")
 }
 
 // ============================================

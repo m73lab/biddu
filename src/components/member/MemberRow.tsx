@@ -24,6 +24,7 @@ interface MemberRowProps {
   isLoading: boolean;
   onRoleChange: (memberId: string, newRole: string) => void;
   onRemove: (memberId: string, memberName: string) => void;
+  onBan: (memberId: string, memberName: string, userId: string) => void;
 }
 
 export function MemberRow({
@@ -33,6 +34,7 @@ export function MemberRow({
   isLoading,
   onRoleChange,
   onRemove,
+  onBan,
 }: MemberRowProps) {
   const t = useTranslations("member");
   const tRoles = useTranslations("auction.roles");
@@ -115,20 +117,40 @@ export function MemberRow({
       {isAdmin && (
         <td className="text-right">
           {canModify && (
-            <button
-              onClick={() =>
-                onRemove(member.id, member.user.name || member.user.email)
-              }
-              disabled={isLoading}
-              className="btn btn-ghost btn-sm text-error"
-              title={t("remove")}
-            >
-              {isLoading ? (
-                <span className="loading loading-spinner loading-sm"></span>
-              ) : (
-                <span className="icon-[tabler--trash] size-4"></span>
-              )}
-            </button>
+            <div className="flex justify-end gap-1">
+              <button
+                onClick={() =>
+                  onBan(
+                    member.id,
+                    member.user.name || member.user.email,
+                    member.user.id,
+                  )
+                }
+                disabled={isLoading}
+                className="btn btn-ghost btn-sm text-warning"
+                title={t("ban")}
+              >
+                {isLoading ? (
+                  <span className="loading loading-spinner loading-sm"></span>
+                ) : (
+                  <span className="icon-[tabler--ban] size-4"></span>
+                )}
+              </button>
+              <button
+                onClick={() =>
+                  onRemove(member.id, member.user.name || member.user.email)
+                }
+                disabled={isLoading}
+                className="btn btn-ghost btn-sm text-error"
+                title={t("remove")}
+              >
+                {isLoading ? (
+                  <span className="loading loading-spinner loading-sm"></span>
+                ) : (
+                  <span className="icon-[tabler--trash] size-4"></span>
+                )}
+              </button>
+            </div>
           )}
         </td>
       )}

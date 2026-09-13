@@ -7,12 +7,15 @@ import {
 } from "@/lib/api/errors";
 import * as bidService from "@/lib/services/bid.service";
 import * as itemService from "@/lib/services/item.service";
+import * as memberService from "@/lib/services/member.service";
 import * as auctionCurrencyService from "@/lib/services/auction-currency.service";
 import {
   normalizeBidValue,
   evaluateBidRules,
 } from "@/lib/services/auction-currency-rule.service";
 import { prisma } from "@/lib/prisma";
+import { getClientIp } from "@/lib/api/middleware/rate-limit";
+import { createHash } from "crypto";
 import {
   formatCurrency,
   decimalsForCurrency,
@@ -79,6 +82,16 @@ export const placeBid: ApiHandler = async (req, res, ctx) => {
       { type: "EMAIL_NOT_VERIFIED" },
     );
   }
+
+  // Anti-fraud: repeat no-show ghosts are blocked platform-wide
+  if (await bidService.isBiddingBlocked(ctx.session!.user.id)) {
+    throw new ForbiddenError(
+      "Tus pujas están bloqueadas por incumplimientos reiterados. Contacta al administrador.",
+    );
+  }
+
+  // Anti-fraud: users blocked from this auction cannot bid
+  await memberService.assertNotBanned(auctionId, ctx.session!.user.id);
 
   // Get item with auction info
   const item = await prisma.auctionItem.findUnique({
@@ -178,6 +191,17 @@ export const placeBid: ApiHandler = async (req, res, ctx) => {
     );
   }
 
+  // Owner-set maximum bid cap (per-item anti-joke limit)
+  if (item.maxBid != null && normalizedAmount > item.maxBid) {
+    throw new BadRequestError(
+      `La puja supera el máximo fijado por el dueño (${formatCurrency(
+        item.maxBid,
+        item.currency.symbol,
+        decimalsForCurrency(item.currency.code),
+      )})`,
+    );
+  }
+
   // Zero-decimal currencies (CLP) without a custom profile: whole numbers
   const plainAmount = currencyProfile
     ? validatedBody.amount ?? normalizedAmount
@@ -185,6 +209,11 @@ export const placeBid: ApiHandler = async (req, res, ctx) => {
         validatedBody.amount ?? normalizedAmount,
         item.currency.code,
       );
+
+  // Anti-fraud audit (hashed IP + user agent, visible to item owner/admin)
+  const ipHash = createHash("sha256").update(getClientIp(req)).digest("hex");
+  const rawUa = req.headers["user-agent"];
+  const userAgent = typeof rawUa === "string" ? rawUa.slice(0, 255) : null;
 
   const bid = await bidService.placeBid(
     itemId,
@@ -195,9 +224,51 @@ export const placeBid: ApiHandler = async (req, res, ctx) => {
       enteredRepresentation: validatedBody.enteredRepresentation,
       currencyProfileId: currencyProfile?.id,
       isAnonymous: validatedBody.isAnonymous,
+      ipHash,
+      userAgent,
     },
     item.auction.bidderVisibility,
   );
 
   res.status(201).json(bid);
+};
+
+export const voidWinnerSchema = z.object({
+  reason: z.string().max(280).optional(),
+});
+
+export type VoidWinnerBody = z.infer<typeof voidWinnerSchema>;
+
+/**
+ * POST /api/auctions/[id]/items/[itemId]/void-winner - Void the winning
+ * bid of an ended item (ghost-bid remedy, owner/admin only).
+ * Promotes the runner-up (or leaves the item unsold) and records a
+ * strike for the ghost bidder.
+ */
+export const voidWinningBid: ApiHandler = async (req, res, ctx) => {
+  const auctionId = ctx.params.id;
+  const itemId = ctx.params.itemId;
+
+  const role = ctx.membership?.role;
+  if (role !== "OWNER" && role !== "ADMIN") {
+    throw new ForbiddenError("Only auction owners or admins can void a winner");
+  }
+
+  const { validatedBody } = req as ValidatedRequest<VoidWinnerBody>;
+
+  try {
+    const result = await bidService.voidWinningBid(
+      itemId,
+      ctx.session!.user.id,
+      validatedBody.reason,
+      auctionId,
+    );
+    res.status(200).json(result);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Cannot void winner";
+    if (message === "Item not found") {
+      throw new NotFoundError("Item not found");
+    }
+    throw new BadRequestError(message);
+  }
 };

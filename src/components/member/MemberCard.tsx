@@ -12,6 +12,7 @@ interface MemberCardProps {
       id: string;
       name: string | null;
       email: string;
+      createdAt: string;
     };
   };
   currentUserId: string;
@@ -19,6 +20,7 @@ interface MemberCardProps {
   isLoading: boolean;
   onRoleChange: (memberId: string, newRole: string) => void;
   onRemove: (memberId: string, memberName: string) => void;
+  onBan: (memberId: string, memberName: string, userId: string) => void;
 }
 
 export function MemberCard({
@@ -28,12 +30,17 @@ export function MemberCard({
   isLoading,
   onRoleChange,
   onRemove,
+  onBan,
 }: MemberCardProps) {
   const t = useTranslations("member");
   const tRoles = useTranslations("auction.roles");
   const { formatShortDate } = useFormatters();
   const isCurrentUser = member.user.id === currentUserId;
   const canModify = isAdmin && !isCurrentUser && member.role !== "OWNER";
+  const isNewAccount =
+    !!member.user.createdAt &&
+    Date.now() - new Date(member.user.createdAt).getTime() <
+      7 * 24 * 60 * 60 * 1000;
 
   const getRoleLabel = (role: string) => {
     const roleKey = role.toLowerCase();
@@ -62,6 +69,11 @@ export function MemberCard({
               {isCurrentUser && (
                 <span className="badge badge-xs ml-2">{t("you")}</span>
               )}
+              {isNewAccount && (
+                <span className="badge badge-warning badge-xs ml-2">
+                  {t("newAccount")}
+                </span>
+              )}
             </div>
             <div className="text-xs text-base-content/60 break-all">
               {member.user.email}
@@ -69,20 +81,40 @@ export function MemberCard({
           </div>
         </div>
         {canModify && isAdmin && (
-          <button
-            onClick={() =>
-              onRemove(member.id, member.user.name || member.user.email)
-            }
-            disabled={isLoading}
-            className="btn btn-ghost btn-xs text-error"
-            title={t("remove")}
-          >
-            {isLoading ? (
-              <span className="loading loading-spinner loading-xs"></span>
-            ) : (
-              <span className="icon-[tabler--trash] size-4"></span>
-            )}
-          </button>
+          <div className="flex gap-1">
+            <button
+              onClick={() =>
+                onBan(
+                  member.id,
+                  member.user.name || member.user.email,
+                  member.user.id,
+                )
+              }
+              disabled={isLoading}
+              className="btn btn-ghost btn-xs text-warning"
+              title={t("ban")}
+            >
+              {isLoading ? (
+                <span className="loading loading-spinner loading-xs"></span>
+              ) : (
+                <span className="icon-[tabler--ban] size-4"></span>
+              )}
+            </button>
+            <button
+              onClick={() =>
+                onRemove(member.id, member.user.name || member.user.email)
+              }
+              disabled={isLoading}
+              className="btn btn-ghost btn-xs text-error"
+              title={t("remove")}
+            >
+              {isLoading ? (
+                <span className="loading loading-spinner loading-xs"></span>
+              ) : (
+                <span className="icon-[tabler--trash] size-4"></span>
+              )}
+            </button>
+          </div>
         )}
       </div>
       <div className="flex flex-wrap items-center gap-2 mt-2">

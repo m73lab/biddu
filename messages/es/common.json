@@ -130,7 +130,8 @@
     "you": "Tú",
     "remove": "Eliminar miembro",
     "joined": "Se unió",
-    "newAccount": "Cuenta nueva"
+    "newAccount": "Cuenta nueva",
+    "ban": "Bloquear miembro"
   },
   "upload": {
     "uploading": "Subiendo...",

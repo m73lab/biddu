@@ -11,6 +11,8 @@ interface Bid {
   amount: number;
   createdAt: string;
   isAnonymous: boolean;
+  ipHash?: string | null;
+  userAgent?: string | null;
   user: {
     id: string;
     name: string | null;
@@ -22,12 +24,14 @@ interface BidHistoryProps {
   bids: Bid[];
   currencySymbol: string;
   currencyCode?: string;
+  showAudit?: boolean;
 }
 
 export function BidHistory({
   bids,
   currencySymbol,
   currencyCode,
+  showAudit = false,
 }: BidHistoryProps) {
   const t = useTranslations("item.history");
   const { formatDate } = useFormatters();
@@ -88,6 +92,14 @@ export function BidHistory({
                 <div className="text-xs text-base-content/60">
                   {formatDate(bid.createdAt)}
                 </div>
+                {showAudit && bid.ipHash && (
+                  <div
+                    className="text-[10px] font-mono text-base-content/40"
+                    title={bid.userAgent || undefined}
+                  >
+                    ip {bid.ipHash.slice(0, 8)}
+                  </div>
+                )}
               </div>
             </div>
           ))}

@@ -57,8 +57,9 @@ export interface CreateItemInput {
   minBidIncrement?: number;
   minBidConstraint?: Record<string, unknown>;
   minBidNormalized?: number;
-  minIncrementNormalized?: number;
-  bidderAnonymous?: boolean;
+    minIncrementNormalized?: number;
+    maxBid?: number;
+    bidderAnonymous?: boolean;
   endDate?: string | null;
   isPublished?: boolean;
   discussionsEnabled?: boolean;
@@ -76,8 +77,9 @@ export interface UpdateItemInput {
   minBidIncrement?: number;
   minBidConstraint?: Record<string, unknown> | null;
   minBidNormalized?: number | null;
-  minIncrementNormalized?: number | null;
-  bidderAnonymous?: boolean;
+    minIncrementNormalized?: number | null;
+    maxBid?: number | null;
+    bidderAnonymous?: boolean;
   endDate?: string | null;
   isPublished?: boolean;
   discussionsEnabled?: boolean;
@@ -142,8 +144,10 @@ export interface BidForDisplay {
     precision: number;
     denominationConfig: unknown;
   } | null;
-  createdAt: string;
+    createdAt: string;
     isAnonymous: boolean;
+    ipHash?: string | null;
+    userAgent?: string | null;
     user: {
       id: string;
       name: string | null;
@@ -382,6 +386,15 @@ export async function getItemDetailPageData(
     };
   });
 
+  // Anti-fraud audit (IP hash + user agent) is only exposed to the
+  // item owner and auction admins, never in exports or public views.
+  if (isItemOwner || isViewerAdmin) {
+    for (let i = 0; i < bids.length; i++) {
+      bids[i].ipHash = bidsRaw[i].ipHash;
+      bids[i].userAgent = bidsRaw[i].userAgent;
+    }
+  }
+
   // Get item images
   const images = await prisma.auctionItemImage.findMany({
     where: { auctionItemId: itemId },
@@ -507,14 +520,15 @@ export async function getItemForEditPage(
   });
 
   return {
-    item: {
-      id: item.id,
-      name: item.name,
-      description: item.description,
-      currencyCode: item.currencyCode,
-      startingBid: item.startingBid,
-      minBidIncrement: item.minBidIncrement,
-      bidderAnonymous: item.bidderAnonymous,
+      item: {
+        id: item.id,
+        name: item.name,
+        description: item.description,
+        currencyCode: item.currencyCode,
+        startingBid: item.startingBid,
+        minBidIncrement: item.minBidIncrement,
+        maxBid: item.maxBid,
+        bidderAnonymous: item.bidderAnonymous,
       endDate: item.endDate?.toISOString() || null,
       currentBid: item.currentBid,
       isPublished: item.isPublished,
@@ -857,6 +871,7 @@ export async function createItem(
       minBidConstraint: (input.minBidConstraint ?? null) as never,
       minBidNormalized: input.minBidNormalized ?? null,
       minIncrementNormalized: input.minIncrementNormalized ?? null,
+      maxBid: input.maxBid ?? null,
       bidderAnonymous: input.bidderAnonymous || false,
       endDate: input.endDate ? new Date(input.endDate) : null,
       isPublished: input.isPublished ?? false,
@@ -995,9 +1010,12 @@ export async function updateItem(
   if (input.minBidNormalized !== undefined) {
     updateData.minBidNormalized = input.minBidNormalized;
   }
-  if (input.minIncrementNormalized !== undefined) {
-    updateData.minIncrementNormalized = input.minIncrementNormalized;
-  }
+    if (input.minIncrementNormalized !== undefined) {
+      updateData.minIncrementNormalized = input.minIncrementNormalized;
+    }
+    if (input.maxBid !== undefined) {
+      updateData.maxBid = input.maxBid;
+    }
   if (input.bidderAnonymous !== undefined)
     updateData.bidderAnonymous = input.bidderAnonymous;
   if (input.endDate !== undefined) {
@@ -1136,6 +1154,7 @@ export async function relistItem(
       minBidConstraint: (source.minBidConstraint ?? null) as never,
       minBidNormalized: source.minBidNormalized,
       minIncrementNormalized: source.minIncrementNormalized,
+      maxBid: source.maxBid,
       bidderAnonymous: source.bidderAnonymous,
       endDate,
       isPublished: false,

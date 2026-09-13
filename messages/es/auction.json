@@ -175,7 +175,14 @@
       "leave": "Abandonar Subasta",
       "confirmLeave": "¿Estás seguro de que quieres abandonar esta subasta?",
       "updateSuccess": "Rol actualizado correctamente",
-      "removeSuccess": "Miembro eliminado correctamente"
+      "removeSuccess": "Miembro eliminado correctamente",
+      "ban": "Bloquear",
+      "unban": "Desbloquear",
+      "confirmBan": "¿Estás seguro de que quieres bloquear a {name}? No podrá volver a unirse ni pujar en esta subasta.",
+      "banSuccess": "Miembro bloqueado",
+      "unbanSuccess": "Bloqueo levantado",
+      "bannedTitle": "Bloqueados",
+      "bannedEmpty": "Nadie bloqueado en esta subasta."
     },
     "results": {
       "title": "Resultados de la Subasta",

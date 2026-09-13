@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { queueInviteEmail } from "@/lib/email/service";
 import * as notificationService from "./notification.service";
+import * as memberService from "./member.service";
 import type { AuctionInvite } from "@/generated/prisma/client";
 
 // ============================================================================
@@ -242,6 +243,9 @@ export async function acceptInvite(
   if (!invite) {
     throw new Error("Invite not found");
   }
+
+  // Banned users cannot join, even with a valid invite
+  await memberService.assertNotBanned(invite.auctionId, userId);
 
 
   // Check if already a member

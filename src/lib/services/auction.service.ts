@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getPublicUrl } from "@/lib/storage";
+import * as memberService from "./member.service";
 import { MemberRole } from "@/generated/prisma/enums";
 import type { Auction, AuctionMember } from "@/generated/prisma/client";
 
@@ -488,6 +489,11 @@ export async function autoJoinAuction(
     return null;
   }
 
+  // Banned users cannot join
+  if (await memberService.isUserBanned(auctionId, userId)) {
+    return null;
+  }
+
 
   return prisma.auctionMember.create({
     data: {
@@ -525,6 +531,14 @@ export async function rejoinAuction(
     });
     if (!leave) {
       throw new Error("NOT_LEFT");
+    }
+
+    // Banned users cannot rejoin
+    const banned = await tx.auctionBan.findUnique({
+      where: { auctionId_userId: { auctionId, userId } },
+    });
+    if (banned) {
+      throw new Error("BANNED_FROM_AUCTION");
     }
 
     // Verify not already a member
