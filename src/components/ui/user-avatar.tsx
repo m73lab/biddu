@@ -3,8 +3,12 @@
  *
  * Same seed always renders the same face: pass the stable user id as
  * `seed` so the avatar never changes. Falls back to email, then name.
+ * Clicking expands to a zoomed lightbox (portal to body).
  */
 
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import { useTranslations } from "next-intl";
 import { Avatar } from "@avatune/react";
 import theme from "@avatune/nevmstas-theme/react";
 
@@ -17,6 +21,8 @@ interface UserAvatarProps {
   avatarSeed?: string | null;
   size?: "xs" | "sm" | "md" | "lg" | "xl";
   className?: string;
+  /** Open zoom lightbox on click. Defaults to true. */
+  expandable?: boolean;
 }
 
 const sizeClasses = {
@@ -42,16 +48,79 @@ export function UserAvatar({
   avatarSeed,
   size = "sm",
   className = "",
+  expandable = true,
 }: UserAvatarProps) {
   const resolvedSeed = avatarSeed || seed || email || name || "biddu";
+  const t = useTranslations("common");
+  const [expanded, setExpanded] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!expanded) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setExpanded(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [expanded]);
+
+  const label = name || email || undefined;
 
   return (
-    <div
-      className={`rounded-full overflow-hidden shrink-0 ring-2 ring-primary/20 bg-base-200 ${sizeClasses[size]} ${className}`}
-      title={name || email || undefined}
-    >
-      <Avatar theme={theme} seed={resolvedSeed} size={sizePx[size]} />
-    </div>
+    <>
+      <div
+        className={`rounded-full overflow-hidden shrink-0 ring-2 ring-primary/20 bg-base-200 ${sizeClasses[size]} ${className} ${
+          expandable ? "cursor-zoom-in hover:ring-primary/50 transition-shadow" : ""
+        }`}
+        title={label}
+        role={expandable ? "button" : undefined}
+        aria-label={expandable ? label : undefined}
+        onClick={
+          expandable
+            ? (e) => {
+                e.stopPropagation();
+                setExpanded(true);
+              }
+            : undefined
+        }
+      >
+        <Avatar theme={theme} seed={resolvedSeed} size={sizePx[size]} />
+      </div>
+      {expanded && mounted
+        ? createPortal(
+            <div className="modal modal-open z-[200]">
+              <div className="modal-box max-w-xs flex flex-col items-center gap-3">
+                <div className="rounded-3xl overflow-hidden ring-4 ring-primary/30 bg-base-200">
+                  <Avatar theme={theme} seed={resolvedSeed} size={220} />
+                </div>
+                {label && (
+                  <div className="font-bold text-center truncate max-w-full">
+                    {label}
+                  </div>
+                )}
+                <div className="modal-action w-full justify-center">
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => setExpanded(false)}
+                  >
+                    {t("close")}
+                  </button>
+                </div>
+              </div>
+              <div
+                className="modal-backdrop bg-black/60"
+                onClick={() => setExpanded(false)}
+              ></div>
+            </div>,
+            document.body,
+          )
+        : null}
+    </>
   );
 }
 
