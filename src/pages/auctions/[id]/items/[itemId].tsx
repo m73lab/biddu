@@ -52,6 +52,7 @@ interface Bid {
   user: {
     id: string;
     name: string | null;
+    createdAt?: string | null;
   } | null; // null if anonymous to viewer
 }
 

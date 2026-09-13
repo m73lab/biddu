@@ -143,12 +143,13 @@ export interface BidForDisplay {
     denominationConfig: unknown;
   } | null;
   createdAt: string;
-  isAnonymous: boolean;
-  user: {
-    id: string;
-    name: string | null;
-  } | null;
-}
+    isAnonymous: boolean;
+    user: {
+      id: string;
+      name: string | null;
+      createdAt?: string | null;
+    } | null;
+  }
 
 export interface DiscussionForDisplay {
   id: string;
@@ -243,6 +244,17 @@ export async function getItemForDetailPage(
 }
 
 /**
+ * Shape a bid's user for display (ISO date for the client).
+ */
+function toBidUser(
+  u: { id: string; name: string | null; createdAt: Date } | null,
+): { id: string; name: string | null; createdAt: string } | null {
+  return u
+    ? { id: u.id, name: u.name, createdAt: u.createdAt.toISOString() }
+    : null;
+}
+
+/**
  * Get comprehensive item data for detail page
  */
 export async function getItemDetailPageData(
@@ -284,7 +296,7 @@ export async function getItemDetailPageData(
         },
       },
       user: {
-        select: { id: true, name: true },
+          select: { id: true, name: true, createdAt: true },
       },
     },
     orderBy: { amount: "desc" },
@@ -327,7 +339,7 @@ export async function getItemDetailPageData(
         currencyProfile: bid.currencyProfile,
         createdAt: bid.createdAt.toISOString(),
         isAnonymous: bid.isAnonymous,
-        user: bid.user,
+        user: toBidUser(bid.user),
       };
     }
 
@@ -340,7 +352,7 @@ export async function getItemDetailPageData(
         currencyProfile: bid.currencyProfile,
         createdAt: bid.createdAt.toISOString(),
         isAnonymous: false,
-        user: bid.user,
+        user: toBidUser(bid.user),
       };
     }
 
@@ -366,7 +378,7 @@ export async function getItemDetailPageData(
       currencyProfile: bid.currencyProfile,
       createdAt: bid.createdAt.toISOString(),
       isAnonymous: bid.isAnonymous,
-      user: bid.isAnonymous ? null : bid.user,
+      user: bid.isAnonymous ? null : toBidUser(bid.user),
     };
   });
 
@@ -691,7 +703,7 @@ export async function getItemBidsForDisplay(
         },
       },
       user: {
-        select: { id: true, name: true },
+          select: { id: true, name: true, createdAt: true },
       },
     },
     orderBy: { amount: "desc" },
@@ -710,7 +722,7 @@ export async function getItemBidsForDisplay(
         currencyProfile: bid.currencyProfile,
         createdAt: bid.createdAt.toISOString(),
         isAnonymous: bid.isAnonymous,
-        user: bid.user,
+        user: toBidUser(bid.user),
       };
     }
 
@@ -724,7 +736,7 @@ export async function getItemBidsForDisplay(
         currencyProfile: bid.currencyProfile,
         createdAt: bid.createdAt.toISOString(),
         isAnonymous: false,
-        user: bid.user,
+        user: toBidUser(bid.user),
       };
     }
 
@@ -764,7 +776,7 @@ export async function getItemBidsForDisplay(
       currencyProfile: bid.currencyProfile,
       createdAt: bid.createdAt.toISOString(),
       isAnonymous: false,
-      user: bid.user,
+      user: toBidUser(bid.user),
     };
   });
 }

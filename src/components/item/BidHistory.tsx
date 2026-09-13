@@ -14,6 +14,7 @@ interface Bid {
   user: {
     id: string;
     name: string | null;
+    createdAt?: string | null;
   } | null;
 }
 
@@ -66,6 +67,18 @@ export function BidHistory({
                       {t("highest")}
                     </span>
                   )}
+                  {bid.user &&
+                    !bid.isAnonymous &&
+                    bid.user.createdAt &&
+                    Date.now() - new Date(bid.user.createdAt).getTime() <
+                      7 * 24 * 60 * 60 * 1000 && (
+                      <span
+                        className="badge badge-warning badge-xs"
+                        title={t("newAccount")}
+                      >
+                        {t("newAccount")}
+                      </span>
+                    )}
                 </div>
               </div>
               <div className="text-right">

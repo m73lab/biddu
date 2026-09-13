@@ -67,6 +67,19 @@ export const placeBid: ApiHandler = async (req, res, ctx) => {
 
   const { validatedBody } = req as ValidatedRequest<CreateBidBody>;
 
+  // Anti-fraud: only verified emails can bid (sockpuppet friction).
+  // Unverified users get a clear message pointing to verification.
+  const bidderAccount = await prisma.user.findUnique({
+    where: { id: ctx.session!.user.id },
+    select: { emailVerified: true },
+  });
+  if (!bidderAccount?.emailVerified) {
+    throw new BadRequestError(
+      "Debes verificar tu email para pujar. Revisa tu bandeja de entrada o reenvía la verificación desde tu perfil.",
+      { type: "EMAIL_NOT_VERIFIED" },
+    );
+  }
+
   // Get item with auction info
   const item = await prisma.auctionItem.findUnique({
     where: { id: itemId },
@@ -147,6 +160,21 @@ export const placeBid: ApiHandler = async (req, res, ctx) => {
         item.currency.symbol,
         decimalsForCurrency(item.currency.code),
       )}`,
+    );
+  }
+
+  // Anti-joke guard: reject absurd bids far above any sane price for
+  // this item. The cap scales with the auction's own numbers so legit
+  // bidding (including healthy jumps) is unaffected.
+  const absurdCap =
+    Math.max(item.currentBid ?? 0, item.startingBid, minBid) * 50;
+  if (absurdCap > 0 && normalizedAmount > absurdCap) {
+    throw new BadRequestError(
+      `La puja supera el máximo permitido (${formatCurrency(
+        absurdCap,
+        item.currency.symbol,
+        decimalsForCurrency(item.currency.code),
+      )})`,
     );
   }
 

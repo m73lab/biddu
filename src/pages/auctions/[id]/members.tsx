@@ -11,13 +11,14 @@ import { withAuth } from "@/lib/auth/withAuth";
 
 interface Member {
   id: string;
-  role: string;
-  joinedAt: string;
+    role: string;
+    joinedAt: string;
   user: {
-    id: string;
-    name: string | null;
-    email: string;
-  };
+      id: string;
+      name: string | null;
+      email: string;
+      createdAt: string;
+    };
   invitedBy: {
     name: string | null;
     email: string;

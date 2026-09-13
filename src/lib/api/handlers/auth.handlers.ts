@@ -39,6 +39,48 @@ const resendVerificationSchema = z.object({
 });
 
 // ============================================================================
+// Anti-fraud: disposable email domains
+// ============================================================================
+
+/**
+ * Well-known temporary/disposable email providers. Sockpuppet and joke-bid
+ * accounts overwhelmingly use these; blocking them at registration raises
+ * attacker cost with negligible impact on legitimate users.
+ */
+const DISPOSABLE_EMAIL_DOMAINS = new Set([
+  "mailinator.com",
+  "tempmail.com",
+  "temp-mail.org",
+  "temp-mail.io",
+  "guerrillamail.com",
+  "guerrillamailblock.com",
+  "10minutemail.com",
+  "yopmail.com",
+  "throwaway.email",
+  "fakeinbox.com",
+  "getnada.com",
+  "trashmail.com",
+  "trashmail.io",
+  "moakt.com",
+  "maildrop.cc",
+  "emailondeck.com",
+  "harakirimail.com",
+  "dispostable.com",
+  "mytemp.email",
+  "tempail.com",
+  "mintemail.com",
+  "mailnesia.com",
+]);
+
+function isDisposableEmailDomain(domain: string): boolean {
+  const d = domain.toLowerCase();
+  for (const blocked of DISPOSABLE_EMAIL_DOMAINS) {
+    if (d === blocked || d.endsWith(`.${blocked}`)) return true;
+  }
+  return false;
+}
+
+// ============================================================================
 // Register
 // ============================================================================
 
@@ -55,6 +97,14 @@ export const register: ApiHandler = async (req, res) => {
       }
     });
     throw new ValidationError("Validation failed", errors);
+  }
+
+  // Anti-fraud: block disposable/temporary email domains (sockpuppet friction)
+  const emailDomain = parsed.data.email.split("@")[1]?.toLowerCase() || "";
+  if (isDisposableEmailDomain(emailDomain)) {
+    throw new ValidationError("Validation failed", {
+      email: ["Disposable email addresses are not allowed."],
+    });
   }
 
   await authService.registerUser(parsed.data);

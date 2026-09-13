@@ -129,7 +129,8 @@
     "noName": "No name",
     "you": "You",
     "remove": "Remove member",
-    "joined": "Joined"
+    "joined": "Joined",
+    "newAccount": "New account"
   },
   "upload": {
     "uploading": "Uploading...",

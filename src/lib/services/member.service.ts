@@ -13,10 +13,11 @@ import * as notificationService from "./notification.service";
 
 export interface MemberWithUser extends AuctionMember {
   user: {
-    id: string;
-    name: string | null;
-    email: string;
-  };
+      id: string;
+      name: string | null;
+      email: string;
+      createdAt: Date | string;
+    };
 }
 
 export interface MemberForList {
@@ -24,10 +25,11 @@ export interface MemberForList {
   role: string;
   joinedAt: string;
   user: {
-    id: string;
-    name: string | null;
-    email: string;
-  };
+      id: string;
+      name: string | null;
+      email: string;
+      createdAt: Date | string;
+    };
   invitedBy: {
     name: string | null;
     email: string;
@@ -48,7 +50,7 @@ export async function getAuctionMembers(
     where: { auctionId },
     include: {
       user: {
-        select: { id: true, name: true, email: true },
+        select: { id: true, name: true, email: true, createdAt: true },
       },
     },
     orderBy: [{ role: "asc" }, { joinedAt: "asc" }],
@@ -65,7 +67,7 @@ export async function getAuctionMembersForListPage(
     where: { auctionId },
     include: {
       user: {
-        select: { id: true, name: true, email: true },
+        select: { id: true, name: true, email: true, createdAt: true },
       },
     },
     orderBy: [{ role: "asc" }, { joinedAt: "asc" }],
@@ -80,7 +82,7 @@ export async function getAuctionMembersForListPage(
     inviterIds.length > 0
       ? await prisma.user.findMany({
           where: { id: { in: inviterIds } },
-          select: { id: true, name: true, email: true },
+          select: { id: true, name: true, email: true, createdAt: true },
         })
       : [];
 
@@ -105,7 +107,7 @@ export async function getMemberById(
     where: { id: memberId },
     include: {
       user: {
-        select: { id: true, name: true, email: true },
+        select: { id: true, name: true, email: true, createdAt: true },
       },
     },
   });
@@ -127,7 +129,7 @@ export async function updateMemberRole(
     data: { role: newRole },
     include: {
       user: {
-        select: { id: true, name: true, email: true },
+        select: { id: true, name: true, email: true, createdAt: true },
       },
     },
   });

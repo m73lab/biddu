@@ -171,10 +171,10 @@ export const withAuthRateLimit = withRateLimit({
 
 /**
  * Rate limit for registration
- * 3 registrations per hour per IP
+ * 2 registrations per hour per IP (sockpuppet friction)
  */
 export const withRegistrationRateLimit = withRateLimit({
-  points: 3,
+  points: 2,
   duration: 60 * 60, // 1 hour in seconds
   keyPrefix: "register",
 });

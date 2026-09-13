@@ -12,6 +12,7 @@ interface MemberRowProps {
       id: string;
       name: string | null;
       email: string;
+      createdAt: string;
     };
     invitedBy: {
       name: string | null;
@@ -38,6 +39,10 @@ export function MemberRow({
   const { formatShortDate } = useFormatters();
   const isCurrentUser = member.user.id === currentUserId;
   const canModify = isAdmin && !isCurrentUser && member.role !== "OWNER";
+  const isNewAccount =
+    !!member.user.createdAt &&
+    Date.now() - new Date(member.user.createdAt).getTime() <
+      7 * 24 * 60 * 60 * 1000;
 
   const getRoleLabel = (role: string) => {
     const roleKey = role.toLowerCase();
@@ -61,6 +66,14 @@ export function MemberRow({
               {member.user.name || t("noName")}
               {isCurrentUser && (
                 <span className="badge badge-sm ml-2">{t("you")}</span>
+              )}
+              {isNewAccount && (
+                <span
+                  className="badge badge-warning badge-sm ml-2"
+                  title={t("newAccount")}
+                >
+                  {t("newAccount")}
+                </span>
               )}
             </div>
             <div className="text-sm text-base-content/60">
