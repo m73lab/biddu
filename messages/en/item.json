@@ -225,7 +225,17 @@
         "markPending": "Back to pending",
         "updating": "Saving...",
         "updateFailed": "Could not update status",
-        "amountToPay": "Amount to pay"
+        "amountToPay": "Amount to pay",
+        "rateTitle": "Rate your experience",
+        "rateButton": "Rate",
+        "rateEdit": "Edit",
+        "rateThanks": "Thanks for rating! It will be revealed once your counterpart rates too.",
+        "ratePlaceholder": "Tell us how the deal went (optional)",
+        "rateSubmit": "Submit rating",
+        "rateCancel": "Cancel",
+        "rateFailed": "Could not submit the rating",
+        "myRating": "Your rating: {score}/5",
+        "blindNote": "Blind until both sides rate"
       },
       "contact": {
         "title": "Contact the winner",

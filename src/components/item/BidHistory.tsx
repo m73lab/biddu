@@ -5,6 +5,7 @@ import {
 } from "@/utils/formatters";
 import { useFormatters } from "@/i18n";
 import { UserAvatar, AnonymousAvatar } from "@/components/ui/user-avatar";
+import { ScoreBadge } from "@/components/common/ScoreBadge";
 
 interface Bid {
   id: string;
@@ -13,12 +14,16 @@ interface Bid {
   isAnonymous: boolean;
   ipHash?: string | null;
   userAgent?: string | null;
-  user: {
-    id: string;
-    name: string | null;
-    createdAt?: string | null;
-  } | null;
-}
+    user: {
+      id: string;
+      name: string | null;
+      createdAt?: string | null;
+      avgSellerRating?: number | null;
+      sellerRatingCount?: number;
+      avgBuyerRating?: number | null;
+      buyerRatingCount?: number;
+    } | null;
+  }
 
 interface BidHistoryProps {
   bids: Bid[];
@@ -70,6 +75,14 @@ export function BidHistory({
                     <span className="badge badge-primary badge-sm text-center">
                       {t("highest")}
                     </span>
+                  )}
+                  {bid.user && !bid.isAnonymous && (
+                    <ScoreBadge
+                      avgSeller={bid.user.avgSellerRating ?? null}
+                      sellerCount={bid.user.sellerRatingCount ?? 0}
+                      avgBuyer={bid.user.avgBuyerRating ?? null}
+                      buyerCount={bid.user.buyerRatingCount ?? 0}
+                    />
                   )}
                   {bid.user &&
                     !bid.isAnonymous &&

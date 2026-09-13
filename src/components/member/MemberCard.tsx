@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl";
 import { ROLE_COLORS, ROLE_OPTIONS } from "@/utils/auction-helpers";
 import { useFormatters } from "@/i18n";
 import { UserAvatar } from "@/components/ui/user-avatar";
+import { ScoreBadge } from "@/components/common/ScoreBadge";
 
 interface MemberCardProps {
   member: {
@@ -13,6 +14,10 @@ interface MemberCardProps {
       name: string | null;
       email: string;
       createdAt: string;
+      avgSellerRating: number | null;
+      sellerRatingCount: number;
+      avgBuyerRating: number | null;
+      buyerRatingCount: number;
     };
   };
   currentUserId: string;
@@ -77,6 +82,14 @@ export function MemberCard({
             </div>
             <div className="text-xs text-base-content/60 break-all">
               {member.user.email}
+            </div>
+            <div className="mt-1">
+              <ScoreBadge
+                avgSeller={member.user.avgSellerRating}
+                sellerCount={member.user.sellerRatingCount}
+                avgBuyer={member.user.avgBuyerRating}
+                buyerCount={member.user.buyerRatingCount}
+              />
             </div>
           </div>
         </div>

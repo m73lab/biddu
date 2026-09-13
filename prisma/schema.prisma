@@ -35,6 +35,12 @@ model User {
   updatedItems              AuctionItem[]              @relation("ItemUpdater")
     bids                      Bid[]
     bidVoids                  BidVoid[]
+    ratingsGiven              Rating[]               @relation("RatingRater")
+    ratingsReceived           Rating[]               @relation("RatingRatee")
+    avgSellerRating           Float?
+    sellerRatingCount         Int                    @default(0)
+    avgBuyerRating            Float?
+    buyerRatingCount          Int                    @default(0)
     itemDiscussions           ItemDiscussion[]
   sentInvites               AuctionInvite[]            @relation("InviteSender")
   notifications             Notification[]
@@ -392,10 +398,11 @@ model AuctionItem {
   // Discussions
   discussionsEnabled Boolean   @default(true)  // Admin/creator can toggle
   
-    // Relations
-    images          AuctionItemImage[]
-    bids            Bid[]
-    bidVoids        BidVoid[]
+      // Relations
+      images          AuctionItemImage[]
+      bids            Bid[]
+      bidVoids        BidVoid[]
+      ratings         Rating[]
     discussions     ItemDiscussion[]
 
   @@map("auction_items")
@@ -502,6 +509,43 @@ model BidVoid {
 }
 
 // ============================================
+// RATINGS (two-way buyer/seller reputation)
+// ============================================
+
+enum RatingRole {
+  BUYER   // Ratee acted as buyer (winner)
+  SELLER  // Ratee acted as seller (item creator)
+}
+
+model Rating {
+  id            String      @id @default(cuid())
+
+  auctionItemId String
+  auctionItem   AuctionItem @relation(fields: [auctionItemId], references: [id], onDelete: Cascade)
+
+  auctionId     String     // Denormalized for quick lookups (no FK)
+
+  raterId       String
+  rater         User       @relation("RatingRater", fields: [raterId], references: [id], onDelete: Cascade)
+
+  rateeId       String
+  ratee         User       @relation("RatingRatee", fields: [rateeId], references: [id], onDelete: Cascade)
+
+  role          RatingRole // Ratee's role in that transaction
+  score         Int        // 1-5 stars
+  comment       String?
+  revealed      Boolean    @default(false) // Blind until both sides rate (or 7 days)
+
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@unique([auctionItemId, raterId, role])
+  @@index([rateeId, revealed])
+  @@index([revealed, createdAt])
+  @@map("ratings")
+}
+
+// ============================================
 // NOTIFICATIONS
 // ============================================
 
@@ -523,7 +567,9 @@ enum NotificationType {
     FULFILLMENT_UPDATED // Payment/delivery status changed on a won item
     SLOT_EXPIRING       // Monthly slots expiring soon
     SHILL_SUSPECTED     // Possible shill/fake bidding detected (owner review)
-}
+    RATING_REQUEST      // Please rate your counterpart after delivery
+    RATING_RECEIVED     // Someone rated you (revealed)
+  }
 
 model Notification {
   id          String           @id @default(cuid())

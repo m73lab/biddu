@@ -29,6 +29,7 @@ import {
   inputStepForCurrency,
 } from "@/utils/formatters";
 import { FulfillmentCard } from "@/components/item/FulfillmentCard";
+import { ScoreBadge } from "@/components/common/ScoreBadge";
 import * as auctionService from "@/lib/services/auction.service";
 import * as itemService from "@/lib/services/item.service";
 import * as userService from "@/lib/services/user.service";
@@ -51,12 +52,16 @@ interface Bid {
   isAnonymous: boolean;
   ipHash?: string | null;
   userAgent?: string | null;
-  user: {
-    id: string;
-    name: string | null;
-    createdAt?: string | null;
-  } | null; // null if anonymous to viewer
-}
+    user: {
+      id: string;
+      name: string | null;
+      createdAt?: string | null;
+      avgSellerRating?: number | null;
+      sellerRatingCount?: number;
+      avgBuyerRating?: number | null;
+      buyerRatingCount?: number;
+    } | null; // null if anonymous to viewer
+  }
 
 interface Discussion {
   id: string;
@@ -114,10 +119,14 @@ interface ItemDetailProps {
     antiSnipeThresholdSeconds: number;
     antiSnipeExtensionSeconds: number;
     creator: {
-      id: string;
-      name: string | null;
-      email: string;
-    };
+        id: string;
+        name: string | null;
+        email: string;
+        avgSellerRating?: number | null;
+        sellerRatingCount?: number;
+        avgBuyerRating?: number | null;
+        buyerRatingCount?: number;
+      };
   };
   bids: Bid[];
   discussions: Discussion[];
@@ -737,13 +746,25 @@ export default function ItemDetailPage({
                           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">
                             {item.name}
                           </h1>
-                          <div className="flex items-center gap-2 text-sm text-base-content/60 ">
-                            <span className="icon-[tabler--user] size-4"></span>
-                            <span>{t("listedBy")}</span>
-                            <span className="font-medium text-base-content/80">
-                              {item.creator.name || item.creator.email}
-                            </span>
-                          </div>
+                            <div className="flex items-center gap-2 text-sm text-base-content/60 ">
+                              <span className="icon-[tabler--user] size-4"></span>
+                              <span>{t("listedBy")}</span>
+                              <span className="font-medium text-base-content/80">
+                                {item.creator.name || item.creator.email}
+                              </span>
+                              <ScoreBadge
+                                avgSeller={
+                                  item.creator.avgSellerRating ?? null
+                                }
+                                sellerCount={
+                                  item.creator.sellerRatingCount ?? 0
+                                }
+                                avgBuyer={item.creator.avgBuyerRating ?? null}
+                                buyerCount={
+                                  item.creator.buyerRatingCount ?? 0
+                                }
+                              />
+                            </div>
                         </div>
 
                         <div className="flex gap-2 self-start w-full sm:w-auto flex-col items-end">
@@ -948,6 +969,22 @@ export default function ItemDetailPage({
                                               {t("history.newAccount")}
                                             </span>
                                           )}
+                                        {bid.user && (
+                                          <ScoreBadge
+                                            avgSeller={
+                                              bid.user.avgSellerRating ?? null
+                                            }
+                                            sellerCount={
+                                              bid.user.sellerRatingCount ?? 0
+                                            }
+                                            avgBuyer={
+                                              bid.user.avgBuyerRating ?? null
+                                            }
+                                            buyerCount={
+                                              bid.user.buyerRatingCount ?? 0
+                                            }
+                                          />
+                                        )}
                                       </div>
                                       <div className="text-xs text-base-content/50">
                                         {formatDate(bid.createdAt)}
@@ -1410,11 +1447,12 @@ export default function ItemDetailPage({
                           isHighestBidder) && (
                           <div className="mt-6">
                             <FulfillmentCard
-                              auctionId={auction.id}
-                              itemId={item.id}
-                              initialStatus={item.fulfillmentStatus}
-                              canManage={isItemOwner || isOwnerOrAdmin}
-                              isWinnerView={isHighestBidder}
+                                auctionId={auction.id}
+                                itemId={item.id}
+                                initialStatus={item.fulfillmentStatus}
+                                canManage={isItemOwner || isOwnerOrAdmin}
+                                isWinnerView={isHighestBidder}
+                                canRate={isItemOwner || isHighestBidder}
                               amount={formatCurrency(
                                 item.currentBid ?? 0,
                                 item.currency.symbol,

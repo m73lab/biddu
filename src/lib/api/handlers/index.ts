@@ -11,6 +11,7 @@ export * as userHandlers from "./user.handlers";
 export * as notificationHandlers from "./notification.handlers";
 export * as systemHandlers from "./system.handlers";
 export * as discussionHandlers from "./discussion.handlers";
+export * as ratingHandlers from "./rating.handlers";
 
 // Re-export schemas for convenience
 export {
@@ -68,3 +69,8 @@ export {
   type CreateDiscussionBody,
   type UpdateDiscussionBody,
 } from "./discussion.handlers";
+
+export {
+  upsertRatingSchema,
+  type UpsertRatingBody,
+} from "./rating.handlers";

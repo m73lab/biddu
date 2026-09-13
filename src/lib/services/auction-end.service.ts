@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import * as notificationService from "./notification.service";
 import { processUnconfirmedWinners } from "./bid.service";
+import { revealDueRatings } from "./rating.service";
 import { queueItemWonEmail } from "@/lib/email/service";
 import { createLogger } from "@/lib/logger";
 
@@ -145,7 +146,13 @@ export async function processEndedItems(): Promise<number> {
       return 0;
     });
 
-    return endedItems.length + bidlessItems.length + autoVoided;
+    // Ratings blind window: reveal ratings older than 7 days.
+    const revealed = await revealDueRatings().catch((err) => {
+      auctionEndLogger.error({ err }, "Failed to reveal due ratings");
+      return 0;
+    });
+
+    return endedItems.length + bidlessItems.length + autoVoided + revealed;
   } catch (err) {
     auctionEndLogger.error({ err }, "Failed to process ended items");
     return 0;

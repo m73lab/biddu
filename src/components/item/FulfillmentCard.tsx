@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 
 export type FulfillmentStatus = "PENDING_PAYMENT" | "PAID" | "DELIVERED";
@@ -53,6 +53,7 @@ interface FulfillmentCardProps {
   initialStatus: FulfillmentStatus | string | null;
   canManage: boolean;
   isWinnerView: boolean;
+  canRate: boolean;
   amount: string;
 }
 
@@ -62,6 +63,7 @@ export function FulfillmentCard({
   initialStatus,
   canManage,
   isWinnerView,
+  canRate,
   amount,
 }: FulfillmentCardProps) {
   const t = useTranslations("item.detail.fulfillment");
@@ -70,6 +72,61 @@ export function FulfillmentCard({
   const [error, setError] = useState<string | null>(null);
 
   const key = status ?? "NONE";
+
+  // Rating (two-way, blind until both sides rate)
+  const [myRating, setMyRating] = useState<{
+    score: number;
+    comment: string | null;
+  } | null>(null);
+  const [showRate, setShowRate] = useState(false);
+  const [stars, setStars] = useState(5);
+  const [rateComment, setRateComment] = useState("");
+  const [ratingSaving, setRatingSaving] = useState(false);
+  const [ratingMsg, setRatingMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (status !== "DELIVERED" || !canRate) return;
+    fetch(`/api/auctions/${auctionId}/items/${itemId}/ratings`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.myRating) {
+          setMyRating({
+            score: data.myRating.score,
+            comment: data.myRating.comment ?? null,
+          });
+        }
+      })
+      .catch(() => undefined);
+  }, [auctionId, itemId, status, canRate]);
+
+  const submitRating = async () => {
+    setRatingSaving(true);
+    setRatingMsg(null);
+    try {
+      const res = await fetch(
+        `/api/auctions/${auctionId}/items/${itemId}/ratings`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            score: stars,
+            comment: rateComment.trim() || null,
+          }),
+        },
+      );
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.message || t("rateFailed"));
+      }
+      setMyRating({ score: stars, comment: rateComment.trim() || null });
+      setShowRate(false);
+      setRatingMsg(t("rateThanks"));
+    } catch (err) {
+      setRatingMsg(err instanceof Error ? err.message : t("rateFailed"));
+    } finally {
+      setRatingSaving(false);
+    }
+  };
 
   const update = async (next: FulfillmentStatus) => {
     setSaving(next);
@@ -156,6 +213,114 @@ export function FulfillmentCard({
               {t("updating")}
             </span>
           )}
+        </div>
+      )}
+
+      {status === "DELIVERED" && canRate && (
+        <div className="mt-4 rounded-lg bg-base-200/50 p-4">
+          {myRating ? (
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className="icon-[tabler--star-filled] size-5 text-warning"></span>
+                <span className="font-bold">
+                  {t("myRating", { score: myRating.score })}
+                </span>
+                <span className="text-xs text-base-content/60">
+                  {t("blindNote")}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setStars(myRating.score);
+                  setRateComment(myRating.comment ?? "");
+                  setShowRate(true);
+                }}
+                className="btn btn-ghost btn-sm gap-1"
+              >
+                <span className="icon-[tabler--edit] size-4"></span>
+                {t("rateEdit")}
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between gap-3">
+              <div className="text-sm font-medium">{t("rateTitle")}</div>
+              <button
+                type="button"
+                onClick={() => setShowRate(true)}
+                className="btn btn-sm btn-warning gap-1"
+              >
+                <span className="icon-[tabler--star] size-4"></span>
+                {t("rateButton")}
+              </button>
+            </div>
+          )}
+          {ratingMsg && (
+            <div className="text-xs text-base-content/60 mt-2">{ratingMsg}</div>
+          )}
+        </div>
+      )}
+
+      {showRate && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg flex items-center gap-2">
+              <span className="icon-[tabler--star] size-5 text-warning"></span>
+              {t("rateTitle")}
+            </h3>
+            <div className="flex items-center gap-1 my-4">
+              {[1, 2, 3, 4, 5].map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => setStars(n)}
+                  className="btn btn-ghost btn-square"
+                  aria-label={`${n} / 5`}
+                >
+                  <span
+                    className={`size-7 ${
+                      n <= stars
+                        ? "icon-[tabler--star-filled] text-warning"
+                        : "icon-[tabler--star] text-base-content/30"
+                    }`}
+                  ></span>
+                </button>
+              ))}
+            </div>
+            <textarea
+              className="textarea textarea-bordered w-full"
+              rows={3}
+              maxLength={500}
+              placeholder={t("ratePlaceholder")}
+              value={rateComment}
+              onChange={(e) => setRateComment(e.target.value)}
+            />
+            <div className="modal-action">
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() => setShowRate(false)}
+                disabled={ratingSaving}
+              >
+                {t("rateCancel")}
+              </button>
+              <button
+                type="button"
+                className="btn btn-warning"
+                onClick={submitRating}
+                disabled={ratingSaving}
+              >
+                {ratingSaving && (
+                  <span className="loading loading-spinner loading-xs"></span>
+                )}
+                {t("rateSubmit")}
+              </button>
+            </div>
+          </div>
+          <div
+            className="modal-backdrop bg-black/50"
+            onClick={() => !ratingSaving && setShowRate(false)}
+          ></div>
         </div>
       )}
     </div>

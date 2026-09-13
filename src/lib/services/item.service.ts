@@ -99,6 +99,10 @@ export interface ItemWithDetails extends AuctionItem {
     id: string;
     name: string | null;
     email: string;
+    avgSellerRating?: number | null;
+    sellerRatingCount?: number;
+    avgBuyerRating?: number | null;
+    buyerRatingCount?: number;
   };
 }
 
@@ -130,6 +134,10 @@ export interface ItemDetailForPage {
     id: string;
     name: string | null;
     email: string;
+    avgSellerRating?: number | null;
+    sellerRatingCount?: number;
+    avgBuyerRating?: number | null;
+    buyerRatingCount?: number;
   };
 }
 
@@ -154,6 +162,10 @@ export interface BidForDisplay {
       id: string;
       name: string | null;
       createdAt?: string | null;
+      avgSellerRating?: number | null;
+      sellerRatingCount?: number;
+      avgBuyerRating?: number | null;
+      buyerRatingCount?: number;
     } | null;
   }
 
@@ -256,10 +268,34 @@ export async function getItemForDetailPage(
  * Shape a bid's user for display (ISO date for the client).
  */
 function toBidUser(
-  u: { id: string; name: string | null; createdAt: Date } | null,
-): { id: string; name: string | null; createdAt: string } | null {
+  u: {
+    id: string;
+    name: string | null;
+    createdAt: Date;
+    avgSellerRating: number | null;
+    sellerRatingCount: number;
+    avgBuyerRating: number | null;
+    buyerRatingCount: number;
+  } | null,
+): {
+  id: string;
+  name: string | null;
+  createdAt: string;
+  avgSellerRating: number | null;
+  sellerRatingCount: number;
+  avgBuyerRating: number | null;
+  buyerRatingCount: number;
+} | null {
   return u
-    ? { id: u.id, name: u.name, createdAt: u.createdAt.toISOString() }
+    ? {
+        id: u.id,
+        name: u.name,
+        createdAt: u.createdAt.toISOString(),
+        avgSellerRating: u.avgSellerRating,
+        sellerRatingCount: u.sellerRatingCount,
+        avgBuyerRating: u.avgBuyerRating,
+        buyerRatingCount: u.buyerRatingCount,
+      }
     : null;
 }
 
@@ -272,16 +308,24 @@ export async function getItemDetailPageData(
   viewerId: string,
   bidderVisibility: string,
   isViewerAdmin: boolean,
-): Promise<ItemDetailPageData | null> {
-  const item = await prisma.auctionItem.findUnique({
-    where: { id: itemId },
-    include: {
-      currency: true,
-      creator: {
-        select: { id: true, name: true, email: true },
+  ): Promise<ItemDetailPageData | null> {
+    const item = await prisma.auctionItem.findUnique({
+      where: { id: itemId },
+      include: {
+        currency: true,
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            avgSellerRating: true,
+            sellerRatingCount: true,
+            avgBuyerRating: true,
+            buyerRatingCount: true,
+          },
+        },
       },
-    },
-  });
+    });
 
   if (!item || item.auctionId !== auctionId) return null;
 
@@ -305,7 +349,7 @@ export async function getItemDetailPageData(
         },
       },
       user: {
-          select: { id: true, name: true, createdAt: true },
+          select: { id: true, name: true, createdAt: true, avgSellerRating: true, sellerRatingCount: true, avgBuyerRating: true, buyerRatingCount: true },
       },
     },
     orderBy: { amount: "desc" },
@@ -725,7 +769,7 @@ export async function getItemBidsForDisplay(
         },
       },
       user: {
-          select: { id: true, name: true, createdAt: true },
+          select: { id: true, name: true, createdAt: true, avgSellerRating: true, sellerRatingCount: true, avgBuyerRating: true, buyerRatingCount: true },
       },
     },
     orderBy: { amount: "desc" },

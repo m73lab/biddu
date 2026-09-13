@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl";
 import { ROLE_COLORS, ROLE_OPTIONS } from "@/utils/auction-helpers";
 import { useFormatters } from "@/i18n";
 import { UserAvatar } from "@/components/ui/user-avatar";
+import { ScoreBadge } from "@/components/common/ScoreBadge";
 
 interface MemberRowProps {
   member: {
@@ -13,6 +14,10 @@ interface MemberRowProps {
       name: string | null;
       email: string;
       createdAt: string;
+      avgSellerRating: number | null;
+      sellerRatingCount: number;
+      avgBuyerRating: number | null;
+      buyerRatingCount: number;
     };
     invitedBy: {
       name: string | null;
@@ -78,8 +83,16 @@ export function MemberRow({
                 </span>
               )}
             </div>
-            <div className="text-sm text-base-content/60">
-              {member.user.email}
+            <div className="flex items-center gap-2">
+              <div className="text-sm text-base-content/60">
+                {member.user.email}
+              </div>
+              <ScoreBadge
+                avgSeller={member.user.avgSellerRating}
+                sellerCount={member.user.sellerRatingCount}
+                avgBuyer={member.user.avgBuyerRating}
+                buyerCount={member.user.buyerRatingCount}
+              />
             </div>
           </div>
         </div>

@@ -280,7 +280,49 @@ export async function notifyShillSuspected(
     userId: ownerId,
     type: "SHILL_SUSPECTED",
     title: "Posible puja artificial detectada",
-    message: `Patrón sospechoso de ${bidderName ?? "un pujador"} en "${itemName}" (${auctionName}): ${reason}. Revísalo antes del cierre.`,
+    message: `Patrón sospechoso de ${bidderName ?? "un pujador"} en "${itemName}" (${auctionName}): ${reason} Revísalo antes del cierre.`,
+    auctionId,
+    itemId,
+  });
+}
+
+/**
+ * Ask a party to rate their counterpart after delivery.
+ * In-app only (no email).
+ */
+export async function notifyRatingRequest(
+  userId: string,
+  itemName: string,
+  auctionId: string,
+  itemId: string,
+): Promise<Notification> {
+  return createNotification({
+    userId,
+    type: "RATING_REQUEST",
+    title: "Califica tu contraparte",
+    message: `"${itemName}" fue entregado. Califica tu experiencia para ayudar a la comunidad.`,
+    auctionId,
+    itemId,
+  });
+}
+
+/**
+ * Tell a user their rating was revealed.
+ * In-app only (no email).
+ */
+export async function notifyRatingReceived(
+  userId: string,
+  raterName: string | null,
+  score: number,
+  itemName: string,
+  auctionId: string,
+  itemId: string,
+): Promise<Notification> {
+  return createNotification({
+    userId,
+    type: "RATING_RECEIVED",
+    title: "Nueva calificación",
+    message: `${raterName ?? "Alguien"} te calificó con ${score}/5 en "${itemName}".`,
     auctionId,
     itemId,
   });
