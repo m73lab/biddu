@@ -148,9 +148,14 @@ model Auction {
   // Bidder visibility settings
   bidderVisibility  BidderVisibility  @default(VISIBLE)
   
-  // Timing settings
-  endDate           DateTime?         // null = indefinite
-  itemEndMode       ItemEndMode       @default(CUSTOM)
+    // Timing settings
+    endDate           DateTime?         // null = indefinite
+    itemEndMode       ItemEndMode       @default(CUSTOM)
+
+    // Anti-fraud (opt-in per auction)
+    bidderApproval       Boolean       @default(false) // New members join as PENDING until approved to bid
+    winnerConfirmEnabled Boolean       @default(false) // Winner must confirm purchase or it passes to runner-up
+    winnerConfirmHours   Int           @default(48)    // Hours the winner has to confirm
   
   // Thumbnail image
   thumbnailUrl      String?           // Path to thumbnail image
@@ -188,9 +193,10 @@ model Auction {
 
 enum MemberRole {
   OWNER     // Can do everything (assigned to creator)
-  ADMIN     // Can manage members and items
-  CREATOR   // Can create auction items
-  BIDDER    // Can only bid
+    ADMIN     // Can manage members and items
+    CREATOR   // Can create auction items
+    BIDDER    // Can only bid
+    PENDING   // Joined but not yet approved to bid (bidder-approval mode)
 }
 
 model AuctionMember {
@@ -365,9 +371,11 @@ model AuctionItem {
   antiSnipeThresholdSeconds Int       @default(300)  // Seconds before end that triggers extension (60-3600)
   antiSnipeExtensionSeconds Int       @default(300)  // Seconds to extend by (5-3600)
   
-  // Notification tracking
-  fulfillmentStatus FulfillmentStatus?
-  winnerNotified  Boolean   @default(false) // Track if winner notification sent
+    // Notification tracking
+    fulfillmentStatus FulfillmentStatus?
+    winnerNotified  Boolean   @default(false) // Track if winner notification sent
+    winnerConfirmed Boolean   @default(false) // Winner confirmed purchase (confirm mode)
+    winnerConfirmDeadline DateTime?           // Confirm before this or it passes on
   
   // Metadata
   createdAt       DateTime  @default(now())
@@ -512,8 +520,9 @@ enum NotificationType {
   NEW_ITEM        // New item added to an auction you're in
   NEW_BID         // Someone placed a bid in an auction you're in
   NEW_COMMENT     // Someone commented on an item you're following
-  FULFILLMENT_UPDATED // Payment/delivery status changed on a won item
-  SLOT_EXPIRING       // Monthly slots expiring soon
+    FULFILLMENT_UPDATED // Payment/delivery status changed on a won item
+    SLOT_EXPIRING       // Monthly slots expiring soon
+    SHILL_SUSPECTED     // Possible shill/fake bidding detected (owner review)
 }
 
 model Notification {

@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import * as notificationService from "./notification.service";
+import { processUnconfirmedWinners } from "./bid.service";
 import { queueItemWonEmail } from "@/lib/email/service";
 import { createLogger } from "@/lib/logger";
 
@@ -137,7 +138,14 @@ export async function processEndedItems(): Promise<number> {
       }),
     );
 
-    return endedItems.length + bidlessItems.length;
+    // Winner-confirmation mode: auto-void unconfirmed winners past
+    // their deadline (passes to runner-up with a fresh window).
+    const autoVoided = await processUnconfirmedWinners().catch((err) => {
+      auctionEndLogger.error({ err }, "Failed to auto-void unconfirmed");
+      return 0;
+    });
+
+    return endedItems.length + bidlessItems.length + autoVoided;
   } catch (err) {
     auctionEndLogger.error({ err }, "Failed to process ended items");
     return 0;

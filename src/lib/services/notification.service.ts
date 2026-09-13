@@ -263,6 +263,30 @@ export async function notifyItemEndedNoBids(
 }
 
 /**
+ * Warn auction owners/admins about a possible shill/fake-bidding pattern.
+ * In-app only (no email). Advisory: the owner decides what to do
+ * (warn, remove, block, or void the winner after close).
+ */
+export async function notifyShillSuspected(
+  ownerId: string,
+  bidderName: string | null,
+  itemName: string,
+  auctionId: string,
+  itemId: string,
+  auctionName: string,
+  reason: string,
+): Promise<Notification> {
+  return createNotification({
+    userId: ownerId,
+    type: "SHILL_SUSPECTED",
+    title: "Posible puja artificial detectada",
+    message: `Patrón sospechoso de ${bidderName ?? "un pujador"} en "${itemName}" (${auctionName}): ${reason}. Revísalo antes del cierre.`,
+    auctionId,
+    itemId,
+  });
+}
+
+/**
  * Notify auction owner that a member joined
  */
 export async function notifyMemberJoined(

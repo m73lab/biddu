@@ -79,6 +79,7 @@ export const ROLE_COLORS: Record<string, string> = {
   ADMIN: "badge-secondary",
   CREATOR: "badge-accent",
   BIDDER: "badge-ghost",
+  PENDING: "badge-warning",
 };
 
-export const ROLE_OPTIONS = ["ADMIN", "CREATOR", "BIDDER"] as const;
+export const ROLE_OPTIONS = ["ADMIN", "CREATOR", "BIDDER", "PENDING"] as const;

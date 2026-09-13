@@ -84,6 +84,7 @@ interface ItemDetailProps {
     name: string;
     bidderVisibility: string;
     endDate: string | null;
+    winnerConfirmEnabled: boolean;
   };
   auctionItems: SidebarItem[];
   itemSidebarCollapsed: boolean;
@@ -101,8 +102,10 @@ interface ItemDetailProps {
     minBidIncrement: number;
     currentBid: number | null;
     highestBidderId: string | null;
-    fulfillmentStatus: string | null;
-    bidderAnonymous: boolean;
+      fulfillmentStatus: string | null;
+      winnerConfirmed: boolean;
+      winnerConfirmDeadline: string | null;
+      bidderAnonymous: boolean;
     endDate: string | null;
     createdAt: string;
     isPublished: boolean;
@@ -199,6 +202,7 @@ export default function ItemDetailPage({
   const [isDeletingItem, setIsDeletingItem] = useState(false);
   const [showVoidModal, setShowVoidModal] = useState(false);
   const [isVoiding, setIsVoiding] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
   const [showRelistModal, setShowRelistModal] = useState(false);
   const [relistAuctionId, setRelistAuctionId] = useState(auction.id);
   const [isRelisting, setIsRelisting] = useState(false);
@@ -644,6 +648,27 @@ export default function ItemDetailPage({
       showToast(tErrors("generic"), "error");
     } finally {
       setIsVoiding(false);
+    }
+  };
+
+  const handleConfirmWinner = async () => {
+    setIsConfirming(true);
+    try {
+      const res = await fetch(
+        `/api/auctions/${auction.id}/items/${item.id}/confirm-winner`,
+        { method: "POST" },
+      );
+      const result = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        showToast(result.message || t("detail.confirmFailed"), "error");
+        return;
+      }
+      showToast(t("detail.confirmSuccess"), "success");
+      await mutate();
+    } catch {
+      showToast(tErrors("generic"), "error");
+    } finally {
+      setIsConfirming(false);
     }
   };
 
@@ -1321,15 +1346,62 @@ export default function ItemDetailPage({
                             <div className="text-sm">
                               {t("detail.contact.noPhoneText")}
                             </div>
-                            <Link
-                              href="/settings"
-                              className="btn btn-sm btn-warning mt-2"
-                            >
-                              {t("detail.contact.goSettings")}
-                            </Link>
+                              <Link
+                                href="/settings"
+                                className="btn btn-sm btn-warning mt-2"
+                              >
+                                {t("detail.contact.goSettings")}
+                              </Link>
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
+
+                      {isEnded &&
+                        isHighestBidder &&
+                        auction.winnerConfirmEnabled &&
+                        !item.winnerConfirmed && (
+                          <div className="alert alert-info shadow-sm mt-6">
+                            <span className="icon-[tabler--badge-check] size-5"></span>
+                            <div className="flex-1">
+                              <div className="font-bold">
+                                {t("detail.confirmTitle")}
+                              </div>
+                              <div className="text-sm">
+                                {item.winnerConfirmDeadline
+                                  ? t("detail.confirmText", {
+                                      date: formatDate(
+                                        item.winnerConfirmDeadline,
+                                      ),
+                                    })
+                                  : t("detail.confirmTextNoDeadline")}
+                              </div>
+                              <button
+                                type="button"
+                                onClick={handleConfirmWinner}
+                                disabled={isConfirming}
+                                className="btn btn-sm btn-primary mt-2 gap-1"
+                              >
+                                {isConfirming ? (
+                                  <span className="loading loading-spinner loading-xs"></span>
+                                ) : (
+                                  <span className="icon-[tabler--check] size-4"></span>
+                                )}
+                                {t("detail.confirmButton")}
+                              </button>
+                            </div>
+                          </div>
+                        )}
+
+                      {isEnded &&
+                        isHighestBidder &&
+                        item.winnerConfirmed && (
+                          <div className="alert alert-success shadow-sm mt-6">
+                            <span className="icon-[tabler--check] size-5"></span>
+                            <span className="text-sm font-medium">
+                              {t("detail.confirmedMsg")}
+                            </span>
+                          </div>
+                        )}
 
                       {isEnded &&
                         item.highestBidderId &&
@@ -1586,6 +1658,7 @@ export const getServerSideProps = withAuth(async (context) => {
         endDate: membership.auction.endDate
           ? membership.auction.endDate.toISOString()
           : null,
+        winnerConfirmEnabled: membership.auction.winnerConfirmEnabled,
       },
       auctionItems,
       itemSidebarCollapsed: userSettings?.itemSidebarCollapsed ?? false,

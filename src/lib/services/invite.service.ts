@@ -268,12 +268,21 @@ export async function acceptInvite(
   }
 
   // Create membership, mark invite as used, and clear any prior leave record
+  // Bidder-approval mode: BIDDER invites join as PENDING until approved
+  const targetAuction = await prisma.auction.findUnique({
+    where: { id: invite.auctionId },
+    select: { bidderApproval: true },
+  });
+  const joinRole =
+    targetAuction?.bidderApproval && invite.role === "BIDDER"
+      ? "PENDING"
+      : invite.role;
   await prisma.$transaction([
     prisma.auctionMember.create({
       data: {
         auctionId: invite.auctionId,
         userId,
-        role: invite.role,
+        role: joinRole,
         invitedById: invite.senderId,
       },
     }),

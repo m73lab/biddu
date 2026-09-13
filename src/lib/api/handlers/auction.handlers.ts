@@ -38,6 +38,9 @@ export const updateAuctionSchema = z.object({
   defaultAntiSnipe: z.boolean().optional(),
   defaultAntiSnipeThreshold: z.number().int().min(60).max(3600).optional(),
   defaultAntiSnipeExtension: z.number().int().min(5).max(3600).optional(),
+  bidderApproval: z.boolean().optional(),
+  winnerConfirmEnabled: z.boolean().optional(),
+  winnerConfirmHours: z.number().int().min(1).max(720).optional(),
 });
 
 export type CreateAuctionBody = z.infer<typeof createAuctionSchema>;

@@ -10,7 +10,7 @@ import { z } from "zod";
 // ============================================================================
 
 export const updateRoleSchema = z.object({
-  role: z.enum(["ADMIN", "CREATOR", "BIDDER"]),
+  role: z.enum(["ADMIN", "CREATOR", "BIDDER", "PENDING"]),
 });
 
 export type UpdateRoleBody = z.infer<typeof updateRoleSchema>;

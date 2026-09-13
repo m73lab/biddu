@@ -35,6 +35,9 @@ interface AuctionSettingsProps {
     defaultAntiSnipe: boolean;
     defaultAntiSnipeThreshold: number;
     defaultAntiSnipeExtension: number;
+    bidderApproval: boolean;
+    winnerConfirmEnabled: boolean;
+    winnerConfirmHours: number;
   };
   allowOpenAuctions: boolean;
 }
@@ -115,6 +118,9 @@ export default function AuctionSettingsPage({
     defaultAntiSnipe: auction.defaultAntiSnipe,
     defaultAntiSnipeThreshold: auction.defaultAntiSnipeThreshold,
     defaultAntiSnipeExtension: auction.defaultAntiSnipeExtension,
+    bidderApproval: auction.bidderApproval,
+    winnerConfirmEnabled: auction.winnerConfirmEnabled,
+    winnerConfirmHours: auction.winnerConfirmHours,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -749,15 +755,96 @@ export default function AuctionSettingsPage({
                       defaultAntiSnipeExtension: v,
                     }))
                   }
-                  minSeconds={5}
-                  maxSeconds={3600}
-                  secondsLabel={t("seconds")}
-                  minutesLabel={t("minutes")}
-                />
+                    minSeconds={5}
+                    maxSeconds={3600}
+                    secondsLabel={t("seconds")}
+                    minutesLabel={t("minutes")}
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Save Button */}
+              {/* Trust & Anti-fraud (opt-in) */}
+              <div className="divider opacity-50"></div>
+              <div className="space-y-4">
+                <h2 className="text-lg font-semibold flex items-center gap-2 text-info">
+                  <span className="icon-[tabler--shield-check] size-5"></span>
+                  {t("trustTitle")}
+                </h2>
+
+                <div className="form-control">
+                  <label className="label cursor-pointer justify-start gap-3 p-0">
+                    <input
+                      type="checkbox"
+                      name="bidderApproval"
+                      checked={formData.bidderApproval}
+                      onChange={handleChange}
+                      className="toggle toggle-info"
+                    />
+                    <div>
+                      <span className="label-text font-medium">
+                        {t("bidderApproval")}
+                      </span>
+                      <p className="text-xs text-base-content/60 text-wrap">
+                        {t("bidderApprovalDescription")}
+                      </p>
+                    </div>
+                  </label>
+                </div>
+
+                <div className="form-control">
+                  <label className="label cursor-pointer justify-start gap-3 p-0">
+                    <input
+                      type="checkbox"
+                      name="winnerConfirmEnabled"
+                      checked={formData.winnerConfirmEnabled}
+                      onChange={handleChange}
+                      className="toggle toggle-info"
+                    />
+                    <div>
+                      <span className="label-text font-medium">
+                        {t("winnerConfirm")}
+                      </span>
+                      <p className="text-xs text-base-content/60 text-wrap">
+                        {t("winnerConfirmDescription")}
+                      </p>
+                    </div>
+                  </label>
+                </div>
+
+                {formData.winnerConfirmEnabled && (
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text font-medium">
+                        {t("winnerConfirmHours")}
+                      </span>
+                    </label>
+                    <input
+                      type="number"
+                      name="winnerConfirmHours"
+                      min={1}
+                      max={720}
+                      value={formData.winnerConfirmHours}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          winnerConfirmHours: Math.max(
+                            1,
+                            Math.min(720, Number(e.target.value) || 48),
+                          ),
+                        }))
+                      }
+                      className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                    />
+                    <label className="label">
+                      <span className="label-text-alt text-base-content/60">
+                        {t("winnerConfirmHoursHint")}
+                      </span>
+                    </label>
+                  </div>
+                )}
+              </div>
+
+              {/* Save Button */}
             <div className="divider opacity-50"></div>
             <Button
               type="submit"
@@ -1161,12 +1248,15 @@ export const getServerSideProps = withAuth(async (context) => {
         isEnded: auction.endDate
           ? new Date(auction.endDate) < new Date()
           : false,
-        thumbnailUrl: auction.thumbnailUrl,
-        defaultItemsEditableByAdmin: auction.defaultItemsEditableByAdmin,
-        defaultAntiSnipe: auction.defaultAntiSnipe,
-        defaultAntiSnipeThreshold: auction.defaultAntiSnipeThreshold,
-        defaultAntiSnipeExtension: auction.defaultAntiSnipeExtension,
-      },
+          thumbnailUrl: auction.thumbnailUrl,
+          defaultItemsEditableByAdmin: auction.defaultItemsEditableByAdmin,
+          defaultAntiSnipe: auction.defaultAntiSnipe,
+          defaultAntiSnipeThreshold: auction.defaultAntiSnipeThreshold,
+          defaultAntiSnipeExtension: auction.defaultAntiSnipeExtension,
+          bidderApproval: auction.bidderApproval,
+          winnerConfirmEnabled: auction.winnerConfirmEnabled,
+          winnerConfirmHours: auction.winnerConfirmHours,
+        },
       allowOpenAuctions: process.env.ALLOW_OPEN_AUCTIONS === "true",
       messages: await getMessages(context.locale as Locale),
     },

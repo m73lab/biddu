@@ -32,12 +32,13 @@ export function AuctionCard({ auction, onDelete }: AuctionCardProps) {
 
   const roleKey = auction.role.toLowerCase();
   // Fallback to the role string if translation is missing (e.g. OWNER might assume admin rights/translation)
-  const roleLabel = [
-    "admin",
-    "creator",
-    "bidder",
-    "owner",
-    "open",
+    const roleLabel = [
+      "admin",
+      "creator",
+      "bidder",
+      "owner",
+      "pending",
+      "open",
     "left",
   ].includes(roleKey)
     ? tRoles(roleKey === "owner" ? "admin" : roleKey)

@@ -121,10 +121,10 @@ export async function getMemberById(
 /**
  * Update a member's role
  */
-export async function updateMemberRole(
-  memberId: string,
-  newRole: "ADMIN" | "CREATOR" | "BIDDER",
-): Promise<MemberWithUser> {
+  export async function updateMemberRole(
+    memberId: string,
+    newRole: "ADMIN" | "CREATOR" | "BIDDER" | "PENDING",
+  ): Promise<MemberWithUser> {
   return prisma.auctionMember.update({
     where: { id: memberId },
     data: { role: newRole },

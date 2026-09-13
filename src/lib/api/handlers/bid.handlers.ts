@@ -98,12 +98,19 @@ export const placeBid: ApiHandler = async (req, res, ctx) => {
     where: { id: itemId },
     include: {
       currency: true,
-      auction: { select: { bidderVisibility: true, endDate: true } },
+      auction: { select: { bidderVisibility: true, endDate: true, bidderApproval: true } },
     },
   });
 
   if (!item || item.auctionId !== auctionId) {
     throw new NotFoundError("Item not found");
+  }
+
+  // Bidder-approval mode: pending members cannot bid until approved
+  if (item.auction.bidderApproval && ctx.membership?.role === "PENDING") {
+    throw new ForbiddenError(
+      "Tu acceso como pujador está pendiente de aprobación por el dueño de la subasta.",
+    );
   }
 
   // Check if item is published
@@ -266,6 +273,30 @@ export const voidWinningBid: ApiHandler = async (req, res, ctx) => {
     res.status(200).json(result);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Cannot void winner";
+    if (message === "Item not found") {
+      throw new NotFoundError("Item not found");
+    }
+    throw new BadRequestError(message);
+  }
+};
+
+/**
+ * POST /api/auctions/[id]/items/[itemId]/confirm-winner - Winner confirms
+ * the purchase (opt-in winner-confirmation mode).
+ */
+export const confirmWinner: ApiHandler = async (_req, res, ctx) => {
+  const auctionId = ctx.params.id;
+  const itemId = ctx.params.itemId;
+
+  try {
+    const result = await bidService.confirmWinner(
+      itemId,
+      ctx.session!.user.id,
+      auctionId,
+    );
+    res.status(200).json(result);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Cannot confirm";
     if (message === "Item not found") {
       throw new NotFoundError("Item not found");
     }

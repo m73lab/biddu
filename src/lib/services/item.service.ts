@@ -114,10 +114,12 @@ export interface ItemDetailForPage {
   };
   startingBid: number;
   minBidIncrement: number;
-  currentBid: number | null;
-  highestBidderId: string | null;
-  fulfillmentStatus: string | null;
-  bidderAnonymous: boolean;
+    currentBid: number | null;
+    highestBidderId: string | null;
+    fulfillmentStatus: string | null;
+    winnerConfirmed: boolean;
+    winnerConfirmDeadline: string | null;
+    bidderAnonymous: boolean;
   endDate: string | null;
   createdAt: string;
   isPublished: boolean;
@@ -235,11 +237,14 @@ export async function getItemForDetailPage(
     minBidIncrement: item.minBidIncrement,
     currentBid: item.currentBid,
     highestBidderId: item.highestBidderId,
-    fulfillmentStatus: item.fulfillmentStatus,
-    bidderAnonymous: item.bidderAnonymous,
-    endDate: item.endDate?.toISOString() || null,
-    createdAt: item.createdAt.toISOString(),
-    isPublished: item.isPublished,
+      fulfillmentStatus: item.fulfillmentStatus,
+      winnerConfirmed: item.winnerConfirmed,
+      winnerConfirmDeadline:
+        item.winnerConfirmDeadline?.toISOString() || null,
+      bidderAnonymous: item.bidderAnonymous,
+      endDate: item.endDate?.toISOString() || null,
+      createdAt: item.createdAt.toISOString(),
+      isPublished: item.isPublished,
     antiSnipeEnabled: item.antiSnipeEnabled,
     antiSnipeThresholdSeconds: item.antiSnipeThresholdSeconds,
     antiSnipeExtensionSeconds: item.antiSnipeExtensionSeconds,
@@ -462,6 +467,9 @@ export async function getItemDetailPageData(
       currentBid: item.currentBid,
       highestBidderId: item.highestBidderId,
       fulfillmentStatus: item.fulfillmentStatus,
+      winnerConfirmed: item.winnerConfirmed,
+      winnerConfirmDeadline:
+        item.winnerConfirmDeadline?.toISOString() || null,
       bidderAnonymous: item.bidderAnonymous,
       endDate: item.endDate?.toISOString() || null,
       createdAt: item.createdAt.toISOString(),

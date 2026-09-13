@@ -57,11 +57,14 @@ export interface UpdateAuctionInput {
   endDate?: string | null;
   defaultItemsEditableByAdmin?: boolean;
   defaultAntiSnipe?: boolean;
-  defaultAntiSnipeThreshold?: number;
-  defaultAntiSnipeExtension?: number;
-}
+    defaultAntiSnipeThreshold?: number;
+    defaultAntiSnipeExtension?: number;
+    bidderApproval?: boolean;
+    winnerConfirmEnabled?: boolean;
+    winnerConfirmHours?: number;
+  }
 
-export interface AuctionDetailForPage {
+  export interface AuctionDetailForPage {
   id: string;
   name: string;
   description: string | null;
@@ -78,6 +81,9 @@ export interface AuctionDetailForPage {
   defaultAntiSnipe: boolean;
   defaultAntiSnipeThreshold: number;
   defaultAntiSnipeExtension: number;
+  bidderApproval: boolean;
+  winnerConfirmEnabled: boolean;
+  winnerConfirmHours: number;
   creator: {
     id: string;
     name: string | null;
@@ -371,6 +377,15 @@ export async function updateAuction(
   if (input.defaultAntiSnipeExtension !== undefined) {
     updateData.defaultAntiSnipeExtension = input.defaultAntiSnipeExtension;
   }
+  if (input.bidderApproval !== undefined) {
+    updateData.bidderApproval = input.bidderApproval;
+  }
+  if (input.winnerConfirmEnabled !== undefined) {
+    updateData.winnerConfirmEnabled = input.winnerConfirmEnabled;
+  }
+  if (input.winnerConfirmHours !== undefined) {
+    updateData.winnerConfirmHours = input.winnerConfirmHours;
+  }
 
   return prisma.auction.update({
     where: { id: auctionId },
@@ -494,12 +509,19 @@ export async function autoJoinAuction(
     return null;
   }
 
+  // Bidder-approval mode: join as PENDING until an owner/admin approves
+  const targetAuction = await prisma.auction.findUnique({
+    where: { id: auctionId },
+    select: { bidderApproval: true },
+  });
 
   return prisma.auctionMember.create({
     data: {
       auctionId,
       userId,
-      role: MemberRole.BIDDER,
+      role: targetAuction?.bidderApproval
+        ? MemberRole.PENDING
+        : MemberRole.BIDDER,
     },
   });
 }
@@ -514,10 +536,10 @@ export async function rejoinAuction(
 ): Promise<AuctionMember> {
   return prisma.$transaction(async (tx) => {
     // Verify the auction exists and is joinable
-    const auction = await tx.auction.findUnique({
-      where: { id: auctionId },
-      select: { joinMode: true },
-    });
+      const auction = await tx.auction.findUnique({
+        where: { id: auctionId },
+        select: { joinMode: true, bidderApproval: true },
+      });
     if (!auction) {
       throw new Error("AUCTION_NOT_FOUND");
     }
@@ -550,6 +572,7 @@ export async function rejoinAuction(
     }
 
     // Clear leave record and create membership
+    // Bidder-approval mode: rejoin as PENDING until approved
     await tx.auctionLeave.delete({
       where: { auctionId_userId: { auctionId, userId } },
     });
@@ -558,7 +581,7 @@ export async function rejoinAuction(
       data: {
         auctionId,
         userId,
-        role: MemberRole.BIDDER,
+        role: auction.bidderApproval ? MemberRole.PENDING : MemberRole.BIDDER,
       },
     });
   });

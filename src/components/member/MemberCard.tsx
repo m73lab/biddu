@@ -44,7 +44,7 @@ export function MemberCard({
 
   const getRoleLabel = (role: string) => {
     const roleKey = role.toLowerCase();
-    if (["admin", "creator", "bidder", "owner"].includes(roleKey)) {
+    if (["admin", "creator", "bidder", "owner", "pending"].includes(roleKey)) {
       return tRoles(roleKey === "owner" ? "admin" : roleKey);
     }
     return role;

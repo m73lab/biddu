@@ -419,6 +419,9 @@ export async function placeBid(
     excludeUserIds: previousBidderId ? [previousBidderId] : [],
   });
 
+  // Shill/fake-bid detection (fire-and-forget, never blocks the bid)
+  detectShillPatterns(item.auction.id, itemId, userId).catch(() => undefined);
+
   return bid;
 }
 
@@ -519,6 +522,8 @@ export async function voidWinningBid(
         highestBidderId: runnerUp ? runnerUp.userId : null,
         fulfillmentStatus: null,
         winnerNotified: false,
+        winnerConfirmed: false,
+        winnerConfirmDeadline: null,
       },
     });
 
@@ -533,6 +538,259 @@ export async function voidWinningBid(
   });
 
   return result;
+}
+
+/**
+ * Shill/fake-bid detection (advisory, never blocks the bid).
+ * Runs fire-and-forget after a bid is placed. Flags explainable patterns:
+ * - R1 IP ring: other accounts sharing an IP with this bidder in the auction
+ * - R2 new account concentrated on a single seller without ever winning
+ * - R3 chronic raiser: many bids, never highest anywhere
+ * Notifies auction owners/admins once per item per week (in-app only).
+ */
+export async function detectShillPatterns(
+  auctionId: string,
+  itemId: string,
+  bidderId: string,
+): Promise<void> {
+  try {
+    const [bidder, auction] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: bidderId },
+        select: { id: true, name: true, createdAt: true },
+      }),
+      prisma.auction.findUnique({
+        where: { id: auctionId },
+        select: {
+          id: true,
+          name: true,
+          creatorId: true,
+          members: {
+            where: { role: { in: ["OWNER", "ADMIN"] } },
+            select: { userId: true },
+          },
+        },
+      }),
+    ]);
+    if (!bidder || !auction) return;
+
+    const bids = await prisma.bid.findMany({
+      where: { auctionItem: { auctionId }, userId: bidderId },
+      select: { id: true, auctionItemId: true, ipHash: true },
+    });
+    if (bids.length < 3) return;
+
+    const wins = await prisma.auctionItem.count({
+      where: { auctionId, highestBidderId: bidderId },
+    });
+
+    const reasons: string[] = [];
+
+    // R1: IP ring
+    const ipHashes = [...new Set(bids.map((b) => b.ipHash).filter(Boolean))];
+    if (ipHashes.length > 0) {
+      const ring = await prisma.bid.findMany({
+        where: {
+          auctionItem: { auctionId },
+          ipHash: { in: ipHashes as string[] },
+          userId: { not: bidderId },
+        },
+        select: { userId: true },
+      });
+      const ringUsers = new Set(ring.map((r) => r.userId));
+      if (ringUsers.size > 0) {
+        reasons.push(
+          `comparte IP con otras ${ringUsers.size} cuenta(s) que también pujan aquí`,
+        );
+      }
+    }
+
+    // R2: new account concentrated on a single seller, never wins
+    const itemIds = [...new Set(bids.map((b) => b.auctionItemId))];
+    const sellers = await prisma.auctionItem.findMany({
+      where: { id: { in: itemIds } },
+      select: { creatorId: true },
+    });
+    const sellerIds = new Set(sellers.map((s) => s.creatorId));
+    if (
+      Date.now() - bidder.createdAt.getTime() < 7 * 86400 * 1000 &&
+      sellerIds.size === 1 &&
+      wins === 0
+    ) {
+      reasons.push(
+        "cuenta nueva que solo puja artículos de un mismo vendedor sin ganar",
+      );
+    }
+
+    // R3: chronic raiser
+    if (bids.length >= 5 && wins === 0) {
+      reasons.push(`${bids.length} pujas sin ganar ninguna`);
+    }
+
+    if (reasons.length === 0) return;
+
+    const owners = [
+      ...new Set([
+        auction.creatorId,
+        ...auction.members.map((m) => m.userId),
+      ]),
+    ].filter((id) => id !== bidderId);
+    if (owners.length === 0) return;
+
+    // Dedup: one flag per item per week
+    const recent = await prisma.notification.findFirst({
+      where: {
+        auctionId,
+        itemId,
+        type: "SHILL_SUSPECTED",
+        createdAt: { gt: new Date(Date.now() - 7 * 86400 * 1000) },
+      },
+    });
+    if (recent) return;
+
+    const item = await prisma.auctionItem.findUnique({
+      where: { id: itemId },
+      select: { name: true },
+    });
+    await Promise.all(
+      owners.map((ownerId) =>
+        notificationService.notifyShillSuspected(
+          ownerId,
+          bidder.name,
+          item?.name ?? "un artículo",
+          auctionId,
+          itemId,
+          auction.name,
+          reasons.join("; "),
+        ),
+      ),
+    );
+  } catch (err) {
+    console.error("Shill detection failed:", err);
+  }
+}
+
+/**
+ * Winner confirms the purchase (opt-in winner-confirmation mode).
+ * Only the current highest bidder of an ended item can confirm,
+ * and only before the confirmation deadline.
+ */
+export async function confirmWinner(
+  itemId: string,
+  userId: string,
+  auctionId?: string,
+): Promise<{ confirmed: boolean }> {
+  const item = await prisma.auctionItem.findUnique({
+    where: { id: itemId },
+    include: {
+      auction: {
+        select: {
+          id: true,
+          endDate: true,
+          winnerConfirmEnabled: true,
+          winnerConfirmHours: true,
+        },
+      },
+    },
+  });
+
+  if (!item || (auctionId && item.auctionId !== auctionId)) {
+    throw new Error("Item not found");
+  }
+  if (!item.auction.winnerConfirmEnabled) {
+    throw new Error("Winner confirmation is not enabled for this auction");
+  }
+  if (!item.highestBidderId || item.highestBidderId !== userId) {
+    throw new Error("Only the winner can confirm");
+  }
+  const now = new Date();
+  const itemEnded = !!item.endDate && item.endDate < now;
+  const auctionEnded =
+    !!item.auction.endDate && item.auction.endDate < now;
+  if (!itemEnded && !auctionEnded) {
+    throw new Error("Item has not ended yet");
+  }
+  if (item.winnerConfirmed) {
+    return { confirmed: true };
+  }
+  if (item.winnerConfirmDeadline && item.winnerConfirmDeadline < now) {
+    throw new Error("Confirmation deadline has passed");
+  }
+
+  await prisma.auctionItem.update({
+    where: { id: itemId },
+    data: { winnerConfirmed: true },
+  });
+  return { confirmed: true };
+}
+
+/**
+ * Auto-void unconfirmed winners past their deadline (opt-in
+ * winner-confirmation mode). Runs inside processEndedItems.
+ * - Items missing a deadline get one stamped first (never voided
+ *   the same round it is stamped).
+ * - Pre-existing winners (ended long ago, e.g. mode enabled later)
+ *   get at least a 24h grace window from the stamping moment.
+ * - Promoted runner-ups get a fresh full window from promotion time.
+ */
+export async function processUnconfirmedWinners(): Promise<number> {
+  const now = new Date();
+  const candidates = await prisma.auctionItem.findMany({
+    where: {
+      endDate: { lt: now },
+      highestBidderId: { not: null },
+      winnerConfirmed: false,
+      winnerNotified: true,
+      auction: { winnerConfirmEnabled: true },
+    },
+    include: {
+      auction: { select: { id: true, winnerConfirmHours: true } },
+    },
+    take: 50,
+  });
+
+  let voided = 0;
+  for (const item of candidates) {
+    try {
+      const hours = item.auction.winnerConfirmHours || 48;
+      if (!item.winnerConfirmDeadline) {
+        const endMs = item.endDate ? item.endDate.getTime() : now.getTime();
+        const deadline = new Date(
+          Math.max(
+            endMs + hours * 3600 * 1000,
+            now.getTime() + 24 * 3600 * 1000,
+          ),
+        );
+        await prisma.auctionItem.update({
+          where: { id: item.id },
+          data: { winnerConfirmDeadline: deadline },
+        });
+        continue;
+      }
+      if (item.winnerConfirmDeadline < now) {
+        const result = await voidWinningBid(
+          item.id,
+          "system",
+          "Confirmation deadline passed",
+          item.auction.id,
+        );
+        if (result.newHighestBidderId) {
+          await prisma.auctionItem.update({
+            where: { id: item.id },
+            data: {
+              winnerConfirmDeadline: new Date(
+                now.getTime() + hours * 3600 * 1000,
+              ),
+            },
+          });
+        }
+        voided++;
+      }
+    } catch (err) {
+      console.error("Auto-void unconfirmed winner failed:", err);
+    }
+  }
+  return voided;
 }
 
 /**
