@@ -149,6 +149,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
                 seed={user.id}
                 avatarSeed={currentSeed}
                 size="xl"
+                loading={!profile}
               />
               <div className="flex-1 w-full">
                 <p className="text-sm text-base-content/60 mb-3">

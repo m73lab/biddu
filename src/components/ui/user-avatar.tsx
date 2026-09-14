@@ -23,6 +23,11 @@ interface UserAvatarProps {
   className?: string;
   /** Open zoom lightbox on click. Defaults to true. */
   expandable?: boolean;
+  /**
+   * Data still loading: render a skeleton instead of a provisional face
+   * so the avatar never flashes a wrong seed before the definitive one.
+   */
+  loading?: boolean;
 }
 
 const sizeClasses = {
@@ -49,6 +54,7 @@ export function UserAvatar({
   size = "sm",
   className = "",
   expandable = true,
+  loading = false,
 }: UserAvatarProps) {
   const resolvedSeed = avatarSeed || seed || email || name || "biddu";
   const t = useTranslations("common");
@@ -69,6 +75,15 @@ export function UserAvatar({
   }, [expanded]);
 
   const label = name || email || undefined;
+
+  if (loading) {
+    return (
+      <div
+        className={`skeleton rounded-full shrink-0 ${sizeClasses[size]} ${className}`}
+        aria-hidden="true"
+      />
+    );
+  }
 
   return (
     <>
