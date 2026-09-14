@@ -57,31 +57,43 @@ export interface InviteForList {
 // ============================================================================
 
 /**
- * Get invites for an auction (for invite page)
+ * Get invites for an auction (for invite page), paginated server-side.
  */
 export async function getAuctionInvitesForPage(
   auctionId: string,
-): Promise<InviteForList[]> {
-  const invites = await prisma.auctionInvite.findMany({
-    where: { auctionId },
-    include: {
-      sender: {
-        select: { name: true, email: true },
-      },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  opts?: { skip?: number; take?: number },
+): Promise<{ invites: InviteForList[]; total: number }> {
+  const skip = Math.max(0, opts?.skip ?? 0);
+  const take = Math.min(100, Math.max(1, opts?.take ?? 10));
 
-  return invites.map((i) => ({
-    id: i.id,
-    email: i.email,
-    role: i.role,
-    token: i.token,
-    usedAt: i.usedAt?.toISOString() || null,
-    expiresAt: i.expiresAt?.toISOString() || null,
-    createdAt: i.createdAt.toISOString(),
-    sender: i.sender,
-  }));
+  const [total, invites] = await Promise.all([
+    prisma.auctionInvite.count({ where: { auctionId } }),
+    prisma.auctionInvite.findMany({
+      where: { auctionId },
+      include: {
+        sender: {
+          select: { name: true, email: true },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      skip,
+      take,
+    }),
+  ]);
+
+  return {
+    invites: invites.map((i) => ({
+      id: i.id,
+      email: i.email,
+      role: i.role,
+      token: i.token,
+      usedAt: i.usedAt?.toISOString() || null,
+      expiresAt: i.expiresAt?.toISOString() || null,
+      createdAt: i.createdAt.toISOString(),
+      sender: i.sender,
+    })),
+    total,
+  };
 }
 
 /**

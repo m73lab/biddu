@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import * as auctionService from "@/lib/services/auction.service";
 import * as inviteService from "@/lib/services/invite.service";
 import { Navbar } from "@/components/layout/navbar";
+import { Pagination } from "@/components/common";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 import { withAuth } from "@/lib/auth/withAuth";
+import { parsePagination } from "@/lib/api/pagination";
 
 interface Invite {
   id: string;
@@ -36,6 +39,12 @@ interface InvitePageProps {
   };
   isAdmin: boolean;
   invites: Invite[];
+  pagination: {
+    page: number;
+    pageSize: number;
+    total: number;
+  };
+}
 }
 
 export default function InvitePage({
@@ -43,17 +52,31 @@ export default function InvitePage({
   auction,
   isAdmin,
   invites: initialInvites,
+  pagination,
 }: InvitePageProps) {
   const t = useTranslations("auction.invite");
   const tCommon = useTranslations("common");
   const tErrors = useTranslations("errors");
   const tStatus = useTranslations("status");
+  const router = useRouter();
   const [invites, setInvites] = useState(initialInvites);
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("BIDDER");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { showToast } = useToast();
+
+  // Resync list after SSR page navigation (page/pageSize change)
+  useEffect(() => {
+    setInvites(initialInvites);
+  }, [initialInvites]);
+
+  const goToPage = (page: number, pageSize: number = pagination.pageSize) => {
+    router.push({
+      pathname: router.pathname,
+      query: { ...router.query, page, pageSize },
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,12 +99,17 @@ export default function InvitePage({
             tErrors("invite.sendFailed"),
         );
       } else {
-        showToast(`Invite sent to ${email}`, "success");
-        setEmail("");
-        // Add to list if admin
-        if (isAdmin) {
-          setInvites([result, ...invites]);
-        }
+          showToast(`Invite sent to ${email}`, "success");
+          setEmail("");
+          // New invites land on page 1: prepend locally if already there,
+          // otherwise navigate so the fresh SSR page shows it
+          if (isAdmin) {
+            if (pagination.page === 1) {
+              setInvites([result, ...invites]);
+            } else {
+              goToPage(1);
+            }
+          }
       }
     } catch {
       setError(tErrors("generic"));
@@ -261,15 +289,15 @@ export default function InvitePage({
             </div>
           </div>
 
-          {isAdmin && invites.length > 0 && (
+          {isAdmin && pagination.total > 0 && (
             <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl mt-8">
               <div className="card-body p-8">
                 <h2 className="card-title text-lg mb-6 flex items-center gap-2">
                   <span className="icon-[tabler--mail] size-5 text-secondary"></span>
-                  {t("pendingInvites")}
-                  <span className="badge badge-ghost badge-sm">
-                    {invites.length}
-                  </span>
+                    {t("pendingInvites")}
+                    <span className="badge badge-ghost badge-sm">
+                      {pagination.total}
+                    </span>
                 </h2>
 
                 <div className="space-y-3">
@@ -307,12 +335,19 @@ export default function InvitePage({
                           <span className="icon-[tabler--copy] size-5"></span>
                         </button>
                       )}
-                    </div>
-                  ))}
+                      </div>
+                    ))}
+                  </div>
+                  <Pagination
+                    page={pagination.page}
+                    pageSize={pagination.pageSize}
+                    total={pagination.total}
+                    onPageChange={(p) => goToPage(p)}
+                    onPageSizeChange={(s) => goToPage(1, s)}
+                  />
                 </div>
               </div>
-            </div>
-          )}
+            )}
         </main>
       </div>
     </div>
@@ -348,10 +383,11 @@ export const getServerSideProps = withAuth(async (context) => {
     };
   }
 
-  // Only admins can see invite list
-  const invites = isAdmin
-    ? await inviteService.getAuctionInvitesForPage(auctionId)
-    : [];
+  // Only admins can see invite list (paginated server-side via ?page=&pageSize=)
+  const { page, pageSize, skip, take } = parsePagination(context.query);
+  const { invites, total } = isAdmin
+    ? await inviteService.getAuctionInvitesForPage(auctionId, { skip, take })
+    : { invites: [], total: 0 };
 
   return {
     props: {
@@ -367,6 +403,7 @@ export const getServerSideProps = withAuth(async (context) => {
       },
       isAdmin,
       invites,
+      pagination: { page, pageSize, total },
       messages: await getMessages(context.locale as Locale),
     },
   };

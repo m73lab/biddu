@@ -217,5 +217,10 @@
     "noReleases": "No se encontraron versiones",
     "noReleaseNotes": "No hay notas de versión disponibles",
     "backToHome": "Volver al inicio"
+  },
+  "pagination": {
+    "perPage": "Por página",
+    "totalRows": "{count} filas",
+    "pageLabel": "Página {current} de {count}"
   }
 }

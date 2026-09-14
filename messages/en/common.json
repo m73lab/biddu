@@ -217,5 +217,10 @@
     "noReleases": "No releases found",
     "noReleaseNotes": "No release notes available",
     "backToHome": "Back to Home"
+  },
+  "pagination": {
+    "perPage": "Per page",
+    "totalRows": "{count} rows",
+    "pageLabel": "Page {current} of {count}"
   }
 }
