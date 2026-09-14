@@ -562,6 +562,7 @@ enum NotificationType {
   AUCTION_ENDED   // Auction has ended
   INVITE_RECEIVED // You received an invite
   MEMBER_JOINED   // Someone joined your auction
+  MEMBER_LEFT     // Someone left your auction
   NEW_ITEM        // New item added to an auction you're in
   NEW_BID         // Someone placed a bid in an auction you're in
   NEW_COMMENT     // Someone commented on an item you're following

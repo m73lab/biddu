@@ -382,6 +382,48 @@ export async function leaveAuction(
 
   // Publish realtime events and notify restored bidders (fire-and-forget)
   publishBidUpdatesAndNotify(auctionId, affectedItems);
+
+  // Notify auction owners/admins that someone left (fire-and-forget)
+  notifyOwnersOfLeave(auctionId, userId).catch(() => {
+    // Notification failure shouldn't break leaving
+  });
+}
+
+/**
+ * Tell owners/admins when a member leaves voluntarily so the
+ * auction owner always knows who abandoned the auction.
+ */
+async function notifyOwnersOfLeave(
+  auctionId: string,
+  userId: string,
+): Promise<void> {
+  const [auction, leaver, owners] = await Promise.all([
+    prisma.auction.findUnique({
+      where: { id: auctionId },
+      select: { name: true },
+    }),
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { name: true, email: true },
+    }),
+    prisma.auctionMember.findMany({
+      where: { auctionId, role: { in: ["OWNER", "ADMIN"] } },
+      select: { userId: true },
+    }),
+  ]);
+  const memberName = leaver?.name || leaver?.email || "Alguien";
+  await Promise.all(
+    owners
+      .filter((o) => o.userId !== userId)
+      .map((o) =>
+        notificationService.notifyMemberLeft(
+          o.userId,
+          memberName,
+          auction?.name || "tu subasta",
+          auctionId,
+        ),
+      ),
+  );
 }
 
 // ============================================================================

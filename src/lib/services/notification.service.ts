@@ -331,20 +331,39 @@ export async function notifyRatingReceived(
 /**
  * Notify auction owner that a member joined
  */
-export async function notifyMemberJoined(
-  ownerId: string,
-  memberName: string,
-  auctionName: string,
-  auctionId: string,
-): Promise<Notification> {
-  return createNotification({
-    userId: ownerId,
-    type: "MEMBER_JOINED",
-    title: "Nuevo miembro",
-    message: `${memberName} se unió a la subasta "${auctionName}"`,
-    auctionId,
-  });
-}
+  export async function notifyMemberJoined(
+    ownerId: string,
+    memberName: string,
+    auctionName: string,
+    auctionId: string,
+  ): Promise<Notification> {
+    return createNotification({
+      userId: ownerId,
+      type: "MEMBER_JOINED",
+      title: "Nuevo miembro",
+      message: `${memberName} se unió a la subasta "${auctionName}"`,
+      auctionId,
+    });
+  }
+
+  /**
+   * Notify auction owners/admins when someone leaves voluntarily.
+   * In-app only (no email).
+   */
+  export async function notifyMemberLeft(
+    ownerId: string,
+    memberName: string,
+    auctionName: string,
+    auctionId: string,
+  ): Promise<Notification> {
+    return createNotification({
+      userId: ownerId,
+      type: "MEMBER_LEFT",
+      title: "Miembro abandonó",
+      message: `${memberName} abandonó la subasta "${auctionName}"`,
+      auctionId,
+    });
+  }
 
 /**
  * Notify user about a new item in an auction
