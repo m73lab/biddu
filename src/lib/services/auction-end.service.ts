@@ -160,6 +160,38 @@ export async function processEndedItems(): Promise<number> {
 }
 
 /**
+ * Release slots bound to ended auctions back to the unassigned pool.
+ * Slots keep their own expiry; they just stop being tied to a finished
+ * auction so they can be reused elsewhere. This runs as a background
+ * task alongside cascade-close, so time-based auction ends free their
+ * slots even without manual close.
+ */
+export async function releaseSlotsOfEndedAuctions(): Promise<number> {
+  try {
+    const now = new Date();
+    const r = await prisma.slotRedemption.updateMany({
+      where: {
+        auctionId: { not: null },
+        auction: { endDate: { lt: now } },
+      },
+      data: { auctionId: null },
+    });
+
+    if (r.count > 0) {
+      auctionEndLogger.info(
+        { released: r.count },
+        "Released slots of ended auctions",
+      );
+    }
+
+    return r.count;
+  } catch (err) {
+      auctionEndLogger.error({ err }, "Failed to release slots of ended auctions");
+      return 0;
+  }
+}
+
+/**
  * Cascade-close: lots of an ended auction must end too.
  * Sets endDate = auction endDate on items that are still open
  * (no date, or a date beyond the auction end). This runs as a

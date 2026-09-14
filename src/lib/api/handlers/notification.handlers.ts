@@ -28,6 +28,11 @@ export const listNotifications: ApiHandler = async (req, res, ctx) => {
     console.error("Background cascade-close failed:", err);
   });
 
+  // Release slots bound to ended auctions (fire-and-forget)
+  auctionEndService.releaseSlotsOfEndedAuctions().catch((err) => {
+    console.error("Background slot-release failed:", err);
+  });
+
   const notifications = await notificationService.getUserNotifications(
     ctx.session!.user.id,
     { unreadOnly, limit },

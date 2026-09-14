@@ -503,6 +503,14 @@ export async function closeAuction(
     },
   });
 
+  // Release slots bound to this auction back to the unassigned pool.
+  // They keep their own expiry; they just stop being tied to a
+  // finished auction so they can be reused elsewhere.
+  await prisma.slotRedemption.updateMany({
+    where: { auctionId },
+    data: { auctionId: null },
+  });
+
   // Close all items that haven't ended yet
   const now = new Date();
   await prisma.auctionItem.updateMany({
