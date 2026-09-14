@@ -200,25 +200,17 @@ export default function ResultsPage({
       </div>
 
       <div className="grid lg:grid-cols-3 gap-4 sm:gap-8">
-        {/* User Wins */}
-        <div className="lg:col-span-1 min-w-0">
-          <div className="card bg-primary/5 border border-primary/10 shadow-xl h-full overflow-hidden">
-            <div className="card-body p-4 sm:p-6">
-              <h2 className="card-title text-lg mb-6 flex items-center gap-2 text-primary">
-                <span className="icon-[tabler--gift] size-5"></span>
-                {t("yourWinnings")}
-              </h2>
+        {/* User Wins: only when the user actually won something.
+            Bidders/creators with no wins just see the general table. */}
+        {userWins.length > 0 && (
+          <div className="lg:col-span-1 min-w-0">
+            <div className="card bg-primary/5 border border-primary/10 shadow-xl h-full overflow-hidden">
+              <div className="card-body p-4 sm:p-6">
+                <h2 className="card-title text-lg mb-6 flex items-center gap-2 text-primary">
+                  <span className="icon-[tabler--gift] size-5"></span>
+                  {t("yourWinnings")}
+                </h2>
 
-              {userWins.length === 0 ? (
-                <div className="text-center py-12 flex flex-col items-center justify-center h-full">
-                  <div className="w-16 h-16 bg-base-100 rounded-full flex items-center justify-center mb-4 shadow-sm">
-                    <span className="icon-[tabler--mood-sad] size-8 text-base-content/30"></span>
-                  </div>
-                  <p className="text-base-content/60 font-medium">
-                    {t("noWins")}
-                  </p>
-                </div>
-              ) : (
                 <div className="space-y-4">
                   {userWins.map((win) => (
                     <div
@@ -271,13 +263,15 @@ export default function ResultsPage({
                     </div>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* All Winners */}
-        <div className="lg:col-span-2 min-w-0">
+        <div
+          className={`${userWins.length > 0 ? "lg:col-span-2" : "lg:col-span-3"} min-w-0`}
+        >
           <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl overflow-hidden">
             <div className="card-body p-0 min-w-0">
               <div className="p-6 border-b border-base-content/5">
