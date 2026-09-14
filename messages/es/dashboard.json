@@ -34,7 +34,15 @@
       "title": "Mis subastas",
       "description": "Subastas que creaste y administras",
       "joinedEmptyTitle": "Todavía no te unes a subastas de otros",
-      "joinedEmptyDescription": "Cuando aceptes una invitación o te unas con un enlace, aparecerán aquí. Mientras tanto puedes crear la tuya."
+      "joinedEmptyDescription": "Cuando aceptes una invitación o te unas con un enlace, aparecerán aquí. Mientras tanto puedes crear la tuya.",
+      "joinByCode": {
+        "button": "Agregar código",
+        "title": "Unirse con código",
+        "description": "Ingresa el código que te compartieron para ver la subasta y unirte.",
+        "join": "Buscar subasta",
+        "cancel": "Cancelar",
+        "invalid": "Código no válido o vencido"
+      }
     }
   }
 }

@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import useSWR from "swr";
 import { getMessages, Locale } from "@/i18n";
 import { fetcher } from "@/lib/fetcher";
@@ -406,6 +407,42 @@ export default function DashboardPage({ user }: DashboardProps) {
     name: string;
   } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const router = useRouter();
+
+  // Join auction with an invite code
+  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const [joinCode, setJoinCode] = useState("");
+  const [joinError, setJoinError] = useState<string | null>(null);
+  const [isJoining, setIsJoining] = useState(false);
+
+  const closeJoinModal = () => {
+    if (isJoining) return;
+    setIsJoinModalOpen(false);
+    setJoinCode("");
+    setJoinError(null);
+  };
+
+  const handleJoinByCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const code = joinCode.trim().toUpperCase();
+    if (!code) return;
+    setIsJoining(true);
+    setJoinError(null);
+    try {
+      const res = await fetch(`/api/invite-codes/${encodeURIComponent(code)}`);
+      const result = await res.json();
+      if (!res.ok) {
+        setJoinError(result.message || t("joinByCode.invalid"));
+      } else {
+        closeJoinModal();
+        router.push(`/join/${encodeURIComponent(code)}`);
+      }
+    } catch {
+      setJoinError(tErrors("generic"));
+    } finally {
+      setIsJoining(false);
+    }
+  };
 
   const handleDeleteAuction = async () => {
     if (!deleteTarget) return;
@@ -676,6 +713,59 @@ export default function DashboardPage({ user }: DashboardProps) {
           onClose={() => !isDeleting && setDeleteTarget(null)}
         />
 
+        {isJoinModalOpen && (
+          <div className="modal modal-open">
+            <div className="modal-box">
+              <h3 className="font-bold text-lg flex items-center gap-2">
+                <span className="icon-[tabler--ticket] size-6 text-primary"></span>
+                {t("joinByCode.title")}
+              </h3>
+              <p className="text-sm text-base-content/60 mt-1">
+                {t("joinByCode.description")}
+              </p>
+              <form onSubmit={handleJoinByCode} className="mt-4 space-y-4">
+                <input
+                  type="text"
+                  value={joinCode}
+                  onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+                  placeholder="BID-XXXXXX"
+                  className="input input-bordered w-full font-mono tracking-widest text-center text-lg uppercase"
+                  maxLength={10}
+                  autoFocus
+                />
+                {joinError && (
+                  <div className="alert alert-error shadow-sm py-2">
+                    <span className="icon-[tabler--alert-circle] size-5"></span>
+                    <span className="text-sm">{joinError}</span>
+                  </div>
+                )}
+                <div className="modal-action">
+                  <button
+                    type="button"
+                    onClick={closeJoinModal}
+                    disabled={isJoining}
+                    className="btn btn-ghost"
+                  >
+                    {t("joinByCode.cancel")}
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isJoining || joinCode.trim() === ""}
+                    className="btn btn-primary gap-1.5"
+                  >
+                    {isJoining ? (
+                      <span className="loading loading-spinner loading-sm"></span>
+                    ) : (
+                      <span className="icon-[tabler--check] size-4"></span>
+                    )}
+                    {t("joinByCode.join")}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
         {/* Auctions Section */}
         {auctions.length === 0 ? (
           <div className="card bg-base-100 shadow-xl">
@@ -713,18 +803,27 @@ export default function DashboardPage({ user }: DashboardProps) {
           </div>
         ) : (
           <div data-tour="joined-auctions">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
-              <h2 className="text-lg sm:text-xl font-semibold text-base-content">
-                {t("auctions.title")}
-              </h2>
-              {otherAuctions.length > 0 && (
-                <SortDropdown
-                  options={auctionSortOptions}
-                  currentSort={auctionSort}
-                  paramName="auctionSort"
-                />
-              )}
-            </div>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+                <h2 className="text-lg sm:text-xl font-semibold text-base-content">
+                  {t("auctions.title")}
+                </h2>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setIsJoinModalOpen(true)}
+                    className="btn btn-outline btn-sm gap-1.5"
+                  >
+                    <span className="icon-[tabler--ticket] size-4"></span>
+                    {t("joinByCode.button")}
+                  </button>
+                  {otherAuctions.length > 0 && (
+                    <SortDropdown
+                      options={auctionSortOptions}
+                      currentSort={auctionSort}
+                      paramName="auctionSort"
+                    />
+                  )}
+                </div>
+              </div>
             {otherAuctions.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {otherAuctions.map((auction) => (

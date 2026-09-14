@@ -44,6 +44,7 @@ model User {
     buyerRatingCount          Int                    @default(0)
     itemDiscussions           ItemDiscussion[]
   sentInvites               AuctionInvite[]            @relation("InviteSender")
+  createdInviteCodes        AuctionInviteCode[]      @relation("InviteCodeCreator")
   notifications             Notification[]
   settings                  UserSettings?
   passwordResetTokens       PasswordResetToken[]
@@ -187,6 +188,7 @@ model Auction {
     members           AuctionMember[]
     items             AuctionItem[]
     invites           AuctionInvite[]
+    inviteCodes       AuctionInviteCode[]
     leaves            AuctionLeave[]
     bans              AuctionBan[]
   customCurrencies  AuctionCurrencyProfile[]
@@ -269,6 +271,37 @@ model AuctionInvite {
 
   @@unique([auctionId, email])
   @@map("auction_invites")
+}
+
+// ============================================
+// AUCTION INVITE CODES (shareable, multi-use)
+// ============================================
+
+model AuctionInviteCode {
+  id          String      @id @default(cuid())
+
+  auctionId   String
+  auction     Auction     @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+
+  // Short human-friendly code (e.g. BID-7KQ2XA), unique globally
+  code        String      @unique
+  role        MemberRole  @default(BIDDER)
+
+  // Usage limits: null maxUses = unlimited
+  maxUses     Int?
+  usesCount   Int         @default(0)
+
+  expiresAt   DateTime?
+  revokedAt   DateTime?
+
+  createdAt   DateTime    @default(now())
+
+  // Who created the code
+  createdById String
+  createdBy   User        @relation("InviteCodeCreator", fields: [createdById], references: [id], onDelete: Cascade)
+
+  @@index([auctionId])
+  @@map("auction_invite_codes")
 }
 
 // ============================================

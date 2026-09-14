@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { GetServerSideProps } from "next";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
   InvitePortal,
@@ -11,65 +11,69 @@ import {
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 
-interface InviteInfo {
+interface InviteCodeInfo {
   auction: PortalAuctionInfo;
-  sender: {
+  createdBy: {
     name: string | null;
-    email: string;
   };
   role: string;
-  email: string;
+  code: string;
+  usesCount: number;
+  maxUses: number | null;
 }
 
-export default function AcceptInvitePage() {
+export default function JoinByCodePage() {
   const router = useRouter();
-  const { token } = router.query;
-  const { data: session, status } = useSession();
+  const { code } = router.query;
+  const { status } = useSession();
   const t = useTranslations("auction.acceptInvite");
   const tErrors = useTranslations("errors");
 
-  const [invite, setInvite] = useState<InviteInfo | null>(null);
+  const [info, setInfo] = useState<InviteCodeInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAccepting, setIsAccepting] = useState(false);
 
   useEffect(() => {
-    if (!token) return;
+    if (!code) return;
 
-    const fetchInvite = async () => {
+    const fetchCode = async () => {
       try {
-        const res = await fetch(`/api/invites/${token}`);
+        const res = await fetch(
+          `/api/invite-codes/${encodeURIComponent(code as string)}`,
+        );
         const data = await res.json();
 
         if (!res.ok) {
           setError(data.message || tErrors("invite.invalidInvite"));
         } else {
-          setInvite(data);
+          setInfo(data);
         }
       } catch {
-        setError("Failed to load invite");
+        setError("Failed to load invite code");
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchInvite();
-  }, [token, tErrors]);
+    fetchCode();
+  }, [code, tErrors]);
 
   const handleAccept = async () => {
-    if (!token) return;
+    if (!code) return;
 
     setIsAccepting(true);
     setError(null);
 
     try {
-      const res = await fetch(`/api/invites/${token}`, {
-        method: "POST",
-      });
+      const res = await fetch(
+        `/api/invite-codes/${encodeURIComponent(code as string)}`,
+        { method: "POST" },
+      );
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.message || "Failed to accept invite");
+        setError(data.message || "Failed to join auction");
       } else {
         router.push(`/auctions/${data.auctionId}`);
       }
@@ -80,7 +84,7 @@ export default function AcceptInvitePage() {
     }
   };
 
-  if (!invite) {
+  if (!info) {
     return (
       <InvitePortal
         status={isLoading ? "loading" : "invalid"}
@@ -100,20 +104,23 @@ export default function AcceptInvitePage() {
   }
 
   const isLoggedIn = status === "authenticated";
-  const emailMatches =
-    session?.user?.email?.toLowerCase() === invite.email.toLowerCase();
 
   return (
     <InvitePortal
       status="ready"
       invalidMessage={null}
-      title={t("title")}
-      subtitle={t("subtitle")}
-      auction={invite.auction}
-      inviterRowLabel={t("invitedBy")}
-      inviterName={invite.sender.name || invite.sender.email}
+      title={t("codeTitle")}
+      subtitle={t("codeSubtitle")}
+      auction={info.auction}
+      inviterRowLabel={t("sharedBy")}
+      inviterName={info.createdBy.name || t("hostNoName")}
       roleLabel={t("yourRole")}
-      role={invite.role}
+      role={info.role}
+      headerBadge={
+        <span className="badge badge-outline badge-lg font-mono tracking-widest">
+          {info.code}
+        </span>
+      }
       error={error}
     >
       {!isLoggedIn ? (
@@ -122,18 +129,10 @@ export default function AcceptInvitePage() {
             <p className="text-base-content/80 font-medium mb-1">
               {t("loginRequired")}
             </p>
-            <p className="text-sm text-base-content/60">
-              {t("sentTo")}{" "}
-              <span className="font-bold text-base-content/80">
-                {invite.email}
-              </span>
-            </p>
           </div>
 
           <Link
-            href={`/login?callbackUrl=${encodeURIComponent(
-              `/invite/${token}`,
-            )}&email=${encodeURIComponent(invite.email)}`}
+            href={`/login?callbackUrl=${encodeURIComponent(`/join/${code}`)}`}
             className="btn btn-primary w-full shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5"
           >
             {t("loginToAccept")}
@@ -144,38 +143,10 @@ export default function AcceptInvitePage() {
             </span>
           </div>
           <Link
-            href={`/register?callbackUrl=${encodeURIComponent(
-              `/invite/${token}`,
-            )}&email=${encodeURIComponent(invite.email)}`}
+            href={`/register?callbackUrl=${encodeURIComponent(`/join/${code}`)}`}
             className="btn btn-outline w-full hover:bg-base-content/5"
           >
             {t("createAccount")}
-          </Link>
-        </div>
-      ) : !emailMatches ? (
-        <div className="space-y-4">
-          <div className="alert alert-warning shadow-sm">
-            <span className="icon-[tabler--alert-triangle] size-5"></span>
-            <div className="text-sm">
-              <p className="font-bold mb-1">{t("wrongAccount")}</p>
-              <p>
-                {t("inviteFor")}{" "}
-                <strong className="font-mono">{invite.email}</strong>
-              </p>
-              <p>
-                {t("loggedInAs")}{" "}
-                <strong className="font-mono">{session.user?.email}</strong>
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={() => signOut({ callbackUrl: `/invite/${token}` })}
-            className="btn btn-primary w-full shadow-lg shadow-primary/20"
-          >
-            {t("switchAccount")}
-          </button>
-          <Link href="/dashboard" className="btn btn-ghost w-full">
-            {t("dashboard")}
           </Link>
         </div>
       ) : (

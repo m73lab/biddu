@@ -46,6 +46,7 @@ export { updateRoleSchema, type UpdateRoleBody } from "./member.handlers";
 export { banMemberSchema, type BanMemberBody } from "./member.handlers";
 
 export { createInviteSchema, type CreateInviteBody } from "./invite.handlers";
+export { createInviteCodeSchema, type CreateInviteCodeBody } from "./invite.handlers";
 
 export {
     updateProfileSchema,
