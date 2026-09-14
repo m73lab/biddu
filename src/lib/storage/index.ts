@@ -69,7 +69,12 @@ function initializeS3Storage(): Storage {
     bucketName: process.env.S3_BUCKET,
     accessKeyId: process.env.S3_ACCESS_KEY_ID,
     secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
-    ...(process.env.S3_ENDPOINT && { endpoint: process.env.S3_ENDPOINT }),
+    ...(process.env.S3_ENDPOINT && {
+      endpoint: process.env.S3_ENDPOINT,
+      // Custom endpoints (OCI/MinIO/...) need path-style URLs:
+      // virtual-hosted style breaks TLS/DNS there.
+      forcePathStyle: true,
+    }),
   };
 
   logger.info(
