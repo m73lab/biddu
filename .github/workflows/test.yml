@@ -1,0 +1,50 @@
+name: Test
+
+# Typecheck + unit tests + production build on every PR to main.
+# This is the required check before merging (see branch protection).
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  pull_request:
+    branches: [cloud-prod]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Typecheck + Unit + Build
+    runs-on: ubuntu-latest
+    env:
+      NEXT_TELEMETRY_DISABLED: 1
+      # Dummy DSN: unit tests import the prisma client but never connect.
+      DATABASE_URL: file:./dev.db
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Prisma generate
+        run: npx prisma generate
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Unit tests
+        run: npx tsx --test "src/**/*.test.ts"
+
+      # NOTE: no lint gate yet — `npx eslint src` currently reports 26
+      # pre-existing errors (react-hooks/*, no-explicit-any...). Fix them
+      # first, then add `- npx eslint src` here.
+      - name: Build
+        run: npm run build

@@ -60,7 +60,6 @@ interface InvitePageProps {
     total: number;
   };
 }
-}
 
 export default function InvitePage({
   user,

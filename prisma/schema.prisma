@@ -185,13 +185,14 @@ model Auction {
   creator           User              @relation("AuctionCreator", fields: [creatorId], references: [id], onDelete: Cascade)
   
     // Relations
-    members           AuctionMember[]
-    items             AuctionItem[]
-    invites           AuctionInvite[]
-    inviteCodes       AuctionInviteCode[]
-    leaves            AuctionLeave[]
-    bans              AuctionBan[]
-  customCurrencies  AuctionCurrencyProfile[]
+      members           AuctionMember[]
+      items             AuctionItem[]
+      invites           AuctionInvite[]
+      inviteCodes       AuctionInviteCode[]
+      leaves            AuctionLeave[]
+      bans              AuctionBan[]
+      slotRedemptions   SlotRedemption[]
+      customCurrencies  AuctionCurrencyProfile[]
 
   @@map("auctions")
 }
@@ -824,11 +825,16 @@ model SlotRedemption {
   slotCode   SlotCode @relation(fields: [slotCodeId], references: [id], onDelete: Restrict)
   slotType   SlotType
   amount     Int
+  // For per-auction types (LOTES, PERSONAS, FOTOS): the auction this slot is assigned to.
+  // SUBASTA and RETENCION are global (auctionId = null).
+  auctionId  String?
+  auction    Auction? @relation(fields: [auctionId], references: [id], onDelete: SetNull)
   redeemedAt DateTime @default(now())
   expiresAt  DateTime
   expiryNotified Boolean @default(false)
 
   @@unique([slotCodeId])
   @@index([userId, expiresAt])
+  @@index([auctionId, expiresAt])
   @@map("slot_redemptions")
 }
