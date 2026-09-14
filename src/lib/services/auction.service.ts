@@ -387,10 +387,71 @@ export async function updateAuction(
     updateData.winnerConfirmHours = input.winnerConfirmHours;
   }
 
-  return prisma.auction.update({
+  // Previous end date, needed to propagate date changes to items below
+  const current =
+    input.endDate !== undefined
+      ? await prisma.auction.findUnique({
+          where: { id: auctionId },
+          select: { endDate: true },
+        })
+      : null;
+
+  const updated = await prisma.auction.update({
     where: { id: auctionId },
     data: updateData,
   });
+
+  // Propagate auction end-date changes to its lots:
+  // - items following the old auction end date adopt the new one
+  //   (same instant ±60s: exact copies, cascade writes, or picker
+  //   values rounded to the minute all count as "following it")
+  // - items beyond the new end are clamped to it (never past the cap)
+  // - custom earlier dates and dateless items are left untouched
+  if (input.endDate !== undefined) {
+    await syncItemsToAuctionEnd(
+      auctionId,
+      current?.endDate ?? null,
+      input.endDate ? new Date(input.endDate) : null,
+    );
+  }
+
+  return updated;
+}
+
+/**
+ * Align item end dates with a new auction end date (see updateAuction).
+ */
+export async function syncItemsToAuctionEnd(
+  auctionId: string,
+  oldEnd: Date | null,
+  newEnd: Date | null,
+): Promise<number> {
+  const oldMs = oldEnd ? oldEnd.getTime() : null;
+  const newMs = newEnd ? newEnd.getTime() : null;
+  if (oldMs === newMs) return 0;
+
+  const FOLLOW_TOLERANCE_MS = 60 * 1000;
+  const items = await prisma.auctionItem.findMany({
+    where: { auctionId },
+    select: { id: true, endDate: true },
+  });
+
+  const toUpdate: string[] = [];
+  for (const item of items) {
+    if (!item.endDate) continue;
+    const t = item.endDate.getTime();
+    const followsOld =
+      oldMs !== null && Math.abs(t - oldMs) <= FOLLOW_TOLERANCE_MS;
+    const exceedsNew = newMs !== null && t > newMs;
+    if (followsOld || exceedsNew) toUpdate.push(item.id);
+  }
+
+  if (toUpdate.length === 0) return 0;
+  const r = await prisma.auctionItem.updateMany({
+    where: { id: { in: toUpdate } },
+    data: { endDate: newEnd },
+  });
+  return r.count;
 }
 
 /**
