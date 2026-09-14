@@ -31,6 +31,7 @@ import {
 } from "@/utils/formatters";
 import { FulfillmentCard } from "@/components/item/FulfillmentCard";
 import { ScoreBadge } from "@/components/common/ScoreBadge";
+import { UserAvatar } from "@/components/ui/user-avatar";
 import * as auctionService from "@/lib/services/auction.service";
 import * as itemService from "@/lib/services/item.service";
 import * as userService from "@/lib/services/user.service";
@@ -964,20 +965,29 @@ interface AuctionCurrencyContextResponse {
                                     : "bg-base-100 border-base-content/5 hover:bg-base-200/50"
                                 }`}
                               >
-                                <div className="flex items-center gap-3">
-                                  <div
-                                    className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                                      index === 0
-                                        ? "bg-primary text-primary-content"
-                                        : "bg-base-300 text-base-content/60"
-                                    }`}
-                                  >
-                                    {index === 0 ? (
-                                      <span className="icon-[tabler--trophy] size-4"></span>
+                                  <div className="flex items-center gap-3">
+                                    {bid.user && !bid.isAnonymous ? (
+                                      <UserAvatar
+                                        name={bid.user.name}
+                                        seed={bid.user.id}
+                                        avatarSeed={bid.user.avatarSeed}
+                                        size="sm"
+                                      />
                                     ) : (
-                                      <span className="icon-[tabler--user] size-4"></span>
+                                      <div
+                                        className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                                          index === 0
+                                            ? "bg-primary text-primary-content"
+                                            : "bg-base-300 text-base-content/60"
+                                        }`}
+                                      >
+                                        {index === 0 ? (
+                                          <span className="icon-[tabler--trophy] size-4"></span>
+                                        ) : (
+                                          <span className="icon-[tabler--user] size-4"></span>
+                                        )}
+                                      </div>
                                     )}
-                                  </div>
                                   <div>
                                     <div className="flex items-center gap-2">
                                       <span
