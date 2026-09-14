@@ -26,8 +26,8 @@ export function MobileBottomNav() {
     if (path === "/history") {
       return currentPath === "/history";
     }
-    if (path === "/settings") {
-      return currentPath === "/settings";
+    if (path === "/profile") {
+      return currentPath === "/profile";
     }
     return false;
   };
@@ -94,16 +94,16 @@ export function MobileBottomNav() {
         </Link>
 
         <Link
-          href="/settings"
+          href="/profile"
           className={`flex flex-col items-center justify-center flex-1 h-full gap-1 transition-colors ${
-            isActive("/settings")
+            isActive("/profile")
               ? "text-primary"
               : "text-base-content/60 hover:text-base-content"
           }`}
         >
           <span
             className={`icon-[tabler--user] size-6 ${
-              isActive("/settings") ? "text-primary" : ""
+              isActive("/profile") ? "text-primary" : ""
             }`}
           />
           <span className="text-xs font-medium">{t("profile")}</span>
