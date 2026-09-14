@@ -165,6 +165,18 @@ export function TourProvider({ children }: { children: ReactNode }) {
         continuous
         tooltipComponent={TourTooltip}
         onEvent={handleEvent}
+        floatingOptions={{
+          // Fixed strategy + autoUpdate: the tooltip tracks its target
+          // while the page scrolls (without this it stays pinned where
+          // it was first computed and detaches from scrolled targets).
+          strategy: "fixed",
+          autoUpdate: {
+            ancestorScroll: true,
+            ancestorResize: true,
+            elementResize: true,
+            layoutShift: true,
+          },
+        }}
         locale={{
           back: t("back"),
           close: t("skip"),
