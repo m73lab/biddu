@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { getMessages, Locale } from "@/i18n";
 import { prisma } from "@/lib/prisma";
 import { PageLayout, BackLink, SEO } from "@/components/common";
@@ -52,8 +52,34 @@ export default function CSVImportPage({
     success: number;
     failed: number;
   } | null>(null);
+  const [quota, setQuota] = useState<{
+    used: number;
+    limit: number | null;
+    remaining: number | null;
+  } | null>(null);
 
   const selectedAuction = auctions.find((a) => a.id === selectedAuctionId);
+
+  // Quota snapshot for the selected auction (cloud only: a missing
+  // endpoint means self-hosted/unlimited, so the check is skipped)
+  useEffect(() => {
+    if (!selectedAuctionId) {
+      setQuota(null);
+      return;
+    }
+    let cancelled = false;
+    fetch(`/api/auctions/${selectedAuctionId}/items/quota`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled) setQuota(data);
+      })
+      .catch(() => {
+        if (!cancelled) setQuota(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedAuctionId]);
   const defaultCurrency =
     currencies.find((c) => c.code === "CLP")?.code ||
     currencies[0]?.code ||
@@ -180,6 +206,36 @@ export default function CSVImportPage({
       return;
     }
 
+    // Pre-validate quota BEFORE creating anything: oversized imports are
+    // rejected whole instead of partially created (self-hosted: no quota
+    // endpoint, the fetch fails silently and the import proceeds)
+    try {
+      const quotaRes = await fetch(
+        `/api/auctions/${selectedAuctionId}/items/quota`,
+      );
+      if (quotaRes.ok) {
+        const q = await quotaRes.json();
+        if (
+          q.remaining !== null &&
+          q.remaining !== undefined &&
+          items.length > q.remaining
+        ) {
+          showToast(
+            t("overQuota", {
+              used: q.used,
+              limit: q.limit,
+              count: items.length,
+              remaining: q.remaining,
+            }),
+            "error",
+          );
+          return;
+        }
+      }
+    } catch {
+      // No quota endpoint (self-hosted): unlimited, proceed
+    }
+
     setIsImporting(true);
     let successCount = 0;
     let failedCount = 0;
@@ -275,6 +331,11 @@ export default function CSVImportPage({
                 </option>
               ))}
             </select>
+            {quota && quota.limit !== null && (
+              <p className="text-sm text-base-content/60 mt-2">
+                {t("quotaStatus", { used: quota.used, limit: quota.limit })}
+              </p>
+            )}
           )}
         </div>
 

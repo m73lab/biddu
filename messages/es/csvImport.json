@@ -24,6 +24,8 @@
     "importPartial": "{success} artículos importados, {failed} fallidos",
     "importResult": "{success} importados, {failed} fallidos",
     "fixErrorsFirst": "Por favor corrige todos los errores antes de importar",
+    "quotaStatus": "{used} de {limit} lotes usados en esta subasta",
+    "overQuota": "Esta subasta tiene {used}/{limit} lotes y tu archivo trae {count} válidos: solo caben {remaining}. Quita filas o autoaloja sin límites.",
     "errorsFound": "{count} artículo(s) tienen errores",
     "fixErrorsBeforeImport": "Corrige los errores resaltados antes de importar",
     "selectItems": "Selecciona artículos para editar",

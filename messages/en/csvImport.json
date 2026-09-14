@@ -24,6 +24,8 @@
     "importPartial": "{success} items imported, {failed} failed",
     "importResult": "{success} imported, {failed} failed",
     "fixErrorsFirst": "Please fix all errors before importing",
+    "quotaStatus": "{used} of {limit} lots used in this auction",
+    "overQuota": "This auction has {used}/{limit} lots and your file has {count} valid rows: only {remaining} fit. Remove rows or self-host without limits.",
     "errorsFound": "{count} item(s) have errors",
     "fixErrorsBeforeImport": "Fix the highlighted errors before importing",
     "selectItems": "Select items to edit",
