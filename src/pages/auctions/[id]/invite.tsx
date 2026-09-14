@@ -179,6 +179,15 @@ export default function InvitePage({
     return `/join/${code}`;
   };
 
+  const copyCode = async (code: string) => {
+    try {
+      await navigator.clipboard.writeText(code);
+      showToast(t("codes.copiedCode", { code }), "success");
+    } catch {
+      setError(t("codes.copyFailed"));
+    }
+  };
+
   const copyCodeLink = async (code: string) => {
     try {
       await navigator.clipboard.writeText(getCodeLink(code));
@@ -543,11 +552,18 @@ export default function InvitePage({
                       {!c.revokedAt && (
                         <div className="flex items-center gap-1 shrink-0">
                           <button
+                            onClick={() => copyCode(c.code)}
+                            className="btn btn-ghost btn-sm btn-circle tooltip tooltip-left"
+                            data-tip={t("codes.copyCode")}
+                          >
+                            <span className="icon-[tabler--copy] size-5"></span>
+                          </button>
+                          <button
                             onClick={() => copyCodeLink(c.code)}
                             className="btn btn-ghost btn-sm btn-circle tooltip tooltip-left"
                             data-tip={t("codes.copyLink")}
                           >
-                            <span className="icon-[tabler--copy] size-5"></span>
+                            <span className="icon-[tabler--link] size-5"></span>
                           </button>
                           <button
                             onClick={() => setCodeToRevoke(c)}

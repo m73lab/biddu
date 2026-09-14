@@ -75,6 +75,8 @@
           "createFailed": "Could not create code",
           "created": "Code {code} created, ready to share",
           "copyLink": "Copy join link",
+          "copyCode": "Copy code only",
+          "copiedCode": "Code {code} copied",
           "copyFailed": "Could not copy link",
           "uses": "{used} of {max} uses",
           "expiresOn": "Expires {date}",

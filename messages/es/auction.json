@@ -75,6 +75,8 @@
           "createFailed": "No se pudo crear el código",
           "created": "Código {code} creado, listo para compartir",
           "copyLink": "Copiar enlace",
+          "copyCode": "Copiar solo el código",
+          "copiedCode": "Código {code} copiado",
           "copyFailed": "No se pudo copiar el enlace",
           "uses": "{used} de {max} usos",
           "expiresOn": "Vence {date}",
