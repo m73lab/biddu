@@ -43,3 +43,31 @@ export const retryEmails: ApiHandler = async (_req, res) => {
     timestamp: new Date().toISOString(),
   });
 };
+
+// ============================================================================
+// Auction-End Handler (ended items, cascade-close, slot release)
+// ============================================================================
+
+/**
+ * Process everything that must happen when auctions end. Runs on a
+ * schedule instead of piggybacking on notification polling, so N app
+ * replicas don't run it N times.
+ */
+export const runAuctionEnd: ApiHandler = async (_req, res) => {
+  const { processEndedItems, closeItemsOfEndedAuctions, releaseSlotsOfEndedAuctions } =
+    await import("@/lib/services/auction-end.service");
+
+  const ended = await processEndedItems();
+  const [closed, released] = await Promise.all([
+    closeItemsOfEndedAuctions(),
+    releaseSlotsOfEndedAuctions(),
+  ]);
+
+  return res.status(200).json({
+    ok: true,
+    ended,
+    closed,
+    released,
+    timestamp: new Date().toISOString(),
+  });
+};
