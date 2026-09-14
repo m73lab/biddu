@@ -44,6 +44,32 @@
       "fulfillment": "Al cerrar con ganador, aquí se coordinan pago y entrega, y ambas partes pueden calificarse.",
       "discussionsTitle": "Discusiones",
       "discussions": "Pregunta al dueño o conversa con otros miembros. Se cierran cuando el artículo finaliza."
+    },
+    "itemCreate": {
+      "welcomeTitle": "Añadir un artículo",
+      "welcome": "Completemos tu lote paso a paso. Solo nombre y puja inicial son obligatorios; lo demás tiene valores sensatos por defecto.",
+      "basicTitle": "Nombre y descripción",
+      "basic": "El nombre es obligatorio y lo primero que ven los pujadores. La descripción acepta texto enriquecido (hasta 500 caracteres).",
+      "currencyTitle": "Moneda",
+      "currency": "Moneda del artículo (ej. CLP). Todo el remate de este lote se hace en esa moneda.",
+      "pricingTitle": "Puja inicial e incremento",
+      "pricing": "La puja inicial es el piso (puede ser 0). El incremento mínimo evita subidas de $1 en $1.",
+      "maxBidTitle": "Puja máxima (opcional)",
+      "maxBid": "Tope anti-bromas: las pujas sobre este monto se rechazan solas. Vacío = sin tope.",
+      "normalizedTitle": "Montos normalizados (avanzado)",
+      "normalized": "Solo para subastas multi-moneda: equivalencias y restricciones en la moneda base. Si no la usas, déjalo vacío.",
+      "endDateTitle": "Fecha de fin",
+      "endDate": "Opcional. Por defecto hereda el tope: nunca puede pasar la fecha de fin de la subasta ni los 30 días.",
+      "anonTitle": "Pujas anónimas",
+      "anon": "Si lo activas, los pujadores no se ven entre sí (tú como dueño sí ves quién puja).",
+      "discussionsTitle": "Discusiones",
+      "discussions": "Permite preguntas y comentarios en el artículo. Viene activado; apágalo si no quieres ruido.",
+      "antiSnipeTitle": "Anti-sniping",
+      "antiSnipe": "Si hay puja en los últimos minutos, extiende el cierre automáticamente. Define ventana y extensión en segundos.",
+      "adminTitle": "Edición por admins",
+      "admin": "Permite que los administradores de la subasta editen este artículo por ti. Por defecto apagado.",
+      "submitTitle": "Crear y seguir",
+      "submit": "Al crear pasas al paso 2: subir fotos y publicar. Sin publicar, el artículo queda como borrador invisible."
     }
   }
 }

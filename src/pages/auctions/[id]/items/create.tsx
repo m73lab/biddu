@@ -12,6 +12,7 @@ import { ImageUpload } from "@/components/upload/image-upload";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
+import { useTour } from "@/components/tour";
 import { inputStepForCurrency, toDateTimeLocalValue } from "@/utils/formatters";
 import { getMaxEndDate } from "@/lib/end-date-limit";
 import { withAuth } from "@/lib/auth/withAuth";
@@ -66,6 +67,8 @@ export default function CreateItemPage({
   const t = useTranslations("item.create");
   const tCommon = useTranslations("common");
   const tErrors = useTranslations("errors");
+  const tTour = useTranslations("tour");
+  const { restartTour } = useTour("item-create");
   const tAuction = useTranslations("auction");
   const tDiscussions = useTranslations("discussions");
   const { showToast } = useToast();
@@ -290,11 +293,22 @@ export default function CreateItemPage({
                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                   <span className="icon-[tabler--package] size-7"></span>
                 </div>
-                <div>
-                  <h1 className="text-2xl font-bold">{t("title")}</h1>
-                  <p className="text-base-content/60">{t("subtitle")}</p>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h1 className="text-2xl font-bold">{t("title")}</h1>
+                      <button
+                        type="button"
+                        onClick={restartTour}
+                        title={tTour("help")}
+                        aria-label={tTour("help")}
+                        className="btn btn-ghost btn-xs btn-circle shrink-0"
+                      >
+                        <span className="icon-[tabler--help] size-4"></span>
+                      </button>
+                    </div>
+                    <p className="text-base-content/60">{t("subtitle")}</p>
+                  </div>
                 </div>
-              </div>
 
               <form onSubmit={handleCreateItem} className="space-y-8">
                 {/* Basic Info */}
@@ -685,11 +699,12 @@ export default function CreateItemPage({
                   >
                     {tCommon("cancel")}
                   </Link>
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    className="w-full sm:flex-1 shadow-lg shadow-primary/20"
-                    isLoading={isLoading}
+                    <Button
+                      type="submit"
+                      data-tour="submit"
+                      variant="primary"
+                      className="w-full sm:flex-1 shadow-lg shadow-primary/20"
+                      isLoading={isLoading}
                     loadingText={t("submitting")}
                     icon={
                       <span className="icon-[tabler--arrow-right] size-5"></span>

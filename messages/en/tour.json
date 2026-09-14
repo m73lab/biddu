@@ -44,6 +44,32 @@
       "fulfillment": "Once closed with a winner, payment and delivery are coordinated here, and both sides can rate each other.",
       "discussionsTitle": "Discussions",
       "discussions": "Ask the owner or chat with other members. They lock once the item ends."
+    },
+    "itemCreate": {
+      "welcomeTitle": "Add an item",
+      "welcome": "Let's complete your lot step by step. Only name and starting bid are required; the rest has sensible defaults.",
+      "basicTitle": "Name and description",
+      "basic": "The name is required and the first thing bidders see. Description supports rich text (up to 500 characters).",
+      "currencyTitle": "Currency",
+      "currency": "Item currency (e.g. CLP). All bidding on this lot happens in that currency.",
+      "pricingTitle": "Starting bid and increment",
+      "pricing": "The starting bid is the floor (can be 0). The minimum increment avoids $1-by-$1 raises.",
+      "maxBidTitle": "Maximum bid (optional)",
+      "maxBid": "Anti-joke cap: bids above this amount are rejected automatically. Empty = no cap.",
+      "normalizedTitle": "Normalized amounts (advanced)",
+      "normalized": "Only for multi-currency auctions: base-currency equivalents and constraints. Leave empty otherwise.",
+      "endDateTitle": "End date",
+      "endDate": "Optional. Defaults to the cap: never past the auction end date or 30 days.",
+      "anonTitle": "Anonymous bidding",
+      "anon": "If enabled, bidders can't see each other (you as owner still see who bids).",
+      "discussionsTitle": "Discussions",
+      "discussions": "Allow questions and comments on the item. On by default; turn off for silence.",
+      "antiSnipeTitle": "Anti-sniping",
+      "antiSnipe": "A bid in the final minutes extends the close automatically. Set window and extension in seconds.",
+      "adminTitle": "Admin editing",
+      "admin": "Let auction admins edit this item for you. Off by default.",
+      "submitTitle": "Create and continue",
+      "submit": "Creating takes you to step 2: upload photos and publish. Unpublished items stay invisible drafts."
     }
   }
 }

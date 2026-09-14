@@ -1,6 +1,10 @@
 import type { Placement } from "react-joyride";
 
-export type TourId = "dashboard" | "auction-create" | "item-detail";
+export type TourId =
+  | "dashboard"
+  | "auction-create"
+  | "item-detail"
+  | "item-create";
 
 export interface TourStepDef {
   target: string;
@@ -104,6 +108,69 @@ export const TOURS: Record<TourId, TourStepDef[]> = {
       target: '[data-tour="discussions"]',
       titleKey: "item.discussionsTitle",
       contentKey: "item.discussions",
+    },
+  ],
+  "item-create": [
+    {
+      target: "body",
+      titleKey: "itemCreate.welcomeTitle",
+      contentKey: "itemCreate.welcome",
+    },
+    {
+      target: "#name",
+      titleKey: "itemCreate.basicTitle",
+      contentKey: "itemCreate.basic",
+    },
+    {
+      target: "#currencyCode",
+      titleKey: "itemCreate.currencyTitle",
+      contentKey: "itemCreate.currency",
+    },
+    {
+      target: "#startingBid",
+      titleKey: "itemCreate.pricingTitle",
+      contentKey: "itemCreate.pricing",
+    },
+    {
+      target: "#maxBid",
+      titleKey: "itemCreate.maxBidTitle",
+      contentKey: "itemCreate.maxBid",
+    },
+    {
+      target: "#minBidNormalized",
+      titleKey: "itemCreate.normalizedTitle",
+      contentKey: "itemCreate.normalized",
+      optional: true,
+    },
+    {
+      target: "#endDate",
+      titleKey: "itemCreate.endDateTitle",
+      contentKey: "itemCreate.endDate",
+    },
+    {
+      target: 'input[name="bidderAnonymous"]',
+      titleKey: "itemCreate.anonTitle",
+      contentKey: "itemCreate.anon",
+    },
+    {
+      target: 'input[name="discussionsEnabled"]',
+      titleKey: "itemCreate.discussionsTitle",
+      contentKey: "itemCreate.discussions",
+    },
+    {
+      target: 'input[name="antiSnipeEnabled"]',
+      titleKey: "itemCreate.antiSnipeTitle",
+      contentKey: "itemCreate.antiSnipe",
+    },
+    {
+      target: 'input[name="isEditableByAdmin"]',
+      titleKey: "itemCreate.adminTitle",
+      contentKey: "itemCreate.admin",
+    },
+    {
+      target: '[data-tour="submit"]',
+      titleKey: "itemCreate.submitTitle",
+      contentKey: "itemCreate.submit",
     },
   ],
 };
