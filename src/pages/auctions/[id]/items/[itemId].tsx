@@ -194,7 +194,9 @@ export default function ItemDetailPage({
   const tErrors = useTranslations("errors");
   const tAuction = useTranslations("auction");
   const tTour = useTranslations("tour");
-  const { restartTour } = useTour("item-detail");
+  // No auto-start the bidding tour for the item owner (they can't
+  // bid on their own item); manual restart via the help button still works.
+  const { restartTour } = useTour("item-detail", { disabled: isItemOwner });
   const tEdit = useTranslations("item.edit");
   const { showToast } = useToast();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
