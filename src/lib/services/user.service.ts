@@ -12,6 +12,8 @@ import * as systemService from "@/lib/services/system.service";
     name: string | null;
     email: string;
     avatarSeed: string | null;
+    phone: string | null;
+    rut: string | null;
   }
 
 export interface UpdateProfileInput {
@@ -99,15 +101,22 @@ export async function userHasPassword(userId: string): Promise<boolean> {
   ): Promise<UserProfile | null> {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, name: true, email: true, avatarSeed: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        avatarSeed: true,
+        phone: true,
+        rut: true,
+      },
     });
 
     return user;
   }
 
-/**
- * Get user settings
- */
+  /**
+   * Get user settings
+   */
 export async function getUserSettings(
   userId: string,
 ): Promise<UserSettings | null> {
@@ -178,7 +187,14 @@ export async function updateUserProfile(
         rut: input.rut ? input.rut.trim() : null,
       }),
     },
-      select: { id: true, name: true, email: true, avatarSeed: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        avatarSeed: true,
+        phone: true,
+        rut: true,
+      },
     });
 
     return user;

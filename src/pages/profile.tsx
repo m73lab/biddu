@@ -12,12 +12,16 @@ import { useToast } from "@/components/ui/toast";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 import { withAuth } from "@/lib/auth/withAuth";
+import { isValidPhone } from "@/utils/phone";
+import { isValidRut } from "@/utils/rut";
 
 interface ProfileData {
   id: string;
   name: string | null;
   email: string;
   avatarSeed: string | null;
+  phone: string | null;
+  rut: string | null;
 }
 
 interface ScoreData {
@@ -84,6 +88,24 @@ export default function ProfilePage({ user }: ProfilePageProps) {
   );
   const [isSaving, setIsSaving] = useState(false);
 
+  // Personal data form (name / phone / RUT)
+  const [personalName, setPersonalName] = useState<string | undefined>(
+    undefined,
+  );
+  const [personalPhone, setPersonalPhone] = useState<string | undefined>(
+    undefined,
+  );
+  const [personalRut, setPersonalRut] = useState<string | undefined>(undefined);
+  const [isSavingPersonal, setIsSavingPersonal] = useState(false);
+
+  useEffect(() => {
+    if (profile && personalName === undefined) {
+      setPersonalName(profile.name ?? "");
+      setPersonalPhone(profile.phone ?? "");
+      setPersonalRut(profile.rut ?? "");
+    }
+  }, [profile, personalName]);
+
   useEffect(() => {
     if (draftSeed === undefined && profile) {
       setDraftSeed(profile.avatarSeed);
@@ -114,6 +136,47 @@ export default function ProfilePage({ user }: ProfilePageProps) {
       showToast(t("saveFailed"), "error");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handlePersonalSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const name = (personalName ?? "").trim();
+    const phone = (personalPhone ?? "").trim();
+    const rut = (personalRut ?? "").trim();
+
+    if (!name) {
+      showToast(t("personal.nameRequired"), "error");
+      return;
+    }
+    if (phone && !isValidPhone(phone)) {
+      showToast(t("personal.phoneInvalid"), "error");
+      return;
+    }
+    if (rut && !isValidRut(rut)) {
+      showToast(t("personal.rutInvalid"), "error");
+      return;
+    }
+
+    setIsSavingPersonal(true);
+    try {
+      const res = await fetch("/api/user/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, phone: phone || null, rut: rut || null }),
+      });
+      const result = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        showToast(result.message || t("personal.saveFailed"), "error");
+        return;
+      }
+      await mutateProfile();
+      await updateSession().catch(() => undefined);
+      showToast(t("personal.saved"), "success");
+    } catch {
+      showToast(t("personal.saveFailed"), "error");
+    } finally {
+      setIsSavingPersonal(false);
     }
   };
 
@@ -184,6 +247,123 @@ export default function ProfilePage({ user }: ProfilePageProps) {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Personal data */}
+        <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl mb-8">
+          <div className="card-body p-8">
+            <h2 className="card-title text-lg flex items-center gap-2 mb-4">
+              <span className="icon-[tabler--user] size-5 text-primary"></span>
+              {t("personal.title")}
+            </h2>
+            {!profile ? (
+              <div className="flex justify-center py-8">
+                <span className="loading loading-spinner text-primary"></span>
+              </div>
+            ) : (
+              <form onSubmit={handlePersonalSave} className="space-y-5">
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text font-medium">
+                      {t("personal.email")}
+                    </span>
+                  </label>
+                  <input
+                    type="email"
+                    value={profile.email}
+                    className="input input-bordered w-full bg-base-200/50 opacity-70"
+                    disabled
+                  />
+                  <label className="label">
+                    <span className="label-text-alt text-base-content/50 flex items-center gap-1">
+                      <span className="icon-[tabler--lock] size-3"></span>
+                      {t("personal.emailCannotChange")}
+                    </span>
+                  </label>
+                </div>
+
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text font-medium">
+                      {t("personal.displayName")}
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    value={personalName ?? ""}
+                    onChange={(e) => setPersonalName(e.target.value)}
+                    placeholder={t("personal.displayNamePlaceholder")}
+                    className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                  />
+                </div>
+
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text font-medium">
+                      {t("personal.phone")}{" "}
+                      <span className="text-base-content/40 text-xs">
+                        ({t("personal.optional")})
+                      </span>
+                    </span>
+                  </label>
+                  <input
+                    type="tel"
+                    value={personalPhone ?? ""}
+                    onChange={(e) => setPersonalPhone(e.target.value)}
+                    placeholder={t("personal.phonePlaceholder")}
+                    autoComplete="tel"
+                    maxLength={20}
+                    className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                  />
+                  <label className="label">
+                    <span className="label-text-alt text-base-content/50 flex items-center gap-1">
+                      <span className="icon-[tabler--brand-whatsapp] size-3"></span>
+                      {t("personal.phoneHint")}
+                    </span>
+                  </label>
+                </div>
+
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text font-medium">
+                      RUT{" "}
+                      <span className="text-base-content/40 text-xs">
+                        ({t("personal.optional")})
+                      </span>
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="12.345.678-9"
+                    value={personalRut ?? ""}
+                    onChange={(e) => setPersonalRut(e.target.value)}
+                    maxLength={20}
+                    className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                  />
+                  <label className="label">
+                    <span className="label-text-alt text-base-content/50">
+                      {t("personal.rutHint")}
+                    </span>
+                  </label>
+                </div>
+
+                <div className="pt-2">
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    isLoading={isSavingPersonal}
+                    loadingText={t("saving")}
+                    icon={
+                      <span className="icon-[tabler--device-floppy] size-5"></span>
+                    }
+                    className="w-full sm:w-auto shadow-lg shadow-primary/20"
+                  >
+                    {t("save")}
+                  </Button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
 

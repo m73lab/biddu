@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { signOut } from "next-auth/react";
 import * as userService from "@/lib/services/user.service";
 import * as systemService from "@/lib/services/system.service";
@@ -7,8 +8,6 @@ import { useTheme } from "@/components/providers/theme-provider";
 import { Button } from "@/components/ui/button";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
-import { isValidPhone } from "@/utils/phone";
-import { isValidRut } from "@/utils/rut";
 import { createLogger } from "@/lib/logger";
 import { useToast } from "@/components/ui/toast";
 import { withAuth } from "@/lib/auth/withAuth";
@@ -66,14 +65,6 @@ export default function SettingsPage({
   const { theme, setTheme } = useTheme();
   const t = useTranslations("settings");
   const tErrors = useTranslations("errors");
-
-  // Profile form state
-  const [name, setName] = useState(user.name || "");
-  const [phone, setPhone] = useState(user.phone || "");
-  const [rut, setRut] = useState(user.rut || "");
-  const [profileError, setProfileError] = useState<string | null>(null);
-  const [profileSuccess, setProfileSuccess] = useState<string | null>(null);
-  const [profileLoading, setProfileLoading] = useState(false);
 
   // Password form state
   const [currentPassword, setCurrentPassword] = useState("");
@@ -321,46 +312,6 @@ export default function SettingsPage({
     }
   };
 
-  const handleProfileSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setProfileError(null);
-    setProfileSuccess(null);
-    setProfileLoading(true);
-
-    if (phone && !isValidPhone(phone)) {
-      setProfileError(t("profile.phoneInvalid"));
-      setProfileLoading(false);
-      return;
-    }
-
-    if (rut && !isValidRut(rut)) {
-      setProfileError(t("profile.rutInvalid"));
-      setProfileLoading(false);
-      return;
-    }
-
-    try {
-      const res = await fetch("/api/user/profile", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone: phone || null, rut: rut || null }),
-      });
-
-      const result = await res.json();
-
-      if (!res.ok) {
-        setProfileError(result.message || tErrors("profile.updateFailed"));
-      } else {
-        setProfileSuccess(t("profile.profileUpdated"));
-        setTimeout(() => setProfileSuccess(null), 3000);
-      }
-    } catch {
-      setProfileError(tErrors("generic"));
-    } finally {
-      setProfileLoading(false);
-    }
-  };
-
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setPasswordError(null);
@@ -489,129 +440,25 @@ export default function SettingsPage({
         <p className="text-base-content/60 text-lg">{t("subtitle")}</p>
       </div>
 
-      {/* Profile Section */}
+      {/* Profile lives in /profile now: link card */}
       <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl mb-8">
-        <div className="card-body">
-          <h2 className="card-title flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-              <span className="icon-[tabler--user] size-6"></span>
-            </div>
-            {t("profile.title")}
-          </h2>
-
-          <form onSubmit={handleProfileSubmit} className="space-y-5">
-            {profileError && (
-              <div className="alert alert-error">
-                <span className="icon-[tabler--alert-circle] size-5"></span>
-                <span>{profileError}</span>
-              </div>
-            )}
-
-            {profileSuccess && (
-              <div className="alert alert-success">
-                <span className="icon-[tabler--check] size-5"></span>
-                <span>{profileSuccess}</span>
-              </div>
-            )}
-
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">
-                  {t("profile.email")}
-                </span>
-              </label>
-              <input
-                type="email"
-                value={user.email}
-                className="input input-bordered w-full bg-base-200/50 opacity-70"
-                disabled
-              />
-              <label className="label">
-                <span className="label-text-alt text-base-content/50 flex items-center gap-1">
-                  <span className="icon-[tabler--lock] size-3"></span>
-                  {t("profile.emailCannotChange")}
-                </span>
-              </label>
-            </div>
-
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">
-                  {t("profile.displayName")}
-                </span>
-              </label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder={t("profile.displayNamePlaceholder")}
-                className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
-              />
-            </div>
-
-
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">
-                  {t("profile.phone")}{" "}
-                  <span className="text-base-content/40 text-xs">
-                    ({t("profile.optional")})
-                  </span>
-                </span>
-              </label>
-              <input
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder={t("profile.phonePlaceholder")}
-                autoComplete="tel"
-                maxLength={20}
-                className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
-              />
-              <label className="label">
-                <span className="label-text-alt text-base-content/50 flex items-center gap-1">
-                  <span className="icon-[tabler--brand-whatsapp] size-3"></span>
-                  {t("profile.phoneHint")}
-                </span>
-              </label>
-            </div>
-
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">
-                  RUT <span className="text-base-content/40 text-xs">(opcional)</span>
-                </span>
-              </label>
-              <input
-                type="text"
-                placeholder="12.345.678-9"
-                value={rut}
-                onChange={(e) => setRut(e.target.value)}
-                maxLength={20}
-                className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
-              />
-              <label className="label">
-                <span className="label-text-alt text-base-content/50">
-                  {t("profile.rutHint")}
-                </span>
-              </label>
-            </div>
-
-            <div className="pt-2">
-              <Button
-                type="submit"
-                variant="primary"
-                isLoading={profileLoading}
-                loadingText={t("profile.saving")}
-                icon={
-                  <span className="icon-[tabler--device-floppy] size-5"></span>
-                }
-                className="w-full sm:w-auto shadow-lg shadow-primary/20"
-              >
-                {t("profile.saveProfile")}
-              </Button>
-            </div>
-          </form>
+        <div className="card-body flex flex-row items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+            <span className="icon-[tabler--user] size-6"></span>
+          </div>
+          <div className="min-w-0">
+            <h2 className="card-title">{t("profile.title")}</h2>
+            <p className="text-sm text-base-content/60">
+              {t("profile.movedHint")}
+            </p>
+          </div>
+          <Link
+            href="/profile"
+            className="btn btn-primary ml-auto gap-1.5 shrink-0"
+          >
+            {t("profile.goTo")}
+            <span className="icon-[tabler--arrow-right] size-4"></span>
+          </Link>
         </div>
       </div>
 

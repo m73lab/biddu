@@ -4,6 +4,8 @@
     "subtitle": "Manage your account preferences and profile",
     "profile": {
       "title": "Profile",
+      "movedHint": "Your name, phone and RUT are managed in your profile.",
+      "goTo": "Go to my profile",
       "email": "Email",
       "emailCannotChange": "Email cannot be changed",
       "displayName": "Display Name",

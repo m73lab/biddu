@@ -21,6 +21,23 @@
     "auctionsWon": "Subastas ganadas",
     "itemsSold": "Artículos vendidos",
     "auctionsCreated": "Subastas creadas",
-    "auctionsJoined": "Subastas unidas"
+    "auctionsJoined": "Subastas unidas",
+    "personal": {
+      "title": "Datos personales",
+      "email": "Correo electrónico",
+      "emailCannotChange": "El correo no se puede cambiar",
+      "displayName": "Nombre para mostrar",
+      "displayNamePlaceholder": "Tu nombre",
+      "nameRequired": "El nombre es obligatorio",
+      "phone": "WhatsApp / Teléfono",
+      "phonePlaceholder": "+56 9 1234 5678",
+      "phoneHint": "Para que te contacten por tus pujas ganadas",
+      "phoneInvalid": "Teléfono inválido. Ejemplo: +56 9 1234 5678",
+      "rutHint": "Se valida el dígito verificador",
+      "rutInvalid": "RUT inválido. Ejemplo: 12.345.678-9",
+      "optional": "opcional",
+      "saved": "Datos actualizados correctamente",
+      "saveFailed": "No se pudo guardar"
+    }
   }
 }

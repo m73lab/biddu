@@ -4,6 +4,8 @@
     "subtitle": "Gestiona tus preferencias de cuenta y perfil",
     "profile": {
       "title": "Perfil",
+      "movedHint": "Tu nombre, teléfono y RUT se gestionan en tu perfil.",
+      "goTo": "Ir a mi perfil",
       "email": "Correo electrónico",
       "emailCannotChange": "El correo no se puede cambiar",
       "displayName": "Nombre para mostrar",

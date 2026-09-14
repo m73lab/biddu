@@ -21,6 +21,23 @@
     "auctionsWon": "Auctions won",
     "itemsSold": "Items sold",
     "auctionsCreated": "Auctions created",
-    "auctionsJoined": "Auctions joined"
+    "auctionsJoined": "Auctions joined",
+    "personal": {
+      "title": "Personal data",
+      "email": "Email",
+      "emailCannotChange": "Email cannot be changed",
+      "displayName": "Display name",
+      "displayNamePlaceholder": "Your name",
+      "nameRequired": "Name is required",
+      "phone": "WhatsApp / Phone",
+      "phonePlaceholder": "+56 9 1234 5678",
+      "phoneHint": "So they can contact you about your won bids",
+      "phoneInvalid": "Invalid phone. Example: +56 9 1234 5678",
+      "rutHint": "Check digit is validated",
+      "rutInvalid": "Invalid RUT. Example: 12.345.678-9",
+      "optional": "optional",
+      "saved": "Data updated successfully",
+      "saveFailed": "Could not save"
+    }
   }
 }
