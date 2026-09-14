@@ -98,22 +98,24 @@ export default function CreateAuctionPage({
             <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
               <span className="icon-[tabler--gavel] size-7"></span>
             </div>
-              <div>
-                <h1 className="text-2xl font-bold">{t("title")}</h1>
-                <p className="text-base-content/60">{t("subtitle")}</p>
-              </div>
-              <button
-                type="button"
-                onClick={restartTour}
-                title={tTour("help")}
-                aria-label={tTour("help")}
-                className="btn btn-ghost btn-square ml-auto shrink-0"
-              >
-                <span className="icon-[tabler--help] size-5"></span>
-              </button>
-            </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h1 className="text-2xl font-bold">{t("title")}</h1>
+                    <button
+                      type="button"
+                      onClick={restartTour}
+                      title={tTour("help")}
+                      aria-label={tTour("help")}
+                      className="btn btn-ghost btn-xs btn-circle shrink-0"
+                    >
+                      <span className="icon-[tabler--help] size-4"></span>
+                    </button>
+                  </div>
+                    <p className="text-base-content/60">{t("subtitle")}</p>
+                  </div>
+                </div>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
+            <form onSubmit={handleSubmit} className="space-y-8">
             {/* Basic Info */}
             <div className="space-y-4">
               <h2 className="text-lg font-semibold flex items-center gap-2 text-primary">
