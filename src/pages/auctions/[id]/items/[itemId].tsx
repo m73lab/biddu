@@ -6,7 +6,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { ItemsSidebar, SidebarItem } from "@/components/item/ItemsSidebar";
 import { DiscussionSection } from "@/components/item/DiscussionSection";
-import { ConfirmModal } from "@/components/common";
+import { ConfirmModal, Pagination } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { RichTextRenderer } from "@/components/ui/rich-text-editor";
 import { useToast } from "@/components/ui/toast";
@@ -132,6 +132,7 @@ interface ItemDetailProps {
       };
   };
   bids: Bid[];
+  initialPagination: { page: number; pageSize: number; total: number };
   discussions: Discussion[];
   isHighestBidder: boolean;
   canBid: boolean;
@@ -148,10 +149,11 @@ interface ItemDetailProps {
   }>;
 }
 
-interface ItemResponse {
-  item: ItemDetailProps["item"];
-  bids: Bid[];
-}
+  interface ItemResponse {
+    item: ItemDetailProps["item"];
+    bids: Bid[];
+    pagination: { page: number; pageSize: number; total: number };
+  }
 
 interface AuctionCurrencyProfile {
   id: string;
@@ -171,14 +173,15 @@ interface AuctionCurrencyContextResponse {
   baseCurrency: AuctionCurrencyProfile | null;
 }
 
-export default function ItemDetailPage({
-  user,
-  auction,
-  auctionItems,
-  itemSidebarCollapsed: initialSidebarCollapsed,
-  item: initialItem,
-  bids: initialBids,
-  discussions: initialDiscussions,
+  export default function ItemDetailPage({
+    user,
+    auction,
+    auctionItems,
+    itemSidebarCollapsed: initialSidebarCollapsed,
+    item: initialItem,
+    bids: initialBids,
+    initialPagination,
+    discussions: initialDiscussions,
   canBid,
   canEdit,
   isItemOwner,
@@ -241,12 +244,20 @@ export default function ItemDetailPage({
   // When realtime is disconnected: falls back to polling
   const swrConfig = useRealtimeSWRConfig(baseRefreshInterval);
 
+  // Bid history pagination (server-driven, like admin lists)
+  const [bidPage, setBidPage] = useState(1);
+  const [bidPageSize, setBidPageSize] = useState(initialPagination.pageSize);
+
   // Fetch latest item data with SWR
   const { data, mutate } = useSWR<ItemResponse>(
-    `/api/auctions/${auction.id}/items/${initialItem.id}`,
+    `/api/auctions/${auction.id}/items/${initialItem.id}?page=${bidPage}&pageSize=${bidPageSize}`,
     fetcher,
     {
-      fallbackData: { item: initialItem, bids: initialBids },
+      fallbackData: {
+        item: initialItem,
+        bids: initialBids,
+        pagination: initialPagination,
+      },
       refreshInterval: swrConfig.refreshInterval,
       revalidateOnFocus: swrConfig.revalidateOnFocus,
       revalidateOnReconnect: swrConfig.revalidateOnReconnect,
@@ -283,53 +294,65 @@ export default function ItemDetailPage({
 
   // Handle realtime bid events - optimistically update UI with event data
   const handleNewBid = useCallback(
-    (event: BidNewEvent) => {
-      // Optimistically update SWR cache with the new bid data
-      mutate(
-        (current) => {
-          if (!current) return current;
+      (event: BidNewEvent) => {
+        // Optimistically update SWR cache with the new bid data.
+        // Off page 1 just revalidate the visible page instead.
+        if (bidPage !== 1) {
+          mutate();
+          return;
+        }
+        mutate(
+          (current) => {
+            if (!current) return current;
 
-          // Skip if this bid already exists (dedup for own bids)
-          if (current.bids.some((b) => b.id === event.bidId)) {
-            return current;
-          }
+            // Skip if this bid already exists (dedup for own bids)
+            if (current.bids.some((b) => b.id === event.bidId)) {
+              return current;
+            }
 
-          // Create new bid entry from event data
-          const newBid: Bid = {
-            id: event.bidId,
-            amount: event.amount,
-            normalizedAmount: event.normalizedAmount ?? null,
-            enteredRepresentation: event.enteredRepresentation,
-            currencyProfile: null,
-            createdAt: event.timestamp,
-            isAnonymous: event.isAnonymous,
-            user: event.isAnonymous
-              ? null
-              : { id: event.bidderId, name: event.bidderName },
-          };
+            // Create new bid entry from event data
+            const newBid: Bid = {
+              id: event.bidId,
+              amount: event.amount,
+              normalizedAmount: event.normalizedAmount ?? null,
+              enteredRepresentation: event.enteredRepresentation,
+              currencyProfile: null,
+              createdAt: event.timestamp,
+              isAnonymous: event.isAnonymous,
+              user: event.isAnonymous
+                ? null
+                : { id: event.bidderId, name: event.bidderName },
+            };
 
-          return {
-            ...current,
-            item: {
-              ...current.item,
-              currentBid: event.highestBid,
-              highestBidderId: event.bidderId,
-              // Update endDate if anti-snipe extended it
-              ...(event.newEndDate ? { endDate: event.newEndDate } : {}),
-            },
-            bids: [newBid, ...current.bids],
-          };
-        },
-        { revalidate: false }, // Don't refetch - we have all the data
-      );
-    },
-    [mutate],
-  );
+            return {
+              ...current,
+              item: {
+                ...current.item,
+                currentBid: event.highestBid,
+                highestBidderId: event.bidderId,
+                // Update endDate if anti-snipe extended it
+                ...(event.newEndDate ? { endDate: event.newEndDate } : {}),
+              },
+              bids: [newBid, ...current.bids],
+              pagination: current.pagination
+                ? {
+                    ...current.pagination,
+                    total: current.pagination.total + 1,
+                  }
+                : current.pagination,
+            };
+          },
+          { revalidate: false }, // Don't refetch - we have all the data
+        );
+      },
+      [mutate, bidPage],
+    );
 
   useEvent(itemChannel, Events.BID_NEW, handleNewBid);
 
   const item = data?.item ?? initialItem;
   const bids: Bid[] = data?.bids ?? initialBids;
+  const bidsTotal = data?.pagination?.total ?? initialPagination.total;
   const availableCurrencyProfiles =
     currencyContext?.currencies.filter((profile) => !profile.isArchived) ?? [];
 
@@ -913,13 +936,13 @@ export default function ItemDetailPage({
                           <h2 className="font-bold text-lg flex items-center gap-2">
                             <span className="icon-[tabler--history] size-5 text-secondary"></span>
                             {t("history.title")}
-                            <span className="badge badge-sm badge-ghost">
-                              {bids.length}
-                            </span>
+                              <span className="badge badge-sm badge-ghost">
+                                {bidsTotal}
+                              </span>
                           </h2>
                         </div>
 
-                        {bids.length === 0 ? (
+                        {bidsTotal === 0 ? (
                           <div className="text-center py-12 bg-base-200/30 rounded-xl border border-base-content/5 border-dashed">
                             <div className="bg-base-200 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
                               <span className="icon-[tabler--gavel] size-6 text-base-content/30"></span>
@@ -1028,12 +1051,24 @@ export default function ItemDetailPage({
                                           ip {bid.ipHash.slice(0, 8)}
                                         </div>
                                       )}
-                                  </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
+                                    </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          {bidsTotal > 0 && (
+                            <Pagination
+                              page={bidPage}
+                              pageSize={bidPageSize}
+                              total={bidsTotal}
+                              onPageChange={setBidPage}
+                              onPageSizeChange={(s) => {
+                                setBidPageSize(s);
+                                setBidPage(1);
+                              }}
+                            />
+                          )}
+                        </div>
 
                       <div className="divider opacity-50"></div>
 
@@ -1296,8 +1331,8 @@ export default function ItemDetailPage({
                             {t("bid.placeBid")}
                           </Button>
                         </form>
-                      ) : isEnded ? (
-                        bids.length === 0 ? (
+                        ) : isEnded ? (
+                          bidsTotal === 0 ? (
                           <div className="space-y-4">
                             <div className="text-center py-6 bg-base-200/30 rounded-xl border border-dashed border-base-content/10">
                               <span className="icon-[tabler--hammer-off] size-8 text-base-content/20 mb-2"></span>
@@ -1515,9 +1550,9 @@ export default function ItemDetailPage({
                             <span className="icon-[tabler--users] size-4"></span>
                             {t("detail.totalBids")}
                           </span>
-                          <span className="badge badge-ghost font-medium">
-                            {bids.length}
-                          </span>
+                            <span className="badge badge-ghost font-medium">
+                              {bidsTotal}
+                            </span>
                         </div>
                       </div>
                     </div>
@@ -1543,7 +1578,7 @@ export default function ItemDetailPage({
               {tEdit("endDescription")}
             </p>
             <p className="text-sm text-base-content/60">
-              {bids.length > 0
+              {bidsTotal > 0
                 ? tEdit("endMessageWithBids")
                 : tEdit("endMessageNoBids")}
             </p>
@@ -1722,9 +1757,10 @@ export const getServerSideProps = withAuth(async (context) => {
         winnerConfirmEnabled: membership.auction.winnerConfirmEnabled,
       },
       auctionItems,
-      itemSidebarCollapsed: userSettings?.itemSidebarCollapsed ?? false,
-      item: itemData.item,
-      bids: itemData.bids,
+        itemSidebarCollapsed: userSettings?.itemSidebarCollapsed ?? false,
+        item: itemData.item,
+        bids: itemData.bids,
+        initialPagination: { page: 1, pageSize: 10, total: itemData.bidsTotal },
       discussions: itemData.discussions,
       isHighestBidder: itemData.isHighestBidder,
       canBid: itemData.canBid,

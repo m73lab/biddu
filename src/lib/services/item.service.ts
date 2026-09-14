@@ -192,8 +192,9 @@ export interface ItemDetailPageData {
     creatorId: string;
     discussionsEnabled: boolean;
   };
-  bids: BidForDisplay[];
-  images: { id: string; url: string; publicUrl: string; order: number }[];
+    bids: BidForDisplay[];
+    bidsTotal: number;
+    images: { id: string; url: string; publicUrl: string; order: number }[];
   discussions: DiscussionForDisplay[];
   isHighestBidder: boolean;
   canBid: boolean;
@@ -313,7 +314,8 @@ export async function getItemDetailPageData(
   viewerId: string,
   bidderVisibility: string,
   isViewerAdmin: boolean,
-  ): Promise<ItemDetailPageData | null> {
+  opts?: { skip?: number; take?: number },
+): Promise<ItemDetailPageData | null> {
     const item = await prisma.auctionItem.findUnique({
       where: { id: itemId },
       include: {
@@ -340,26 +342,35 @@ export async function getItemDetailPageData(
     return null;
   }
 
-  // Get bids with user info
-  const bidsRaw = await prisma.bid.findMany({
-    where: { auctionItemId: itemId },
-    include: {
-      currencyProfile: {
-        select: {
-          id: true,
-          symbol: true,
-          inputMode: true,
-          fractionMode: true,
-          precision: true,
-          denominationConfig: true,
+  // Get bids with user info (first page; live pages come from the API)
+  const detailSkip = Math.max(0, opts?.skip ?? 0);
+  const detailTake = Math.min(100, Math.max(1, opts?.take ?? 10));
+  const [bidsTotal, bidsRaw] = await Promise.all([
+    prisma.bid.count({ where: { auctionItemId: itemId } }),
+    prisma.bid.findMany({
+      where: { auctionItemId: itemId },
+      include: {
+        currencyProfile: {
+          select: {
+            id: true,
+            symbol: true,
+            inputMode: true,
+            fractionMode: true,
+            precision: true,
+            denominationConfig: true,
+          },
+        },
+        user: {
+            select: { id: true, name: true, createdAt: true, avatarSeed: true, avgSellerRating: true, sellerRatingCount: true, avgBuyerRating: true, buyerRatingCount: true },
         },
       },
-      user: {
-          select: { id: true, name: true, createdAt: true, avatarSeed: true, avgSellerRating: true, sellerRatingCount: true, avgBuyerRating: true, buyerRatingCount: true },
-      },
-    },
-    orderBy: { amount: "desc" },
-  });
+      orderBy: { amount: "desc" },
+      skip: detailSkip,
+      take: detailTake,
+    }),
+  ]);
+
+  // Lots inherit the auction end: fetch it to block bids and surface
 
   // Lots inherit the auction end: fetch it to block bids and surface
   // the ended state even when the item itself has no (or a future) date
@@ -533,6 +544,7 @@ export async function getItemDetailPageData(
       discussionsEnabled: item.discussionsEnabled,
     },
     bids,
+    bidsTotal,
     images: images.map((img) => ({
       id: img.id,
       url: img.url,
@@ -760,30 +772,39 @@ export async function getItemBidsForDisplay(
   viewerId: string,
   itemCreatorId: string,
   bidderVisibility: string,
-): Promise<BidForDisplay[]> {
-  const bidsRaw = await prisma.bid.findMany({
-    where: { auctionItemId: itemId },
-    include: {
-      currencyProfile: {
-        select: {
-          id: true,
-          symbol: true,
-          inputMode: true,
-          fractionMode: true,
-          precision: true,
-          denominationConfig: true,
+  opts?: { skip?: number; take?: number },
+): Promise<{ bids: BidForDisplay[]; total: number }> {
+  const skip = Math.max(0, opts?.skip ?? 0);
+  const take = Math.min(100, Math.max(1, opts?.take ?? 10));
+
+  const [total, bidsRaw] = await Promise.all([
+    prisma.bid.count({ where: { auctionItemId: itemId } }),
+    prisma.bid.findMany({
+      where: { auctionItemId: itemId },
+      include: {
+        currencyProfile: {
+          select: {
+            id: true,
+            symbol: true,
+            inputMode: true,
+            fractionMode: true,
+            precision: true,
+            denominationConfig: true,
+          },
+        },
+        user: {
+            select: { id: true, name: true, createdAt: true, avatarSeed: true, avgSellerRating: true, sellerRatingCount: true, avgBuyerRating: true, buyerRatingCount: true },
         },
       },
-      user: {
-          select: { id: true, name: true, createdAt: true, avatarSeed: true, avgSellerRating: true, sellerRatingCount: true, avgBuyerRating: true, buyerRatingCount: true },
-      },
-    },
-    orderBy: { amount: "desc" },
-  });
+        orderBy: { amount: "desc" },
+        skip,
+        take,
+      }),
+    ]);
 
   const isItemOwner = itemCreatorId === viewerId;
 
-  return bidsRaw.map((bid) => {
+  const bids = bidsRaw.map((bid) => {
     // Item owner always sees bidder names
     if (isItemOwner) {
       return {
@@ -851,6 +872,8 @@ export async function getItemBidsForDisplay(
       user: toBidUser(bid.user),
     };
   });
+
+  return { bids, total };
 }
 
 /**

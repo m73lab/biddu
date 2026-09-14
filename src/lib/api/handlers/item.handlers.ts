@@ -13,6 +13,7 @@ import {
   getMaxEndDate,
 } from "@/lib/end-date-limit";
 import { prisma } from "@/lib/prisma";
+import { parsePagination } from "@/lib/api/pagination";
 import {
   formatCurrency,
   decimalsForCurrency,
@@ -156,7 +157,7 @@ export const createItem: ApiHandler = async (req, res, ctx) => {
 /**
  * GET /api/auctions/[id]/items/[itemId] - Get item details
  */
-export const getItem: ApiHandler = async (_req, res, ctx) => {
+export const getItem: ApiHandler = async (req, res, ctx) => {
   const auctionId = ctx.params.id;
   const itemId = ctx.params.itemId;
 
@@ -185,12 +186,14 @@ export const getItem: ApiHandler = async (_req, res, ctx) => {
     throw new ForbiddenError("Not a member of this auction");
   }
 
-  // Get bids with visibility filtering
-  const bids = await itemService.getItemBidsForDisplay(
+  // Get bids with visibility filtering (paginated via ?page=&pageSize=)
+  const { page, pageSize, skip, take } = parsePagination(req.query);
+  const { bids, total } = await itemService.getItemBidsForDisplay(
     itemId,
     ctx.session!.user.id,
     item.creator.id,
     membership.auction.bidderVisibility,
+    { skip, take },
   );
 
   // Get winner email if applicable
@@ -204,6 +207,7 @@ export const getItem: ApiHandler = async (_req, res, ctx) => {
   res.status(200).json({
     item,
     bids,
+    pagination: { page, pageSize, total },
     winnerEmail,
   });
 };
