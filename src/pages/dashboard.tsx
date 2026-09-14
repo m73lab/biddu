@@ -774,30 +774,39 @@ export default function DashboardPage({ user }: DashboardProps) {
                 icon="icon-[tabler--gavel]"
                 title={tEmpty("title")}
                 description={tEmpty("description")}
-                action={
-                  isAuctionLimitReached ? (
-                    <div
-                      className="tooltip tooltip-bottom"
-                      data-tip={t("limitReached") || "Límite alcanzado"}
-                    >
+                  action={
+                    <div className="flex flex-wrap items-center justify-center gap-2">
+                      {isAuctionLimitReached ? (
+                        <div
+                          className="tooltip tooltip-bottom"
+                          data-tip={t("limitReached") || "Límite alcanzado"}
+                        >
+                          <button
+                            disabled
+                            className="btn btn-primary btn-disabled"
+                          >
+                            <span className="icon-[tabler--lock] size-5"></span>
+                            {tEmpty("createFirst")}
+                          </button>
+                        </div>
+                      ) : (
+                        <Link
+                          href="/auctions/create"
+                          className="btn btn-primary"
+                        >
+                          <span className="icon-[tabler--plus] size-5"></span>
+                          {tEmpty("createFirst")}
+                        </Link>
+                      )}
                       <button
-                        disabled
-                        className="btn btn-primary btn-disabled"
+                        onClick={() => setIsJoinModalOpen(true)}
+                        className="btn btn-outline gap-1.5"
                       >
-                        <span className="icon-[tabler--lock] size-5"></span>
-                        {tEmpty("createFirst")}
+                        <span className="icon-[tabler--ticket] size-5"></span>
+                        {t("joinByCode.button")}
                       </button>
                     </div>
-                  ) : (
-                    <Link
-                      href="/auctions/create"
-                      className="btn btn-primary"
-                    >
-                      <span className="icon-[tabler--plus] size-5"></span>
-                      {tEmpty("createFirst")}
-                    </Link>
-                  )
-                }
+                  }
               />
             </div>
           </div>
