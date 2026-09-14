@@ -319,23 +319,25 @@ export default function CSVImportPage({
               <span>{t("noAuctions")}</span>
             </div>
           ) : (
-            <select
-              className="select select-bordered w-full max-w-md"
-              value={selectedAuctionId}
-              onChange={(e) => setSelectedAuctionId(e.target.value)}
-            >
-              <option value="">{t("selectAuctionPlaceholder")}</option>
-              {auctions.map((auction) => (
-                <option key={auction.id} value={auction.id}>
-                  {auction.name}
-                </option>
-              ))}
-            </select>
-            {quota && quota.limit !== null && (
-              <p className="text-sm text-base-content/60 mt-2">
-                {t("quotaStatus", { used: quota.used, limit: quota.limit })}
-              </p>
-            )}
+            <>
+              <select
+                className="select select-bordered w-full max-w-md"
+                value={selectedAuctionId}
+                onChange={(e) => setSelectedAuctionId(e.target.value)}
+              >
+                <option value="">{t("selectAuctionPlaceholder")}</option>
+                {auctions.map((auction) => (
+                  <option key={auction.id} value={auction.id}>
+                    {auction.name}
+                  </option>
+                ))}
+              </select>
+              {quota && quota.limit !== null && (
+                <p className="text-sm text-base-content/60 mt-2">
+                  {t("quotaStatus", { used: quota.used, limit: quota.limit })}
+                </p>
+              )}
+            </>
           )}
         </div>
 
