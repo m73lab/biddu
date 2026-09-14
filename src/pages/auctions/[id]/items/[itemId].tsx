@@ -6,7 +6,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { ItemsSidebar, SidebarItem } from "@/components/item/ItemsSidebar";
 import { DiscussionSection } from "@/components/item/DiscussionSection";
-import { ConfirmModal, Pagination } from "@/components/common";
+import { ConfirmModal, Pagination, Countdown } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { RichTextRenderer } from "@/components/ui/rich-text-editor";
 import { useToast } from "@/components/ui/toast";
@@ -995,10 +995,12 @@ interface AuctionCurrencyContextResponse {
                                           index === 0 ? "text-primary" : ""
                                         }`}
                                       >
-                                        {bid.user
-                                          ? bid.user.name ||
-                                            t("history.anonymous")
-                                          : t("history.anonymous")}
+                                          {bid.user && !bid.isAnonymous
+                                            ? bid.user.id === user.id
+                                              ? t("history.you")
+                                              : bid.user.name ||
+                                                t("history.anonymous")
+                                            : t("history.anonymous")}
                                       </span>
                                         {index === 0 && (
                                           <span className="badge badge-primary badge-xs">
@@ -1167,9 +1169,11 @@ interface AuctionCurrencyContextResponse {
                                 : tTime("endsAt")}
                               :
                             </span>
-                            <span className="font-mono">
-                              {formatDate(item.endDate)}
-                            </span>
+                              <span className="font-mono">
+                                <Countdown target={item.endDate}>
+                                  {formatDate(item.endDate)}
+                                </Countdown>
+                              </span>
                           </div>
                           {item.antiSnipeEnabled && !isEnded && (
                             <div className="flex items-center gap-1.5 text-xs text-warning">

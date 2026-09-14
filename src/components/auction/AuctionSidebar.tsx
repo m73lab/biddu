@@ -5,6 +5,7 @@ import { isAuctionEnded } from "@/utils/auction-helpers";
 import { useFormatters } from "@/i18n";
 import { RichTextRenderer } from "@/components/ui/rich-text-editor";
 import { useToast } from "@/components/ui/toast";
+import { Countdown } from "@/components/common/Countdown";
 import { QuitAuctionModal } from "@/components/auction/QuitAuctionModal";
 
 interface AuctionSidebarProps {
@@ -168,13 +169,15 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
                   <span className="icon-[tabler--clock] size-4"></span>
                   {t("card.ends")}
                 </span>
-                <span
-                  className={`font-medium ${
-                    ended ? "text-error" : "text-primary"
-                  }`}
-                >
-                  {formatShortDate(auction.endDate)}
-                </span>
+                  <span
+                    className={`font-medium ${
+                      ended ? "text-error" : "text-primary"
+                    }`}
+                  >
+                    <Countdown target={auction.endDate}>
+                      {formatShortDate(auction.endDate)}
+                    </Countdown>
+                  </span>
               </div>
             )}
           </div>
