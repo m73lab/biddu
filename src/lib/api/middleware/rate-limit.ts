@@ -1,23 +1,16 @@
-import { RateLimiterMemory } from "rate-limiter-flexible";
+import { RateLimiterMemory, RateLimiterRedis } from "rate-limiter-flexible";
+import { createClient, type RedisClientType } from "redis";
 import type { Middleware } from "../types";
 import { ApiError } from "../errors";
 
 /**
- * Rate limiting middleware using rate-limiter-flexible
+ * Rate limiting middleware using rate-limiter-flexible.
  *
- * IMPORTANT: This uses in-memory storage which works for:
- * - Local deployments (PM2, Docker, single server)
- * - Self-hosted instances
- *
- * For serverless deployments (Vercel, AWS Lambda), in-memory rate limiting
- * won't work reliably because each function invocation may run in a different
- * instance. For serverless, consider:
- * - @upstash/ratelimit with Upstash Redis
- * - Vercel KV
- * - RateLimiterRedis with external Redis
- *
- * The rate limiting is still useful as a defense-in-depth measure and works
- * fully for self-hosted deployments.
+ * - REDIS_URL set (cloud with replicas): counters live in shared Redis,
+ *   so all replicas enforce ONE quota. A per-process memory limiter acts
+ *   as insurance if Redis is unreachable (fails open, stays up).
+ * - REDIS_URL unset (self-hosted, single instance): plain in-memory
+ *   limiting, as before.
  */
 
 interface RateLimitOptions {
@@ -88,23 +81,93 @@ export function getClientIp(req: {
 }
 
 // Cache rate limiters to avoid creating new instances on each request
-const rateLimiterCache = new Map<string, RateLimiterMemory>();
+const memoryCache = new Map<string, RateLimiterMemory>();
+const redisCache = new Map<string, RateLimiterRedis>();
 
-function getRateLimiter(options: RateLimitOptions): RateLimiterMemory {
-  const key = `${options.keyPrefix}-${options.points}-${options.duration}`;
+// Shared Redis client (lazy singleton). Null = not configured or
+// unreachable right now; callers fall back to memory limiting.
+let redisClientPromise: Promise<RedisClientType | null> | null = null;
+// Brief cooldown after a failed connect so a down Redis doesn't add
+// latency to every rate-limited request.
+let redisDownUntil = 0;
 
-  if (!rateLimiterCache.has(key)) {
-    rateLimiterCache.set(
-      key,
-      new RateLimiterMemory({
-        points: options.points || 10,
-        duration: options.duration || 60,
-        keyPrefix: options.keyPrefix || "global",
-      }),
-    );
+function getRedisClient(): Promise<RedisClientType | null> {
+  if (!process.env.REDIS_URL) return Promise.resolve(null);
+  if (Date.now() < redisDownUntil) return Promise.resolve(null);
+  if (!redisClientPromise) {
+    redisClientPromise = (async () => {
+      let client: RedisClientType | undefined;
+      try {
+        client = createClient({
+          url: process.env.REDIS_URL,
+          // No auto-reconnect: a dead Redis must fail fast so requests
+          // fall back to memory instead of hanging.
+          socket: { connectTimeout: 1000, reconnectStrategy: false },
+        }) as RedisClientType;
+        // Without this listener a mid-life Redis drop crashes the process.
+        // Drop the client so the next request reconnects (recovery).
+        const connected = client;
+        connected.on("error", () => {
+          redisClientPromise = null;
+          connected.disconnect().catch(() => {});
+        });
+        await connected.connect();
+        return connected;
+      } catch {
+        // Retry on a later request instead of caching the failure forever
+        redisClientPromise = null;
+        redisDownUntil = Date.now() + 10_000;
+        try {
+          await client?.disconnect();
+        } catch {
+          // ignore
+        }
+        return null;
+      }
+    })();
+  }
+  return redisClientPromise;
+}
+
+function getMemoryLimiter(
+  key: string,
+  points: number,
+  duration: number,
+  keyPrefix: string,
+): RateLimiterMemory {
+  let limiter = memoryCache.get(key);
+  if (!limiter) {
+    limiter = new RateLimiterMemory({ points, duration, keyPrefix });
+    memoryCache.set(key, limiter);
+  }
+  return limiter;
+}
+
+async function getRateLimiter(
+  options: RateLimitOptions,
+): Promise<RateLimiterMemory | RateLimiterRedis> {
+  const points = options.points || 10;
+  const duration = options.duration || 60;
+  const keyPrefix = options.keyPrefix || "global";
+  const key = `${keyPrefix}-${points}-${duration}`;
+
+  const storeClient = await getRedisClient();
+  if (!storeClient) {
+    return getMemoryLimiter(key, points, duration, keyPrefix);
   }
 
-  return rateLimiterCache.get(key)!;
+  let limiter = redisCache.get(key);
+  if (!limiter) {
+    limiter = new RateLimiterRedis({
+      storeClient,
+      keyPrefix,
+      points,
+      duration,
+      insuranceLimiter: getMemoryLimiter(key, points, duration, keyPrefix),
+    });
+    redisCache.set(key, limiter);
+  }
+  return limiter;
 }
 
 /**
@@ -117,10 +180,9 @@ function getRateLimiter(options: RateLimitOptions): RateLimiterMemory {
  * });
  */
 export function withRateLimit(options: RateLimitOptions = {}): Middleware {
-  const rateLimiter = getRateLimiter(options);
-
   return (next) => async (req, res, ctx) => {
     const ip = getClientIp(req);
+    const rateLimiter = await getRateLimiter(options);
 
     try {
       const rateLimiterRes = await rateLimiter.consume(ip);
