@@ -9,6 +9,49 @@ import { prisma } from "@/lib/prisma";
 import { queueWelcomeEmail } from "@/lib/email/service";
 import { z } from "zod";
 
+// Short-lived session-freshness cache (per process).
+// The jwt() callback below runs on EVERY session access (each SSR + each
+// API call), so without this every request pays a DB round-trip.
+// Security trade-off, documented: a positive hit skips the DB for up to
+// TOKEN_VERSION_TTL_MS. A revoked session (password change bumps the DB
+// version) can therefore stay valid for at most that long. Rejections
+// ALWAYS go through the database, so a wrong/unknown version can never
+// be accepted from cache.
+const TOKEN_VERSION_TTL_MS = 60_000;
+const tokenVersionCache = new Map<
+  string,
+  { version: number; avatarSeed: string | null; expiresAt: number }
+>();
+
+async function validateSessionToken(
+  userId: string,
+  tokenVersion: unknown,
+): Promise<{ ok: boolean; avatarSeed: string | null }> {
+  const now = Date.now();
+  const cached = tokenVersionCache.get(userId);
+  if (
+    cached &&
+    cached.expiresAt > now &&
+    cached.version === tokenVersion
+  ) {
+    return { ok: true, avatarSeed: cached.avatarSeed };
+  }
+  const dbUser = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { tokenVersion: true, avatarSeed: true },
+  });
+  if (!dbUser || dbUser.tokenVersion !== tokenVersion) {
+    return { ok: false, avatarSeed: null };
+  }
+  if (tokenVersionCache.size > 10000) tokenVersionCache.clear();
+  tokenVersionCache.set(userId, {
+    version: dbUser.tokenVersion,
+    avatarSeed: dbUser.avatarSeed ?? null,
+    expiresAt: now + TOKEN_VERSION_TTL_MS,
+  });
+  return { ok: true, avatarSeed: dbUser.avatarSeed ?? null };
+}
+
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
@@ -258,19 +301,19 @@ export const authOptions: NextAuthOptions = {
             token.tokenVersion = dbUser.tokenVersion;
             token.avatarSeed = dbUser.avatarSeed ?? null;
           }
-        } else if (token.id) {
-          // Validate session freshness: password changes bump tokenVersion
-          // and revoke all previously issued tokens. Runs on every session
-          // access (local SQLite PK lookup, sub-millisecond).
-          const dbUser = await prisma.user.findUnique({
-            where: { id: token.id as string },
-            select: { tokenVersion: true, avatarSeed: true },
-          });
-          if (!dbUser || dbUser.tokenVersion !== token.tokenVersion) {
-            return null as any;
+          } else if (token.id) {
+            // Validate session freshness: password changes bump tokenVersion
+            // and revoke all previously issued tokens. Cached for 60s
+            // (see validateSessionToken); rejections always hit the DB.
+            const check = await validateSessionToken(
+              token.id as string,
+              token.tokenVersion,
+            );
+            if (!check.ok) {
+              return null as any;
+            }
+            token.avatarSeed = check.avatarSeed;
           }
-          token.avatarSeed = dbUser.avatarSeed ?? null;
-        }
         return token;
       },
       async session({ session, token }) {

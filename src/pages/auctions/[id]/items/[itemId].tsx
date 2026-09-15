@@ -1740,19 +1740,17 @@ export const getServerSideProps = withAuth(async (context) => {
     };
   }
 
-  // Get sidebar items
-  const auctionItems = await itemService.getAuctionItemsForListPage(
-    auctionId,
-    context.session.user.id,
-  );
-
-  // Get user settings
-  const userSettings = await userService.getUserSettings(
-    context.session.user.id,
-  );
-
-  // Viewer phone for the winner WhatsApp banner
-  const viewer = await userService.getUserById(context.session.user.id);
+  // Get sidebar items (lightweight: no descriptions), user settings and
+  // viewer phone in parallel (were sequential awaits)
+  const [auctionItems, userSettings, viewer] = await Promise.all([
+    itemService.getAuctionItemsForSidebar(
+      auctionId,
+      context.session.user.id,
+    ),
+    userService.getUserSettings(context.session.user.id),
+    // Viewer phone for the winner WhatsApp banner
+    userService.getUserById(context.session.user.id),
+  ]);
 
   return {
     props: {

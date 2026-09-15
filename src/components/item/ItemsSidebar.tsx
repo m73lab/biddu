@@ -122,14 +122,21 @@ function SidebarItemCard({
   isActive: boolean;
   userId: string;
 }) {
+  const router = useRouter();
   const isEnded = item.endDate && new Date(item.endDate) < new Date();
   const isWinning = item.highestBidderId === userId;
   const isOutbid = item.userHasBid && !isWinning;
   const isOwnItem = item.creatorId === userId;
 
-  return (
-    <Link
-      href={`/auctions/${auctionId}/items/${item.id}`}
+    return (
+      <Link
+        href={`/auctions/${auctionId}/items/${item.id}`}
+        onMouseEnter={() =>
+          router.prefetch(`/auctions/${auctionId}/items/${item.id}`)
+        }
+        onTouchStart={() =>
+          router.prefetch(`/auctions/${auctionId}/items/${item.id}`)
+        }
       className={`block p-3 rounded-xl transition-all border ${
         isActive
           ? "bg-primary/5 border-primary/20 shadow-sm"

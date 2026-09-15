@@ -2,12 +2,25 @@
 
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { preload } from "swr";
 import { useTranslations } from "next-intl";
+import { fetcher } from "@/lib/fetcher";
 
 export function MobileBottomNav() {
   const t = useTranslations("nav");
   const router = useRouter();
   const currentPath = router.pathname;
+
+  // Warm route + API cache on hover/touch so taps feel instant.
+  // Data stays fresh via SWR revalidation; this only removes the cold flash.
+  const prefetchNav = (href: string, api?: string) => {
+    router.prefetch(href);
+    if (api) preload(api, fetcher);
+  };
+  const touchProps = (href: string, api?: string) => ({
+    onMouseEnter: () => prefetchNav(href, api),
+    onTouchStart: () => prefetchNav(href, api),
+  });
 
   const isActive = (path: string) => {
     if (path === "/dashboard") {
@@ -37,6 +50,7 @@ export function MobileBottomNav() {
       <div className="flex items-center justify-around h-16 px-2">
         <Link
           href="/dashboard"
+          {...touchProps("/dashboard", "/api/user/dashboard")}
           className={`flex flex-col items-center justify-center flex-1 h-full gap-1 transition-colors ${
             isActive("/dashboard")
               ? "text-primary"
@@ -53,6 +67,7 @@ export function MobileBottomNav() {
 
         <Link
           href="/listings"
+          {...touchProps("/listings", "/api/user/listings")}
           className={`flex flex-col items-center justify-center flex-1 h-full gap-1 transition-colors ${
             isActive("/listings")
               ? "text-primary"
@@ -69,6 +84,7 @@ export function MobileBottomNav() {
 
         <Link
           href="/history"
+          {...touchProps("/history", "/api/user/history")}
           className={`flex flex-col items-center justify-center flex-1 h-full gap-1 transition-colors ${
             isActive("/history")
               ? "text-primary"
@@ -85,6 +101,7 @@ export function MobileBottomNav() {
 
         <Link
           href="/auctions/mine"
+          {...touchProps("/auctions/mine")}
           className={`flex flex-col items-center justify-center flex-1 h-full gap-1 transition-colors ${isActive("/auctions/mine") ? "text-primary" : "text-base-content/60 hover:text-base-content"}`}
         >
           <span
@@ -95,6 +112,7 @@ export function MobileBottomNav() {
 
         <Link
           href="/profile"
+          {...touchProps("/profile", "/api/user/profile")}
           className={`flex flex-col items-center justify-center flex-1 h-full gap-1 transition-colors ${
             isActive("/profile")
               ? "text-primary"

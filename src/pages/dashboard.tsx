@@ -385,12 +385,13 @@ export default function DashboardPage({ user }: DashboardProps) {
 
   // Client-side data fetching with polling for bid status updates
   const { data, isLoading, mutate } = useSWR<DashboardData>(
-    "/api/user/dashboard",
-    fetcher,
-    {
-      refreshInterval,
-      revalidateOnFocus: true,
-    },
+      "/api/user/dashboard",
+      fetcher,
+      {
+        refreshInterval,
+        revalidateOnFocus: true,
+        keepPreviousData: true,
+      },
   );
 
   const auctions = useMemo(() => data?.auctions ?? [], [data?.auctions]);
@@ -495,8 +496,8 @@ export default function DashboardPage({ user }: DashboardProps) {
   const isAuctionLimitReached =
     isCloudPanel && myAuctions.length >= auctionLimit;
 
-  // Show skeleton while loading
-  if (isLoading) {
+    // Show skeleton only on cold load (cached data renders instantly)
+    if (isLoading && !data) {
     return (
       <>
         <SEO title={t("seo.title")} description={t("seo.description")} />

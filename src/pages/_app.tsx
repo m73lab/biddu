@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { SessionProvider } from "next-auth/react";
+import { SWRConfig } from "swr";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ToastProvider } from "@/components/ui/toast";
 import { NextIntlClientProvider } from "next-intl";
@@ -9,6 +10,7 @@ import { UpdateBanner } from "@/components/common";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { AppProvider } from "@/contexts/AppContext";
 import { TourProvider } from "@/components/tour";
+import { fetcher } from "@/lib/fetcher";
 
 export default function App({
   Component,
@@ -23,18 +25,32 @@ export default function App({
       messages={pageProps.messages}
     >
       <SessionProvider session={session}>
-        <AppProvider>
-          <NotificationProvider>
-            <ThemeProvider>
-              <ToastProvider>
-                <TourProvider>
-                  <UpdateBanner />
-                  <Component {...pageProps} />
-                </TourProvider>
-              </ToastProvider>
-            </ThemeProvider>
-          </NotificationProvider>
-        </AppProvider>
+        <SWRConfig
+          value={{
+            fetcher,
+            // Shared client cache: back/forward navigation reuses data
+            // instead of flashing skeletons. Live bidding pages override
+            // polling per-hook; freshness there wins over caching.
+            provider: () => new Map(),
+            dedupingInterval: 30000,
+            focusThrottleInterval: 30000,
+            revalidateOnFocus: false,
+            keepPreviousData: true,
+          }}
+        >
+          <AppProvider>
+            <NotificationProvider>
+              <ThemeProvider>
+                <ToastProvider>
+                  <TourProvider>
+                    <UpdateBanner />
+                    <Component {...pageProps} />
+                  </TourProvider>
+                </ToastProvider>
+              </ThemeProvider>
+            </NotificationProvider>
+          </AppProvider>
+        </SWRConfig>
       </SessionProvider>
     </NextIntlClientProvider>
   );

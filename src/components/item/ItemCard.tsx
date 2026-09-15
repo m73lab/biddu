@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
 import { isItemEnded, getBidStatus } from "@/utils/auction-helpers";
 import { useFormatters } from "@/i18n";
@@ -30,6 +31,7 @@ interface ItemCardProps {
 export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
   const t = useTranslations();
   const { formatShortDate } = useFormatters();
+  const router = useRouter();
   const ended = isItemEnded(item.endDate);
   const canEditItem = item.creatorId === userId || isAdmin;
   const isOwnItem = item.creatorId === userId;
@@ -50,10 +52,16 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
           : "border-base-content/5 hover:border-primary/20 hover:shadow-primary/5"
       }`}
     >
-      <Link
-        href={`/auctions/${auctionId}/items/${item.id}`}
-        className="block h-full flex flex-col"
-      >
+        <Link
+          href={`/auctions/${auctionId}/items/${item.id}`}
+          className="block h-full flex flex-col"
+          onMouseEnter={() =>
+            router.prefetch(`/auctions/${auctionId}/items/${item.id}`)
+          }
+          onTouchStart={() =>
+            router.prefetch(`/auctions/${auctionId}/items/${item.id}`)
+          }
+        >
         {item.thumbnailUrl ? (
           <figure className="h-48 relative overflow-hidden bg-base-200/50">
             {/* eslint-disable-next-line @next/next/no-img-element */}

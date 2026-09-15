@@ -1,8 +1,11 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { preload } from "swr";
 import { useTranslations } from "next-intl";
 import { isAuctionEnded } from "@/utils/auction-helpers";
 import { useFormatters } from "@/i18n";
 import { stripHtmlTags } from "@/components/ui/rich-text-editor";
+import { fetcher } from "@/lib/fetcher";
 
 interface AuctionCardProps {
   auction: {
@@ -45,9 +48,18 @@ export function AuctionCard({ auction, onDelete }: AuctionCardProps) {
     : auction.role;
   const isLeft = roleKey === "left";
 
+  const router = useRouter();
+  const prefetchAuction = () => {
+    router.prefetch(href);
+    // Warm the details API cache so the page paints without a skeleton
+    if (!ended) preload(`/api/auctions/${auction.id}/details`, fetcher);
+  };
+
   return (
     <Link
       href={href}
+      onMouseEnter={prefetchAuction}
+      onTouchStart={prefetchAuction}
       className={`card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group ${
         ended ? "opacity-70" : ""
       }`}
