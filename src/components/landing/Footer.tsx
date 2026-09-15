@@ -54,6 +54,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/changelog"
+                  prefetch={false}
                   className="hover:text-gold-300 transition-colors"
                 >
                   {t("footer.changelog")}
@@ -82,6 +83,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/privacy"
+                  prefetch={false}
                   className="hover:text-gold-300 transition-colors"
                 >
                   {t("footer.privacyPolicy")}
@@ -90,6 +92,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/terms"
+                  prefetch={false}
                   className="hover:text-gold-300 transition-colors"
                 >
                   {t("footer.termsOfService")}
