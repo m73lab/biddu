@@ -11,11 +11,22 @@ RUN npm install
 
 FROM node:20-bookworm-slim AS builder
 WORKDIR /app
+# Which Prisma schema to generate the client from. Default (self-hosted):
+# SQLite. Cloud builds override with prisma/schema.cloud.prisma (PostgreSQL).
+ARG PRISMA_SCHEMA=prisma/schema.prisma
+ARG DATABASE_URL_BUILD=
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npx prisma generate
+RUN npx prisma generate --schema=$PRISMA_SCHEMA
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN npm run build
+# NOTE: plain `next build`, NOT `npm run build`: the latter re-runs
+# `prisma generate` with the default schema and would overwrite the
+# client generated above (breaks cloud PostgreSQL builds).
+# DATABASE_URL_BUILD (optional): DB reached during `next build` for page
+# data collection. Defaults to the runtime DATABASE_URL logic; cloud builds
+# point it at an empty throwaway Postgres so builds never touch prod data.
+RUN if [ -n "$DATABASE_URL_BUILD" ]; then export DATABASE_URL="$DATABASE_URL_BUILD"; fi; \
+  npx next build
 
 FROM node:20-bookworm-slim AS runner
 WORKDIR /app

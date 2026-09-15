@@ -1,0 +1,842 @@
+// AUTO-GENERATED from schema.prisma — DO NOT EDIT BY HAND.
+// Run: node scripts/sync-cloud-schema.mjs
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// USER & AUTHENTICATION
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String?   // Optional for OAuth users
+  tokenVersion  Int       @default(0) // Bump to revoke all JWT sessions
+  name          String?
+  image         String?   // Profile image from OAuth provider
+  rut           String?   // RUT chileno (opcional)
+  phone         String?   // WhatsApp / teléfono (opcional)
+  avatarSeed    String?   // Custom avatar seed (null = derived from id/email)
+  emailVerified DateTime? // When email was verified (null = unverified)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  accounts                  Account[]
+  auctionMemberships        AuctionMember[]
+  createdAuctions           Auction[]                  @relation("AuctionCreator")
+  createdItems              AuctionItem[]              @relation("ItemCreator")
+  updatedItems              AuctionItem[]              @relation("ItemUpdater")
+    bids                      Bid[]
+    bidVoids                  BidVoid[]
+    ratingsGiven              Rating[]               @relation("RatingRater")
+    ratingsReceived           Rating[]               @relation("RatingRatee")
+    avgSellerRating           Float?
+    sellerRatingCount         Int                    @default(0)
+    avgBuyerRating            Float?
+    buyerRatingCount          Int                    @default(0)
+    itemDiscussions           ItemDiscussion[]
+  sentInvites               AuctionInvite[]            @relation("InviteSender")
+  createdInviteCodes        AuctionInviteCode[]      @relation("InviteCodeCreator")
+  notifications             Notification[]
+  settings                  UserSettings?
+  passwordResetTokens       PasswordResetToken[]
+  emailVerificationTokens   EmailVerificationToken[]
+    auctionLeaves             AuctionLeave[]
+    bans                      AuctionBan[]
+  slotCodesRedeemed         SlotCode[]        @relation("SlotCodeRedeemer")
+  slotRedemptions           SlotRedemption[]
+
+  @@map("users")
+}
+
+// ============================================
+// OAUTH ACCOUNTS (NextAuth)
+// ============================================
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+// ============================================
+// USER SETTINGS
+// ============================================
+
+model UserSettings {
+  id                    String   @id @default(cuid())
+  
+  userId                String   @unique
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // UI Preferences
+  itemSidebarCollapsed  Boolean  @default(false)  // Split view sidebar state
+  
+  // Email Notification Preferences
+  emailOnNewItem        Boolean  @default(false)  // Notify when new item added to auction
+  emailOnOutbid         Boolean  @default(false)  // Notify when outbid
+  emailOnItemWon        Boolean  @default(true)   // Notify when user wins an item (important: on by default)
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("user_settings")
+}
+
+// ============================================
+// AUCTION
+// ============================================
+
+enum JoinMode {
+  FREE          // Anyone can join
+  INVITE_ONLY   // Only invited users can join
+  LINK          // Anyone with link can join
+}
+
+enum BidderVisibility {
+  VISIBLE       // Bidder name always visible to everyone
+  ANONYMOUS     // Bidder always anonymous to other bidders
+  PER_BID       // Let each bidder decide per bid
+}
+
+enum ItemEndMode {
+  AUCTION_END   // Items end when auction ends
+  CUSTOM        // Each item can have custom end date
+  NONE          // No end date for items
+}
+
+enum AuctionCurrencyFractionMode {
+  INTEGER_ONLY
+  DECIMAL
+}
+
+enum AuctionCurrencyInputMode {
+  SCALAR
+  DENOMINATION
+}
+
+enum AuctionCurrencyRuleType {
+  MIN_INCREMENT
+  MIN_COMPONENT_RATIO
+  REQUIRED_DENOMINATION
+}
+
+model Auction {
+  id                String            @id @default(cuid())
+  name              String
+  description       String?
+  
+  // Join settings
+  joinMode          JoinMode          @default(INVITE_ONLY)
+  memberCanInvite   Boolean           @default(false)
+  inviteToken       String?           @unique  // For link-based joining
+  
+  // Bidder visibility settings
+  bidderVisibility  BidderVisibility  @default(VISIBLE)
+  
+    // Timing settings
+    endDate           DateTime?         // null = indefinite
+    itemEndMode       ItemEndMode       @default(CUSTOM)
+
+    // Anti-fraud (opt-in per auction)
+    bidderApproval       Boolean       @default(false) // New members join as PENDING until approved to bid
+    winnerConfirmEnabled Boolean       @default(false) // Winner must confirm purchase or it passes to runner-up
+    winnerConfirmHours   Int           @default(48)    // Hours the winner has to confirm
+  
+  // Thumbnail image
+  thumbnailUrl      String?           // Path to thumbnail image
+  
+  // Admin editing default for new items
+  defaultItemsEditableByAdmin  Boolean  @default(false)
+  
+  // Anti-snipe defaults for new items
+  defaultAntiSnipe             Boolean  @default(false)   // Whether new items get anti-snipe by default
+  defaultAntiSnipeThreshold    Int      @default(300)     // Seconds before end that triggers extension (60-3600)
+  defaultAntiSnipeExtension    Int      @default(300)     // Seconds to extend by (5-3600)
+  
+  // Metadata
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  
+  // Creator (only this user can edit auction settings)
+  creatorId         String
+  creator           User              @relation("AuctionCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  
+    // Relations
+      members           AuctionMember[]
+      items             AuctionItem[]
+      invites           AuctionInvite[]
+      inviteCodes       AuctionInviteCode[]
+      leaves            AuctionLeave[]
+      bans              AuctionBan[]
+      slotRedemptions   SlotRedemption[]
+      customCurrencies  AuctionCurrencyProfile[]
+
+  @@map("auctions")
+}
+
+// ============================================
+// AUCTION MEMBERSHIP & ROLES
+// ============================================
+
+enum MemberRole {
+  OWNER     // Can do everything (assigned to creator)
+    ADMIN     // Can manage members and items
+    CREATOR   // Can create auction items
+    BIDDER    // Can only bid
+    PENDING   // Joined but not yet approved to bid (bidder-approval mode)
+}
+
+model AuctionMember {
+  id          String      @id @default(cuid())
+  
+  auctionId   String
+  auction     Auction     @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  role        MemberRole  @default(BIDDER)
+  
+  joinedAt    DateTime    @default(now())
+  invitedById String?     // Who invited this member
+
+  @@unique([auctionId, userId])
+  @@map("auction_members")
+}
+
+// ============================================
+// AUCTION LEAVES (tracks voluntary departures to prevent auto-rejoin)
+// ============================================
+
+model AuctionLeave {
+  id          String      @id @default(cuid())
+  
+  auctionId   String
+  auction     Auction     @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  leftAt      DateTime    @default(now())
+
+  @@unique([auctionId, userId])
+  @@map("auction_leaves")
+}
+
+// ============================================
+// AUCTION INVITES
+// ============================================
+
+model AuctionInvite {
+  id          String      @id @default(cuid())
+  
+  auctionId   String
+  auction     Auction     @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  
+  email       String      // Email to invite
+  role        MemberRole  @default(BIDDER)
+  
+  token       String      @unique @default(cuid())
+  
+  expiresAt   DateTime?
+  usedAt      DateTime?   // When the invite was accepted
+  
+  createdAt   DateTime    @default(now())
+  
+  // Who sent the invite
+  senderId    String
+  sender      User        @relation("InviteSender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@unique([auctionId, email])
+  @@map("auction_invites")
+}
+
+// ============================================
+// AUCTION INVITE CODES (shareable, multi-use)
+// ============================================
+
+model AuctionInviteCode {
+  id          String      @id @default(cuid())
+
+  auctionId   String
+  auction     Auction     @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+
+  // Short human-friendly code (e.g. BID-7KQ2XA), unique globally
+  code        String      @unique
+  role        MemberRole  @default(BIDDER)
+
+  // Usage limits: null maxUses = unlimited
+  maxUses     Int?
+  usesCount   Int         @default(0)
+
+  expiresAt   DateTime?
+  revokedAt   DateTime?
+
+  createdAt   DateTime    @default(now())
+
+  // Who created the code
+  createdById String
+  createdBy   User        @relation("InviteCodeCreator", fields: [createdById], references: [id], onDelete: Cascade)
+
+  @@index([auctionId])
+  @@map("auction_invite_codes")
+}
+
+// ============================================
+// CURRENCY
+// ============================================
+
+model Currency {
+  code    String  @id           // ISO 4217 code: "USD", "EUR", "HUF"
+  name    String                // "US Dollar", "Euro", "Hungarian Forint"
+  symbol  String                // "$", "€", "Ft"
+  
+  // Relations
+  items   AuctionItem[]
+
+  @@map("currencies")
+}
+
+model AuctionCurrencyProfile {
+  id                        String                     @id @default(cuid())
+
+  auctionId                 String
+  auction                   Auction                    @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+
+  code                      String
+  name                      String
+  symbol                    String
+
+  conversionRateToBase      Float                      @default(1)
+  fractionMode              AuctionCurrencyFractionMode @default(DECIMAL)
+  precision                 Int                        @default(2)
+  inputMode                 AuctionCurrencyInputMode   @default(SCALAR)
+  denominationConfig        Json?
+  isBase                    Boolean                    @default(false)
+  isArchived                Boolean                    @default(false)
+  sortOrder                 Int                        @default(0)
+
+  createdAt                 DateTime                   @default(now())
+  updatedAt                 DateTime                   @updatedAt
+
+  rules                     AuctionCurrencyRule[]
+  bids                      Bid[]
+
+  @@unique([auctionId, code])
+  @@index([auctionId, isArchived])
+  @@map("auction_currency_profiles")
+}
+
+model AuctionCurrencyRule {
+  id                String                  @id @default(cuid())
+
+  currencyProfileId String
+  currencyProfile   AuctionCurrencyProfile  @relation(fields: [currencyProfileId], references: [id], onDelete: Cascade)
+
+  type              AuctionCurrencyRuleType
+  isEnabled         Boolean                 @default(true)
+  config            Json
+
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+
+  @@unique([currencyProfileId, type])
+  @@map("auction_currency_rules")
+}
+
+// ============================================
+// AUCTION ITEMS
+// ============================================
+
+model AuctionItem {
+  id              String    @id @default(cuid())
+  
+  auctionId       String
+  auction         Auction   @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  
+  // Item details
+  name            String
+  description     String?
+  
+  // Pricing
+  currencyCode    String    @default("CLP")
+  currency        Currency  @relation(fields: [currencyCode], references: [code])
+  startingBid     Float     @default(0)
+  minBidIncrement Float     @default(1)
+  minBidConstraint Json?
+  minBidNormalized Float?
+  minIncrementNormalized Float?
+  maxBid           Float?    // Owner-set maximum bid cap (anti-joke bids)
+  
+  // Current state
+  currentBid      Float?    // null if no bids yet
+  highestBidderId String?   // User ID of highest bidder
+  
+  // Deprecated - kept for migration, use Bid.isAnonymous instead
+  bidderAnonymous Boolean   @default(false)
+  
+  // Publishing state
+  isPublished     Boolean   @default(false) // Draft items are not visible to other users
+  
+  // Admin editing permission (opt-in by item owner)
+  isEditableByAdmin Boolean @default(false)
+  
+  // Timing
+  endDate         DateTime? // null = follows auction end or no end
+  
+  // Anti-snipe protection
+  antiSnipeEnabled          Boolean   @default(false)
+  antiSnipeThresholdSeconds Int       @default(300)  // Seconds before end that triggers extension (60-3600)
+  antiSnipeExtensionSeconds Int       @default(300)  // Seconds to extend by (5-3600)
+  
+    // Notification tracking
+    fulfillmentStatus FulfillmentStatus?
+    winnerNotified  Boolean   @default(false) // Track if winner notification sent
+    winnerConfirmed Boolean   @default(false) // Winner confirmed purchase (confirm mode)
+    winnerConfirmDeadline DateTime?           // Confirm before this or it passes on
+  
+  // Metadata
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Creator
+  creatorId       String
+  creator         User      @relation("ItemCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  
+  // Last updater (for audit trail)
+  lastUpdatedById String?
+  lastUpdatedBy   User?     @relation("ItemUpdater", fields: [lastUpdatedById], references: [id], onDelete: SetNull)
+  
+  // Discussions
+  discussionsEnabled Boolean   @default(true)  // Admin/creator can toggle
+  
+      // Relations
+      images          AuctionItemImage[]
+      bids            Bid[]
+      bidVoids        BidVoid[]
+      ratings         Rating[]
+    discussions     ItemDiscussion[]
+
+  @@map("auction_items")
+}
+
+// ============================================
+// AUCTION ITEM IMAGES
+// ============================================
+
+model AuctionItemImage {
+  id            String      @id @default(cuid())
+  
+  auctionItemId String
+  auctionItem   AuctionItem @relation(fields: [auctionItemId], references: [id], onDelete: Cascade)
+  
+  url           String      // Path or URL to image
+  order         Int         @default(0)  // For ordering images
+  
+  createdAt     DateTime    @default(now())
+
+  @@map("auction_item_images")
+}
+
+// ============================================
+// BIDS
+// ============================================
+
+model Bid {
+  id            String      @id @default(cuid())
+  
+  auctionItemId String
+  auctionItem   AuctionItem @relation(fields: [auctionItemId], references: [id], onDelete: Cascade)
+  
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  amount        Float
+  normalizedAmount Float?
+  enteredRepresentation Json?
+
+  currencyProfileId String?
+  currencyProfile   AuctionCurrencyProfile? @relation(fields: [currencyProfileId], references: [id], onDelete: SetNull)
+  
+  // Per-bid anonymity (only used when auction.bidderVisibility = PER_BID)
+  isAnonymous   Boolean     @default(false)
+
+  // Anti-fraud audit (hashed IP + user agent, visible to item owner/admin)
+  ipHash        String?
+  userAgent     String?
+
+  createdAt     DateTime    @default(now())
+
+  @@index([auctionItemId, amount])
+  @@index([auctionItemId, normalizedAmount])
+  @@map("bids")
+}
+
+// ============================================
+// AUCTION BANS (blocked users cannot join or bid)
+// ============================================
+
+model AuctionBan {
+  id          String   @id @default(cuid())
+
+  auctionId   String
+  auction     Auction  @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  reason      String?
+  createdById String?  // Owner/admin who issued the ban
+  createdAt   DateTime @default(now())
+
+  @@unique([auctionId, userId])
+  @@index([auctionId])
+  @@map("auction_bans")
+}
+
+// ============================================
+// BID VOIDS (voided winning bids: audit trail + strikes)
+// ============================================
+
+model BidVoid {
+  id            String      @id @default(cuid())
+
+  auctionItemId String
+  auctionItem   AuctionItem @relation(fields: [auctionItemId], references: [id], onDelete: Cascade)
+
+  auctionId     String     // Denormalized for quick lookups (no FK)
+
+  bidId         String     // Original winning bid id (row deleted on void)
+  userId        String     // Ghost bidder
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount        Float      // Voided amount
+
+  reason        String?
+  createdById   String     // Owner/admin who voided
+  createdAt     DateTime   @default(now())
+
+  @@index([userId, createdAt])
+  @@index([auctionItemId])
+  @@map("bid_voids")
+}
+
+// ============================================
+// RATINGS (two-way buyer/seller reputation)
+// ============================================
+
+enum RatingRole {
+  BUYER   // Ratee acted as buyer (winner)
+  SELLER  // Ratee acted as seller (item creator)
+}
+
+model Rating {
+  id            String      @id @default(cuid())
+
+  auctionItemId String
+  auctionItem   AuctionItem @relation(fields: [auctionItemId], references: [id], onDelete: Cascade)
+
+  auctionId     String     // Denormalized for quick lookups (no FK)
+
+  raterId       String
+  rater         User       @relation("RatingRater", fields: [raterId], references: [id], onDelete: Cascade)
+
+  rateeId       String
+  ratee         User       @relation("RatingRatee", fields: [rateeId], references: [id], onDelete: Cascade)
+
+  role          RatingRole // Ratee's role in that transaction
+  score         Int        // 1-5 stars
+  comment       String?
+  revealed      Boolean    @default(false) // Blind until both sides rate (or 7 days)
+
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@unique([auctionItemId, raterId, role])
+  @@index([rateeId, revealed])
+  @@index([revealed, createdAt])
+  @@map("ratings")
+}
+
+// ============================================
+// NOTIFICATIONS
+// ============================================
+
+enum FulfillmentStatus {
+  PENDING_PAYMENT // Winner hasn't paid yet (offline)
+  PAID            // Winner paid (offline), pending delivery
+  DELIVERED       // Item delivered, flow complete
+}
+
+enum NotificationType {
+  OUTBID          // Someone outbid you
+  AUCTION_WON     // You won an auction item
+  AUCTION_ENDED   // Auction has ended
+  INVITE_RECEIVED // You received an invite
+  MEMBER_JOINED   // Someone joined your auction
+  MEMBER_LEFT     // Someone left your auction
+  NEW_ITEM        // New item added to an auction you're in
+  NEW_BID         // Someone placed a bid in an auction you're in
+  NEW_COMMENT     // Someone commented on an item you're following
+    FULFILLMENT_UPDATED // Payment/delivery status changed on a won item
+    SLOT_EXPIRING       // Monthly slots expiring soon
+    SHILL_SUSPECTED     // Possible shill/fake bidding detected (owner review)
+    RATING_REQUEST      // Please rate your counterpart after delivery
+    RATING_RECEIVED     // Someone rated you (revealed)
+  }
+
+model Notification {
+  id          String           @id @default(cuid())
+  
+  userId      String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  type        NotificationType
+  title       String
+  message     String
+  imageUrl    String?          // Optional image for rich notifications
+  
+  // Optional references
+  auctionId   String?
+  itemId      String?
+  
+  read        Boolean          @default(false)
+  
+  createdAt   DateTime         @default(now())
+
+  @@index([userId, read])
+  @@map("notifications")
+}
+
+// ============================================
+// EMAIL LOG (for failed emails and retry)
+// ============================================
+
+enum EmailStatus {
+  PENDING       // Queued for sending
+  SENT          // Successfully sent
+  FAILED        // Failed to send (will retry)
+  ABANDONED     // Too many retries, gave up
+}
+
+enum EmailType {
+  WELCOME            // Welcome email on registration
+  INVITE             // Auction invite
+  NEW_ITEM           // New item added to auction
+  OUTBID             // User was outbid
+  PASSWORD_RESET     // Password reset request
+  ITEM_WON           // User won an item
+  ACCOUNT_EXISTS     // Registration attempt with existing email
+  EMAIL_VERIFICATION // Email verification on registration
+  RETENTION_WARNING  // Auction will be purged soon (cloud retention)
+  SLOT_EXPIRING      // Monthly slots expiring in 7 days
+}
+
+model EmailLog {
+  id            String       @id @default(cuid())
+  
+  // Recipient info
+  toEmail       String
+  toName        String?
+  
+  // Email content
+  type          EmailType
+  subject       String
+  htmlContent   String       // Rendered HTML content
+  
+  // Status tracking
+  status        EmailStatus  @default(PENDING)
+  retryCount    Int          @default(0)
+  lastError     String?      // Last error message
+  
+  // Metadata (JSON string for flexibility)
+  metadata      String?      // JSON payload for debugging
+  
+  sentAt        DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([status, createdAt])
+  @@map("email_logs")
+}
+
+// ============================================
+// SYSTEM SETTINGS (singleton)
+// ============================================
+
+model SystemSettings {
+  id                    String   @id @default("system")  // Always "system" - singleton pattern
+  
+  // Deployment admin - can trigger updates
+  deploymentAdminEmail  String?  // Email of user who can manage deployments
+  
+  // Update settings
+  autoCheckUpdates      Boolean  @default(true)  // Whether to check for updates
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("system_settings")
+}
+
+// ============================================
+// PASSWORD RESET TOKENS
+// ============================================
+
+model PasswordResetToken {
+  id          String   @id @default(cuid())
+  
+  token       String   @unique  // Hashed token for security
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@map("password_reset_tokens")
+}
+
+// ============================================
+// EMAIL VERIFICATION TOKENS
+// ============================================
+
+model EmailVerificationToken {
+  id          String   @id @default(cuid())
+  
+  token       String   @unique  // Hashed token for security
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@map("email_verification_tokens")
+}
+
+// ============================================
+// ITEM DISCUSSIONS (threaded comments)
+// ============================================
+
+model ItemDiscussion {
+  id            String      @id @default(cuid())
+  
+  auctionItemId String
+  auctionItem   AuctionItem @relation(fields: [auctionItemId], references: [id], onDelete: Cascade)
+  
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  content       String      // Rich text HTML content (sanitized)
+  
+  // Threading support - null means top-level discussion
+  parentId      String?
+  parent        ItemDiscussion?  @relation("DiscussionReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies       ItemDiscussion[] @relation("DiscussionReplies")
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([auctionItemId, createdAt])
+  @@index([parentId])
+  @@map("item_discussions")
+}
+
+// ============================================
+// STORE: PRODUCTS, SLOT CODES, REDEMPTIONS (cloud monetization)
+// Slots are monthly (30 rolling days). Expired slots stop counting;
+// already-created content is always kept.
+// ============================================
+
+enum SlotType {
+  SUBASTA // +N auctions
+  LOTES   // +N items per auction
+  PERSONAS // +N members/invites per auction
+  FOTOS   // +N images per item
+  RETENCION // account-wide purge protection (boolean coverage)
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  slotType    SlotType
+  slotAmount  Int
+  price       Int      // CLP, integer
+  flowUrl     String
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  slotCodes   SlotCode[]
+
+  @@map("products")
+}
+
+model SlotCode {
+  id          String    @id @default(cuid())
+  code        String    @unique
+  slotType    SlotType
+  amount      Int
+  productId   String?
+  product     Product?  @relation(fields: [productId], references: [id], onDelete: SetNull)
+  isRedeemed  Boolean   @default(false)
+  redeemedById String?
+  redeemedBy  User?     @relation("SlotCodeRedeemer", fields: [redeemedById], references: [id], onDelete: SetNull)
+  redeemedAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  redemptions SlotRedemption[]
+
+  @@map("slot_codes")
+}
+
+model SlotRedemption {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slotCodeId String
+  slotCode   SlotCode @relation(fields: [slotCodeId], references: [id], onDelete: Restrict)
+  slotType   SlotType
+  amount     Int
+  // For per-auction types (LOTES, PERSONAS, FOTOS): the auction this slot is assigned to.
+  // SUBASTA and RETENCION are global (auctionId = null).
+  auctionId  String?
+  auction    Auction? @relation(fields: [auctionId], references: [id], onDelete: SetNull)
+  redeemedAt DateTime @default(now())
+  expiresAt  DateTime
+  expiryNotified Boolean @default(false)
+
+  @@unique([slotCodeId])
+  @@index([userId, expiresAt])
+  @@index([auctionId, expiresAt])
+  @@map("slot_redemptions")
+}
