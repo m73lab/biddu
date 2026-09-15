@@ -488,11 +488,11 @@ export default function RegisterPage({
 
                   <p className="text-xs text-base-content/50 text-center mt-4">
                     {t("termsAgreement")}{" "}
-                    <Link href="/terms" className="link link-primary">
+                    <Link href="/terms" prefetch={false} className="link link-primary">
                       {t("termsOfService")}
                     </Link>{" "}
                     {t("and")}{" "}
-                    <Link href="/privacy" className="link link-primary">
+                    <Link href="/privacy" prefetch={false} className="link link-primary">
                       {t("privacyPolicy")}
                     </Link>
                   </p>

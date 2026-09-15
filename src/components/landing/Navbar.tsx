@@ -1,4 +1,5 @@
 ﻿import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTheme } from "@/components/providers/theme-provider";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
@@ -27,6 +28,7 @@ export function Navbar({
   const tNav = useTranslations("nav");
   const tCommon = useTranslations("common");
   const [scrolled, setScrolled] = useState(false);
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -34,6 +36,15 @@ export function Navbar({
   useEffect(() => {
     setMounted(true); // eslint-disable-line
   }, []);
+
+  // Cierra el menu movil en cada navegacion (cubre links sin onClick
+  // explicito y gestos atras/adelante). Sin esto el menu quedaba
+  // abierto si la navegacion la dispara otra via que el onClick.
+  useEffect(() => {
+    const close = () => setMobileMenuOpen(false);
+    router.events.on("routeChangeComplete", close);
+    return () => router.events.off("routeChangeComplete", close);
+  }, [router]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -132,9 +143,10 @@ export function Navbar({
             </button>
           )}
           <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            onClick={() => setMobileMenuOpen((open) => !open)}
             className="btn btn-ghost btn-sm btn-circle text-gold-400 hover:bg-cream-50/10"
             aria-label="Toggle menu"
+            aria-expanded={mobileMenuOpen}
           >
             {mobileMenuOpen ? (
               <span className="icon-[tabler--x] size-6"></span>

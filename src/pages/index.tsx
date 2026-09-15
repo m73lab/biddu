@@ -1,7 +1,8 @@
-import { GetServerSideProps } from "next";
-import { getServerSession } from "next-auth";
+import { GetStaticProps } from "next";
 import dynamic from "next/dynamic";
-import { authOptions } from "@/lib/auth";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
 import { getMessages } from "@/i18n/getMessages";
 import { Locale } from "@/i18n/config";
 import {
@@ -61,6 +62,16 @@ const ImpactVisualization = dynamic(
 );
 
 export default function LandingPage() {
+  // La pagina es estatica para un TTFB rapido en movil; los usuarios
+  // autenticados se redirigen al dashboard en el cliente.
+  const { status } = useSession();
+  const router = useRouter();
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.replace("/dashboard");
+    }
+  }, [status, router]);
+
   // Homepage-specific structured data for better SEO
   const homepageStructuredData = {
     "@context": "https://schema.org",
@@ -209,25 +220,14 @@ export default function LandingPage() {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getServerSession(context.req, context.res, authOptions);
-
-  // If logged in, redirect to dashboard
-  if (session) {
-    return {
-      redirect: {
-        destination: "/dashboard",
-        permanent: false,
-      },
-    };
-  }
-
+export const getStaticProps: GetStaticProps = async (context) => {
   const messages = await getMessages(context.locale as Locale);
 
-  // Show landing page for non-authenticated users
   return {
     props: {
       messages,
     },
+    // El copy del landing cambia poco; revalidar cada hora.
+    revalidate: 3600,
   };
 };
