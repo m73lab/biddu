@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getPublicUrl } from "@/lib/storage";
 import * as memberService from "./member.service";
+import * as itemService from "./item.service";
 import { MemberRole } from "@/generated/prisma/enums";
 import type { Auction, AuctionMember } from "@/generated/prisma/client";
 
@@ -163,18 +164,48 @@ export async function getAuctionForDetailPage(
     },
   });
 
-  if (!auction) return null;
+    if (!auction) return null;
 
-  return {
-    ...auction,
-    endDate: auction.endDate?.toISOString() || null,
-    createdAt: auction.createdAt.toISOString(),
-    updatedAt: auction.updatedAt.toISOString(),
-    thumbnailUrl: auction.thumbnailUrl
-      ? getPublicUrl(auction.thumbnailUrl)
-      : null,
-  };
-}
+    return {
+      ...auction,
+      endDate: auction.endDate?.toISOString() || null,
+      createdAt: auction.createdAt.toISOString(),
+      updatedAt: auction.updatedAt.toISOString(),
+      thumbnailUrl: auction.thumbnailUrl
+        ? getPublicUrl(auction.thumbnailUrl)
+        : null,
+    };
+  }
+
+  export interface AuctionDetailsPayload {
+    auction: AuctionDetailForPage;
+    items: Awaited<
+      ReturnType<typeof itemService.getAuctionItemsForListPage>
+    >;
+  }
+
+  /**
+   * Full detail payload for the auction page, shared by SSR (as SWR
+   * fallbackData) and GET /api/auctions/[id]/details. One function =
+   * one round of queries, no duplicated logic between page and API.
+   * Items lists are quota-capped (a few dozen max), so no pagination.
+   * (No retention block: slots don't exist in this build.)
+   */
+  export async function getAuctionDetailsData(
+    auctionId: string,
+    userId: string,
+  ): Promise<AuctionDetailsPayload | null> {
+    const auction = await getAuctionForDetailPage(auctionId);
+
+    if (!auction) return null;
+
+    const items = await itemService.getAuctionItemsForListPage(
+      auctionId,
+      userId,
+    );
+
+    return { auction, items };
+  }
 
 /**
  * Get all auctions for a user (as member)

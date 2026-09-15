@@ -63,6 +63,7 @@ export default function ListingsPage({ user }: ListingsPageProps) {
   const { data: items = [], isLoading } = useSWR<UserItem[]>(
     "/api/user/listings",
     fetcher,
+    { dedupingInterval: 30000, keepPreviousData: true },
   );
 
   // Calculate date 3 days ago for "Just Ended" section
@@ -118,8 +119,8 @@ export default function ListingsPage({ user }: ListingsPageProps) {
   const currentSort = viewMode === "active" ? activeSort : endedSort;
   const currentSortParam = viewMode === "active" ? "activeSort" : "endedSort";
 
-  // Show skeleton while loading
-  if (isLoading) {
+  // Show skeleton only on cold load (cached data renders instantly)
+  if (isLoading && items.length === 0) {
     return (
       <PageLayout user={user}>
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">

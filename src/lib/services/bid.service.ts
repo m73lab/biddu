@@ -75,20 +75,35 @@ export async function getItemBids(itemId: string): Promise<BidWithUser[]> {
 }
 
 /**
- * Get user's bid statistics for dashboard
+ * Get user's bid stats + bid items in ONE query.
+ * Replaces the former getUserBidStats + getUserBidItems pair, which each
+ * scanned the user's full bid history (double I/O growing with every bid).
  */
-export async function getUserBidStats(userId: string): Promise<UserBidStats> {
+export async function getUserBidsOverview(userId: string): Promise<{
+  stats: UserBidStats;
+  items: UserBidItem[];
+}> {
+  const { getPublicUrl } = await import("@/lib/storage");
+
   const userBids = await prisma.bid.findMany({
     where: { userId },
     include: {
       auctionItem: {
         include: {
           currency: { select: { code: true, symbol: true } },
+          auction: { select: { id: true, name: true } },
+          images: {
+            select: { url: true },
+            orderBy: { order: "asc" },
+            take: 1,
+          },
         },
       },
     },
+    orderBy: { createdAt: "desc" },
   });
 
+  // --- stats (same shape as the old getUserBidStats) ---
   const totalBids = userBids.length;
 
   // Calculate currency totals
@@ -125,17 +140,60 @@ export async function getUserBidStats(userId: string): Promise<UserBidStats> {
     }
   }
 
-  const itemsBidOn = itemsMap.size;
-  const currentlyWinning = Array.from(itemsMap.values()).filter(
-    (item) => item.highestBidderId === userId,
-  ).length;
-
-  return {
+  const stats: UserBidStats = {
     totalBids,
     currencyTotals,
-    itemsBidOn,
-    currentlyWinning,
+    itemsBidOn: itemsMap.size,
+    currentlyWinning: Array.from(itemsMap.values()).filter(
+      (item) => item.highestBidderId === userId,
+    ).length,
   };
+
+  // --- items (same shape as the old getUserBidItems) ---
+  const fullItemsMap = new Map<
+    string,
+    (typeof userBids)[0]["auctionItem"] & { userHighestBid: number }
+  >();
+  for (const bid of userBids) {
+    const existing = fullItemsMap.get(bid.auctionItemId);
+    if (!existing || bid.amount > existing.userHighestBid) {
+      fullItemsMap.set(bid.auctionItemId, {
+        ...bid.auctionItem,
+        userHighestBid: bid.amount,
+      });
+    }
+  }
+
+  const items: UserBidItem[] = Array.from(fullItemsMap.values()).map(
+    (item) => ({
+      id: item.id,
+      name: item.name,
+      thumbnailUrl: item.images[0]?.url
+        ? getPublicUrl(item.images[0].url)
+        : null,
+      currentBid: item.currentBid,
+      startingBid: item.startingBid,
+      highestBidderId: item.highestBidderId,
+      endDate: item.endDate?.toISOString() || null,
+      createdAt: item.createdAt.toISOString(),
+      currencySymbol: item.currency.symbol,
+      currencyCode: item.currency.code,
+      auctionId: item.auction.id,
+      auctionName: item.auction.name,
+      userHighestBid: item.userHighestBid,
+    }),
+  );
+
+  return { stats, items };
+}
+
+/**
+ * Get user's bid statistics for dashboard
+ * @deprecated Use getUserBidsOverview (single query) instead.
+ */
+export async function getUserBidStats(userId: string): Promise<UserBidStats> {
+  const { stats } = await getUserBidsOverview(userId);
+  return stats;
 }
 
 /**
@@ -211,58 +269,11 @@ export async function getUserBidHistory(userId: string) {
 
 /**
  * Get user's bid items for dashboard
+ * @deprecated Use getUserBidsOverview (single query) instead.
  */
 export async function getUserBidItems(userId: string): Promise<UserBidItem[]> {
-  const { getPublicUrl } = await import("@/lib/storage");
-
-  const userBids = await prisma.bid.findMany({
-    where: { userId },
-    include: {
-      auctionItem: {
-        include: {
-          currency: { select: { code: true, symbol: true } },
-          auction: { select: { id: true, name: true } },
-          images: {
-            select: { url: true },
-            orderBy: { order: "asc" },
-            take: 1,
-          },
-        },
-      },
-    },
-    orderBy: { createdAt: "desc" },
-  });
-
-  // Get unique items with user's highest bid
-  const itemsMap = new Map<
-    string,
-    (typeof userBids)[0]["auctionItem"] & { userHighestBid: number }
-  >();
-  for (const bid of userBids) {
-    const existing = itemsMap.get(bid.auctionItemId);
-    if (!existing || bid.amount > existing.userHighestBid) {
-      itemsMap.set(bid.auctionItemId, {
-        ...bid.auctionItem,
-        userHighestBid: bid.amount,
-      });
-    }
-  }
-
-  return Array.from(itemsMap.values()).map((item) => ({
-    id: item.id,
-    name: item.name,
-    thumbnailUrl: item.images[0]?.url ? getPublicUrl(item.images[0].url) : null,
-    currentBid: item.currentBid,
-    startingBid: item.startingBid,
-    highestBidderId: item.highestBidderId,
-    endDate: item.endDate?.toISOString() || null,
-    createdAt: item.createdAt.toISOString(),
-    currencySymbol: item.currency.symbol,
-    currencyCode: item.currency.code,
-    auctionId: item.auction.id,
-    auctionName: item.auction.name,
-    userHighestBid: item.userHighestBid,
-  }));
+  const { items } = await getUserBidsOverview(userId);
+  return items;
 }
 
 /**

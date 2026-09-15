@@ -342,42 +342,61 @@ export async function getItemDetailPageData(
     return null;
   }
 
-  // Get bids with user info (first page; live pages come from the API)
+  // Independent fetches in parallel (were sequential round-trips):
+  // bids first page (live pages come from the API), auction end for
+  // inherited endings, images, and discussions. Discussions are bounded
+  // so one hot thread can't blow up the SSR payload; threading below
+  // stays intact.
   const detailSkip = Math.max(0, opts?.skip ?? 0);
   const detailTake = Math.min(100, Math.max(1, opts?.take ?? 10));
-  const [bidsTotal, bidsRaw] = await Promise.all([
-    prisma.bid.count({ where: { auctionItemId: itemId } }),
-    prisma.bid.findMany({
-      where: { auctionItemId: itemId },
-      include: {
-        currencyProfile: {
-          select: {
-            id: true,
-            symbol: true,
-            inputMode: true,
-            fractionMode: true,
-            precision: true,
-            denominationConfig: true,
+  const [bidsResult, auction, images, allDiscussions] = await Promise.all([
+    (async () => {
+      const [bidsTotal, bidsRaw] = await Promise.all([
+        prisma.bid.count({ where: { auctionItemId: itemId } }),
+        prisma.bid.findMany({
+          where: { auctionItemId: itemId },
+          include: {
+            currencyProfile: {
+              select: {
+                id: true,
+                symbol: true,
+                inputMode: true,
+                fractionMode: true,
+                precision: true,
+                denominationConfig: true,
+              },
+            },
+            user: {
+              select: { id: true, name: true, createdAt: true, avatarSeed: true, avgSellerRating: true, sellerRatingCount: true, avgBuyerRating: true, buyerRatingCount: true },
+            },
           },
-        },
+          orderBy: { amount: "desc" },
+          skip: detailSkip,
+          take: detailTake,
+        }),
+      ]);
+      return { bidsTotal, bidsRaw };
+    })(),
+    prisma.auction.findUnique({
+      where: { id: auctionId },
+      select: { endDate: true },
+    }),
+    prisma.auctionItemImage.findMany({
+      where: { auctionItemId: itemId },
+      orderBy: { order: "asc" },
+    }),
+    prisma.itemDiscussion.findMany({
+      where: { auctionItemId: itemId },
+      orderBy: { createdAt: "asc" },
+      include: {
         user: {
-            select: { id: true, name: true, createdAt: true, avatarSeed: true, avgSellerRating: true, sellerRatingCount: true, avgBuyerRating: true, buyerRatingCount: true },
+          select: { id: true, name: true, image: true },
         },
       },
-      orderBy: { amount: "desc" },
-      skip: detailSkip,
-      take: detailTake,
+      take: 200,
     }),
   ]);
-
-  // Lots inherit the auction end: fetch it to block bids and surface
-
-  // Lots inherit the auction end: fetch it to block bids and surface
-  // the ended state even when the item itself has no (or a future) date
-  const auction = await prisma.auction.findUnique({
-    where: { id: auctionId },
-    select: { endDate: true },
-  });
+  const { bidsTotal, bidsRaw } = bidsResult;
   const isAuctionEnded =
     !!auction?.endDate && new Date(auction.endDate) < new Date();
 
@@ -461,24 +480,8 @@ export async function getItemDetailPageData(
     }
   }
 
-  // Get item images
-  const images = await prisma.auctionItemImage.findMany({
-    where: { auctionItemId: itemId },
-    orderBy: { order: "asc" },
-  });
-
-  // Get discussions as threaded tree
-  const allDiscussions = await prisma.itemDiscussion.findMany({
-    where: { auctionItemId: itemId },
-    orderBy: { createdAt: "asc" },
-    include: {
-      user: {
-        select: { id: true, name: true, image: true },
-      },
-    },
-  });
-
-  // Build threaded tree structure
+  // Images and discussions were fetched in parallel above; build the
+  // threaded discussion tree here.
   const discussionMap = new Map<string, DiscussionForDisplay>();
   const topLevelDiscussions: DiscussionForDisplay[] = [];
 

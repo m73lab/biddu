@@ -10,12 +10,12 @@ import * as itemService from "@/lib/services/item.service";
 const getDashboardData: ApiHandler = async (_req, res, ctx) => {
   const userId = ctx.session!.user.id;
 
-  const [memberAuctions, openAuctions, bidStats, bidItems, userItems] =
+  const [memberAuctions, openAuctions, bidsOverview, userItems] =
     await Promise.all([
       auctionService.getUserAuctions(userId),
       auctionService.getOpenAuctionsForUser(userId),
-      bidService.getUserBidStats(userId),
-      bidService.getUserBidItems(userId),
+      // Single bid-history scan (was: separate stats + items queries)
+      bidService.getUserBidsOverview(userId),
       itemService.getUserCreatedItems(userId),
     ]);
 
@@ -23,8 +23,8 @@ const getDashboardData: ApiHandler = async (_req, res, ctx) => {
 
   res.status(200).json({
     auctions,
-    bidStats,
-    bidItems,
+    bidStats: bidsOverview.stats,
+    bidItems: bidsOverview.items,
     userItems,
   });
 };

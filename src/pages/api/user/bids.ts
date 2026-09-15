@@ -8,10 +8,9 @@ import * as bidService from "@/lib/services/bid.service";
 const getUserBids: ApiHandler = async (_req, res, ctx) => {
   const userId = ctx.session!.user.id;
 
-  const [bidStats, bidItems] = await Promise.all([
-    bidService.getUserBidStats(userId),
-    bidService.getUserBidItems(userId),
-  ]);
+  // Single bid-history scan (was: separate stats + items queries)
+  const { stats: bidStats, items: bidItems } =
+    await bidService.getUserBidsOverview(userId);
 
   res.status(200).json({
     bidStats,

@@ -76,16 +76,18 @@ interface AuctionDetailProps {
   membership: {
     role: string;
   } | null;
-  hasLeft: boolean;
-}
+    hasLeft: boolean;
+    fallback: AuctionDetailsData | null;
+  }
 
-export default function AuctionDetailPage({
-  user,
-  auctionId,
-  auctionName,
-  membership,
-  hasLeft,
-}: AuctionDetailProps) {
+  export default function AuctionDetailPage({
+    user,
+    auctionId,
+    auctionName,
+    membership,
+    hasLeft,
+    fallback,
+  }: AuctionDetailProps) {
   const router = useRouter();
   const t = useTranslations("auction");
   const tCommon = useTranslations("common");
@@ -98,13 +100,17 @@ export default function AuctionDetailPage({
   // Use high priority for auction detail page, pauses when tab hidden
   const refreshInterval = usePollingInterval({ priority: "high" });
 
-  // Client-side data fetching with polling for live bid updates
+  // Client-side data fetching with polling for live bid updates.
+  // SSR seeds fallbackData: first paint comes from props, SWR
+  // revalidates in background (no second skeleton, no double fetch).
   const { data, isLoading } = useSWR<AuctionDetailsData>(
     hasLeft ? null : `/api/auctions/${auctionId}/details`,
     fetcher,
     {
+      fallbackData: fallback ?? undefined,
       refreshInterval,
       revalidateOnFocus: true,
+      keepPreviousData: true,
     },
   );
 
@@ -194,7 +200,7 @@ export default function AuctionDetailPage({
   const isAdmin = isUserAdmin(membership!.role);
   const canCreate = canUserCreateItems(membership!.role);
 
-  // Show skeleton while loading
+  // Show skeleton only on cold load (cached data renders instantly)
   if (isLoading || !auction) {
     return (
       <PageLayout user={user}>
@@ -342,8 +348,19 @@ export default function AuctionDetailPage({
 export const getServerSideProps = withAuth(async (context) => {
   const auctionId = context.params?.id as string;
 
-  // Get auction details
-  const auction = await auctionService.getAuctionForDetailPage(auctionId);
+  // Membership + full details payload + messages in one parallel round
+  // (were sequential). Details double as SWR fallbackData: the client
+  // paints instantly with no second fetch round-trip.
+  const [membership0, details, messages] = await Promise.all([
+    auctionService.getUserMembership(auctionId, context.session.user.id),
+    auctionService.getAuctionDetailsData(
+      auctionId,
+      context.session.user.id,
+    ),
+    getMessages(context.locale as Locale),
+  ]);
+
+  const auction = details?.auction ?? null;
 
   if (!auction) {
     return {
@@ -355,10 +372,7 @@ export const getServerSideProps = withAuth(async (context) => {
   }
 
   // Get membership check
-  let membership = await auctionService.getUserMembership(
-    auctionId,
-    context.session.user.id,
-  );
+  let membership = membership0;
 
   // If not a member, check if this is an OPEN or LINK auction
   if (!membership) {
@@ -382,7 +396,8 @@ export const getServerSideProps = withAuth(async (context) => {
             auctionName: auction.name,
             membership: null,
             hasLeft: true,
-            messages: await getMessages(context.locale as Locale),
+            fallback: null,
+            messages,
           },
         };
       }
@@ -412,13 +427,14 @@ export const getServerSideProps = withAuth(async (context) => {
         name: context.session.user.name || null,
         email: context.session.user.email || "",
       },
-      auctionId,
-      auctionName: null,
-      membership: {
-        role: membership.role,
-      },
-      hasLeft: false,
-      messages: await getMessages(context.locale as Locale),
+        auctionId,
+        auctionName: null,
+        membership: {
+          role: membership.role,
+        },
+        hasLeft: false,
+        fallback: details,
+        messages,
     },
   };
 });

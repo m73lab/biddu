@@ -67,7 +67,10 @@ export default function HistoryPage({ user }: HistoryPageProps) {
   const tItem = useTranslations("item");
 
   // Client-side data fetching
-  const { data, isLoading } = useSWR<HistoryData>("/api/user/history", fetcher);
+  const { data, isLoading } = useSWR<HistoryData>("/api/user/history", fetcher, {
+    dedupingInterval: 30000,
+    keepPreviousData: true,
+  });
 
   const bids = data?.bids ?? [];
   const stats = data?.stats ?? {
@@ -86,8 +89,8 @@ export default function HistoryPage({ user }: HistoryPageProps) {
     });
   };
 
-  // Show skeleton while loading
-  if (isLoading) {
+  // Show skeleton only on cold load (cached data renders instantly)
+  if (!data) {
     return (
       <PageLayout user={user}>
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
