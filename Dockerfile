@@ -41,7 +41,9 @@ COPY --from=builder /app/src/generated ./src/generated
 # Next standalone tracing omits ESM files of @swc/helpers that Next's
 # require-hook loads dynamically at runtime: copy the full package.
 COPY --from=builder /app/node_modules/@swc/helpers/ ./node_modules/@swc/helpers/
-RUN mkdir -p ./data ./public/uploads ./logs && chown -R nextjs:nodejs ./data ./public/uploads ./logs
+# .next must be writable by the runtime user: ISR revalidation rewrites
+# the prerender cache in place (EACCES otherwise).
+RUN mkdir -p ./data ./public/uploads ./logs && chown -R nextjs:nodejs ./.next ./data ./public/uploads ./logs
 USER nextjs
 EXPOSE 3000
 ENV HOSTNAME="0.0.0.0"
