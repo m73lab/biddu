@@ -1,6 +1,8 @@
 import { PrismaClient } from "@/generated/prisma/client";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { PrismaLibSql } from "@prisma/adapter-libsql";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 import { prismaLogger as logger } from "@/lib/logger";
 
 const globalForPrisma = globalThis as unknown as {
@@ -12,15 +14,25 @@ const databaseUrl = process.env.DATABASE_URL || "file:./dev.db";
 function createAdapter() {
   const isTursoUrl =
     databaseUrl.startsWith("libsql://") || databaseUrl.startsWith("https://");
+  const isPgUrl =
+    databaseUrl.startsWith("postgresql://") ||
+    databaseUrl.startsWith("postgres://");
 
   logger.info(
     {
       isTurso: isTursoUrl,
+      isPostgres: isPgUrl,
       urlPrefix: databaseUrl.substring(0, 20) + "...",
       hasAuthToken: !!process.env.DATABASE_AUTH_TOKEN,
     },
     "Creating adapter",
   );
+
+  if (isPgUrl) {
+    // PostgreSQL (multi-replica cloud deployments)
+    const pool = new Pool({ connectionString: databaseUrl });
+    return new PrismaPg(pool);
+  }
 
   if (isTursoUrl) {
     // Turso/LibSQL
