@@ -1,3 +1,4 @@
+import { isIP } from "net";
 import { RateLimiterMemory, RateLimiterRedis } from "rate-limiter-flexible";
 import { createClient, type RedisClientType } from "redis";
 import type { Middleware } from "../types";
@@ -51,33 +52,57 @@ function firstHeaderValue(
   return trimmed || null;
 }
 
+function cleanIp(value: string | null): string | null {
+  if (!value) return null;
+  const ip = normalizeIp(value.trim());
+  return isIP(ip) ? ip : null;
+}
+
 /**
  * Get client IP address from request.
  *
- * Proxy headers (X-Forwarded-For / X-Real-IP) are only trusted when the
- * direct TCP peer is a private or loopback address - i.e. we sit behind
- * our own reverse proxy (Caddy/Docker) on a trusted host. Otherwise the
- * socket address is used, so attackers cannot spoof their way around
- * rate limits with a forged header.
+ * Trust order (first valid wins):
+ * 1. `CF-Connecting-IP` - set (and overwritten) by the Cloudflare edge,
+ *    so it cannot be forged on traffic arriving through Cloudflare.
+ * 2. The LAST `X-Forwarded-For` entry, but only when the direct TCP peer
+ *    is our own reverse proxy (private/loopback address, e.g. Caddy on
+ *    the Docker network). Proxies append the peer they see to the RIGHT;
+ *    everything to the left is client-controlled graffiti, so the
+ *    leftmost entry must never be trusted. `X-Real-IP` is never trusted:
+ *    Caddy does not set it, so any value arriving here was client-sent.
+ * 3. The socket peer address (direct connections).
+ *
+ * Anything else yields "unknown" (one shared bucket) instead of
+ * attacker-controlled input, so forged headers can no longer mint fresh
+ * rate-limit buckets per request.
+ *
+ * Residual limitation (documented): a client reaching the app container
+ * directly (bypassing Caddy, e.g. LAN to the published port) with a forged
+ * single-entry X-Forwarded-For is indistinguishable from a proxied request.
+ * Mitigate at the network layer (don't publish the app port beyond localhost).
  */
 export function getClientIp(req: {
   headers: Record<string, string | string[] | undefined>;
   socket?: { remoteAddress?: string };
 }): string {
+  const cfIp = cleanIp(firstHeaderValue(req.headers["cf-connecting-ip"]));
+  if (cfIp) return cfIp;
+
   const socketIp = req.socket?.remoteAddress || "";
 
   if (socketIp && isPrivateOrLoopback(socketIp)) {
-    const forwarded = firstHeaderValue(req.headers["x-forwarded-for"]);
-    if (forwarded) return normalizeIp(forwarded);
-    const realIp = firstHeaderValue(req.headers["x-real-ip"]);
-    if (realIp) return normalizeIp(realIp);
+    const forwarded = req.headers["x-forwarded-for"];
+    const chain = (Array.isArray(forwarded) ? forwarded.join(",") : forwarded || "")
+      .split(",")
+      .map((entry) => entry.trim())
+      .filter(Boolean);
+    for (let i = chain.length - 1; i >= 0; i--) {
+      const ip = cleanIp(chain[i]);
+      if (ip) return ip;
+    }
   }
 
-  if (socketIp) return normalizeIp(socketIp);
-  const fallback =
-    firstHeaderValue(req.headers["x-forwarded-for"]) ||
-    firstHeaderValue(req.headers["x-real-ip"]);
-  return fallback ? normalizeIp(fallback) : "unknown";
+  return cleanIp(socketIp || null) || "unknown";
 }
 
 // Cache rate limiters to avoid creating new instances on each request
