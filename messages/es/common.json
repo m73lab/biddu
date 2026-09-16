@@ -56,7 +56,8 @@
     "howItWorks": "Cómo funciona",
     "docs": "Docs",
     "help": "Ayuda",
-    "myAuctions": "Mis subastas"
+    "myAuctions": "Mis subastas",
+    "signOutConfirm": "¿Seguro que quieres cerrar sesión?"
   },
   "admin": {
     "title": "Admin de Subasta",

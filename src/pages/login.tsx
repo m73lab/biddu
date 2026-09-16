@@ -37,6 +37,7 @@ export default function LoginPage({
   const [resendStatus, setResendStatus] = useState<
     "idle" | "sending" | "sent" | "error"
   >("idle");
+  const [showPassword, setShowPassword] = useState(false);
 
   // Preserve invite/auth flow params when linking to register
   const authParams = new URLSearchParams();
@@ -254,12 +255,22 @@ export default function LoginPage({
                     <input
                       id="password"
                       name="password"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       placeholder={t("passwordPlaceholder")}
                       autoComplete="current-password"
-                      className="input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors"
+                      className="input input-bordered w-full pl-10 pr-10 bg-base-200/50 focus:bg-base-100 transition-colors"
                       required
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content transition-colors"
+                      aria-label={showPassword ? t("hidePassword") : t("showPassword")}
+                    >
+                      <span
+                        className={`${showPassword ? "icon-[tabler--eye-off]" : "icon-[tabler--eye]"} size-5 block`}
+                      />
+                    </button>
                   </div>
                   <label className="label pb-0">
                     <Link
