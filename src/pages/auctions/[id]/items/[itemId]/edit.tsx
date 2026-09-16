@@ -402,68 +402,6 @@ export default function EditItemPage({
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="form-control">
-                  <label className="label" htmlFor="minBidNormalized">
-                    <span className="label-text font-medium">
-                      {t("minBidNormalized")}
-                    </span>
-                  </label>
-                  <input
-                    id="minBidNormalized"
-                    name="minBidNormalized"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    defaultValue={item.minBidNormalized ?? ""}
-                    className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
-                  />
-                </div>
-
-                <div className="form-control">
-                  <label className="label" htmlFor="minIncrementNormalized">
-                    <span className="label-text font-medium">
-                      {t("minIncrementNormalized")}
-                    </span>
-                  </label>
-                  <input
-                    id="minIncrementNormalized"
-                    name="minIncrementNormalized"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    defaultValue={item.minIncrementNormalized ?? ""}
-                    className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
-                  />
-                </div>
-              </div>
-
-              {auctionCurrencyProfiles.length > 0 && (
-                <div className="form-control">
-                  <label className="label" htmlFor="minBidConstraint">
-                    <span className="label-text font-medium">
-                      {t("minBidConstraint")}
-                    </span>
-                  </label>
-                  <textarea
-                    id="minBidConstraint"
-                    name="minBidConstraint"
-                    rows={3}
-                    defaultValue={
-                      item.minBidConstraint
-                        ? JSON.stringify(item.minBidConstraint, null, 2)
-                        : ""
-                    }
-                    placeholder='e.g. {"currencyProfileId":"...","components":{"gold":1}}'
-                    className="textarea textarea-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
-                  />
-                  <label className="label">
-                    <span className="label-text-alt text-base-content/60">
-                      Currency profiles: {auctionCurrencyProfiles.map((p) => `${p.name} (${p.symbol})`).join(", ")}
-                    </span>
-                  </label>
-                </div>
-              )}
             </div>
 
             {/* Images */}

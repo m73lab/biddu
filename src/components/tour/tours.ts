@@ -137,12 +137,6 @@ export const TOURS: Record<TourId, TourStepDef[]> = {
       contentKey: "itemCreate.maxBid",
     },
     {
-      target: "#minBidNormalized",
-      titleKey: "itemCreate.normalizedTitle",
-      contentKey: "itemCreate.normalized",
-      optional: true,
-    },
-    {
       target: "#endDate",
       titleKey: "itemCreate.endDateTitle",
       contentKey: "itemCreate.endDate",
