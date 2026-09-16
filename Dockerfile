@@ -15,6 +15,20 @@ WORKDIR /app
 # SQLite. Cloud builds override with prisma/schema.cloud.prisma (PostgreSQL).
 ARG PRISMA_SCHEMA=prisma/schema.prisma
 ARG DATABASE_URL_BUILD=
+# NEXT_PUBLIC_* vars are inlined by Next at BUILD time (unreadable at
+# runtime), so they must arrive as build args. Empty defaults keep plain
+# `docker build` working; compose passes the real values from .env.
+ARG NEXT_PUBLIC_APP_URL=
+ARG NEXT_PUBLIC_REALTIME_DRIVER=
+ARG NEXT_PUBLIC_SOKETI_APP_KEY=
+ARG NEXT_PUBLIC_SOKETI_HOST=
+ARG NEXT_PUBLIC_SOKETI_PORT=
+ARG NEXT_PUBLIC_SOKETI_USE_TLS=
+ARG NEXT_PUBLIC_PUSHER_KEY=
+ARG NEXT_PUBLIC_PUSHER_CLUSTER=
+ARG NEXT_PUBLIC_RECAPTCHA_SITE_KEY=
+ARG NEXT_PUBLIC_WHATSAPP_NUMBER=
+ARG NEXT_PUBLIC_CONTACT_EMAIL=
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npx prisma generate --schema=$PRISMA_SCHEMA
