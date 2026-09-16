@@ -56,7 +56,8 @@
     "docs": "Docs",
     "adminPanel": "Auction Admin",
     "help": "Help",
-    "myAuctions": "My auctions"
+    "myAuctions": "My auctions",
+    "signOutConfirm": "Are you sure you want to sign out?"
   },
   "admin": {
     "title": "Auction Admin",
