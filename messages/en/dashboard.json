@@ -44,6 +44,12 @@
       "cancel": "Cancel",
       "invalid": "Invalid or expired code"
     },
-    "limitReached": "Limit reached"
+    "limitReached": "Limit reached",
+    "quotaTitle": "Usage and limits",
+    "auctionCounterLabel": "Auctions",
+    "fotosHint": "Limit per item",
+    "manageSlots": "Manage slots",
+    "showLess": "Show less",
+    "showMore": "See {count} more"
   }
 }

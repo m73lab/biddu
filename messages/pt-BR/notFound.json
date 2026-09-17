@@ -1,0 +1,14 @@
+{
+  "notFound": {
+    "meta": {
+      "title": "Página não encontrada",
+      "description": "A página que você procura não existe ou foi movida"
+    },
+    "badge": "Erro 404",
+    "title": "Página",
+    "titleHighlight": "não encontrada",
+    "description": "Parece que você seguiu um link quebrado ou digitou o endereço errado. Não se preocupe, vamos te ajudar a voltar.",
+    "backToHome": "Voltar ao início",
+    "goToLogin": "Entrar"
+  }
+}

@@ -53,6 +53,12 @@ jobs:
       - name: Unit tests
         run: npx tsx --test "src/**/*.test.ts"
 
+      - name: i18n key audit
+        # Every useTranslations("literal") must exist in messages/{es,en,pt-BR}.
+        # Missing keys throw MISSING_MESSAGE during prerender (noisy build)
+        # and at runtime. Dynamic calls are listed but not gated.
+        run: node scripts/i18n-audit.mjs
+
       # NOTE: no lint gate yet — `npx eslint src` currently reports 26
       # pre-existing errors (react-hooks/*, no-explicit-any...). Fix them
       # first, then add `- npx eslint src` here.

@@ -44,6 +44,12 @@
       "cancel": "Cancelar",
       "invalid": "Código no válido o vencido"
     },
-    "limitReached": "Límite alcanzado"
+    "limitReached": "Límite alcanzado",
+    "quotaTitle": "Uso y límites",
+    "auctionCounterLabel": "Subastas",
+    "fotosHint": "Límite por artículo",
+    "manageSlots": "Gestionar slots",
+    "showLess": "Ver menos",
+    "showMore": "Ver {count} más"
   }
 }

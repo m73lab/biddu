@@ -1,0 +1,14 @@
+{
+  "notFound": {
+    "meta": {
+      "title": "Page not found",
+      "description": "The page you are looking for does not exist or was moved"
+    },
+    "badge": "Error 404",
+    "title": "Page",
+    "titleHighlight": "not found",
+    "description": "It looks like you followed a broken link or mistyped the address. Don't worry, we'll help you back.",
+    "backToHome": "Back to home",
+    "goToLogin": "Sign in"
+  }
+}

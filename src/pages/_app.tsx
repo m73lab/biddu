@@ -19,6 +19,19 @@ export default function App({
 }: AppProps) {
   const router = useRouter();
 
+  // Pages without translated messages (Next.js default 500/error pages,
+  // which cannot carry getStaticProps) must NOT render inside
+  // NextIntlClientProvider: every useTranslations in the tree would throw
+  // MISSING_MESSAGE (visible as dozens of build-prerender errors and a
+  // broken page). Render them with a minimal provider set instead.
+  if (!pageProps.messages) {
+    return (
+      <SessionProvider session={session}>
+        <Component {...pageProps} />
+      </SessionProvider>
+    );
+  }
+
   return (
     <NextIntlClientProvider
       locale={router.locale}

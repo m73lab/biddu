@@ -1,7 +1,7 @@
 import { Locale } from "./config";
 
 // Locale JSONs are static assets: cache per locale in production so every
-// SSR doesn't re-import 17 files. Dev stays uncached for hot editing.
+// SSR doesn't re-import 18 files. Dev stays uncached for hot editing.
 const messagesCache = new Map<Locale, Record<string, unknown>>();
 
 export async function getMessages(locale: Locale) {
@@ -27,6 +27,7 @@ export async function getMessages(locale: Locale) {
     ...(await import(`../../messages/${locale}/tour.json`)).default,
     ...(await import(`../../messages/${locale}/profile.json`)).default,
     ...(await import(`../../messages/${locale}/setup.json`)).default,
+    ...(await import(`../../messages/${locale}/notFound.json`)).default,
   };
   if (process.env.NODE_ENV === "production") {
     messagesCache.set(locale, messages);
