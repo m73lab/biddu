@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { ApiHandler } from "../types";
-import { BadRequestError, ValidationError } from "../errors";
+import { BadRequestError, ConflictError, ValidationError } from "../errors";
 import * as authService from "@/lib/services/auth.service";
+import { isEmailEnabled } from "@/lib/email";
 import { isValidRut } from "@/utils/rut";
 import { isValidPhone } from "@/utils/phone";
 
@@ -107,14 +108,16 @@ export const register: ApiHandler = async (req, res) => {
     });
   }
 
-  await authService.registerUser(parsed.data);
+  const result = await authService.registerUser(parsed.data);
 
   // Always return success to prevent email enumeration attacks
   // If email exists, the service will send a "you already have an account" email
-  // instead of revealing this information to potential attackers
+  // instead of revealing this information to potential attackers.
+  // `emailSent` is the REAL outcome (false when no email provider is
+  // configured) so the UI never promises an email that will not arrive.
   return res.status(201).json({
     message: "Registration successful. Please check your email.",
-    emailSent: true,
+    emailSent: result.emailSent,
   });
 };
 
@@ -218,6 +221,16 @@ export const resendVerification: ApiHandler = async (req, res) => {
 
   if (!parsed.success) {
     throw new BadRequestError("Email is required");
+  }
+
+  // Fail loudly (409) when no provider is configured: the generic "we've
+  // sent an email" reply would be a lie, and the login page shows an
+  // actionable message instead. 409 here reveals nothing about accounts
+  // (it depends only on deployment-global config).
+  if (!isEmailEnabled()) {
+    throw new ConflictError(
+      "Email is not configured on this deployment, so no verification email can be sent. Configure an email provider or contact the administrator.",
+    );
   }
 
   const result = await authService.resendVerificationEmail(parsed.data.email);

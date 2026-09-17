@@ -35,7 +35,7 @@ export default function LoginPage({
   const [emailNotVerified, setEmailNotVerified] = useState(false);
   const [loginEmail, setLoginEmail] = useState<string>("");
   const [resendStatus, setResendStatus] = useState<
-    "idle" | "sending" | "sent" | "error"
+    "idle" | "sending" | "sent" | "error" | "disabled"
   >("idle");
   const [showPassword, setShowPassword] = useState(false);
 
@@ -175,6 +175,10 @@ export default function LoginPage({
                       <span className="text-sm opacity-80">
                         {t("verificationEmailSent")}
                       </span>
+                    ) : resendStatus === "disabled" ? (
+                      <span className="text-sm opacity-80">
+                        {t("emailNotConfigured")}
+                      </span>
                     ) : (
                       <button
                         type="button"
@@ -194,7 +198,14 @@ export default function LoginPage({
                             if (res.ok) {
                               setResendStatus("sent");
                             } else {
-                              setResendStatus("error");
+                              const data = await res
+                                .json()
+                                .catch(() => null);
+                              setResendStatus(
+                                data?.code === "CONFLICT"
+                                  ? "disabled"
+                                  : "error",
+                              );
                             }
                           } catch {
                             setResendStatus("error");

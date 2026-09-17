@@ -1,0 +1,27 @@
+{
+  "setup": {
+    "seoTitle": "Configuración inicial",
+    "seoDescription": "Crea la cuenta administradora de tu instancia de Biddu",
+    "title": "Configuración inicial",
+    "subtitle": "Tu instancia aún no tiene administrador. Crea la cuenta para empezar.",
+    "brandingTitle": "Casi listo",
+    "brandingDescription": "Este asistente de un solo paso crea la cuenta administradora de tu instancia. Después podrás configurar el correo, invitar usuarios y crear subastas.",
+    "adminNoteTitle": "Cuenta administradora",
+    "adminNoteMessage": "Esta cuenta quedará verificada automáticamente y será la administradora del despliegue. Nadie más podrá usar este asistente después.",
+    "emailDisabledHint": "El correo no está configurado en este despliegue: no necesitas verificar nada, esta cuenta entra directo.",
+    "fullName": "Nombre completo",
+    "fullNamePlaceholder": "Ada Administradora",
+    "email": "Correo electrónico",
+    "emailPlaceholder": "admin@mi-dominio.cl",
+    "password": "Contraseña",
+    "passwordPlaceholder": "••••••••",
+    "confirmPassword": "Confirmar contraseña",
+    "confirmPasswordPlaceholder": "••••••••",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña",
+    "submitButton": "Crear cuenta administradora",
+    "submitting": "Creando...",
+    "setupFailed": "No se pudo completar la configuración",
+    "alreadyCompleted": "La configuración ya fue completada. Inicia sesión con tu cuenta."
+  }
+}

@@ -41,6 +41,7 @@ export default function RegisterPage({
   const [loadCaptcha, setLoadCaptcha] = useState(false);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState<string>("");
+  const [verificationEmailSent, setVerificationEmailSent] = useState(true);
   const [rutValue, setRutValue] = useState("");
   const recaptchaRef = useRef<ReCAPTCHA>(null);
 
@@ -169,8 +170,12 @@ export default function RegisterPage({
           setError(data.message || t("registrationFailed"));
         }
       } else {
-        // Show verification pending state instead of redirecting
+        // Show verification pending state instead of redirecting.
+        // `emailSent` is the real outcome: on deployments without email
+        // configured no verification email could go out, so we say so
+        // instead of sending the user to hunt an inbox that got nothing.
         setRegisteredEmail(email);
+        setVerificationEmailSent(data.emailSent !== false);
         setRegistrationSuccess(true);
       }
     } catch {
@@ -229,20 +234,43 @@ export default function RegisterPage({
                 <div className="w-20 h-20 bg-success/10 rounded-full flex items-center justify-center mx-auto">
                   <span className="icon-[tabler--mail-check] size-10 text-success"></span>
                 </div>
-                <div className="space-y-2">
-                  <h2 className="text-2xl font-bold text-base-content">
-                    {t("verifyEmailTitle")}
-                  </h2>
-                  <p className="text-base-content/60">
-                    {t("verifyEmailMessage", { email: registeredEmail })}
-                  </p>
-                </div>
-                <div className="bg-base-200/50 rounded-xl p-4 text-sm text-base-content/60">
-                  <p className="flex items-center gap-2 justify-center">
-                    <span className="icon-[tabler--info-circle] size-4"></span>
-                    {t("checkSpamNote")}
-                  </p>
-                </div>
+                {verificationEmailSent ? (
+                  <>
+                    <div className="space-y-2">
+                      <h2 className="text-2xl font-bold text-base-content">
+                        {t("verifyEmailTitle")}
+                      </h2>
+                      <p className="text-base-content/60">
+                        {t("verifyEmailMessage", { email: registeredEmail })}
+                      </p>
+                    </div>
+                    <div className="bg-base-200/50 rounded-xl p-4 text-sm text-base-content/60">
+                      <p className="flex items-center gap-2 justify-center">
+                        <span className="icon-[tabler--info-circle] size-4"></span>
+                        {t("checkSpamNote")}
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="space-y-2">
+                      <h2 className="text-2xl font-bold text-base-content">
+                        {t("verifyEmailSkippedTitle")}
+                      </h2>
+                      <p className="text-base-content/60">
+                        {t("verifyEmailSkippedMessage", {
+                          email: registeredEmail,
+                        })}
+                      </p>
+                    </div>
+                    <div className="bg-warning/10 rounded-xl p-4 text-sm text-base-content/70">
+                      <p className="flex items-center gap-2 justify-center">
+                        <span className="icon-[tabler--mail-off] size-4"></span>
+                        {t("verifyEmailSkippedNote")}
+                      </p>
+                    </div>
+                  </>
+                )}
                 <div className="pt-4">
                   <Link
                     href={loginHref}

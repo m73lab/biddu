@@ -7,6 +7,7 @@ import { ToastProvider } from "@/components/ui/toast";
 import { NextIntlClientProvider } from "next-intl";
 import { useRouter } from "next/router";
 import { UpdateBanner } from "@/components/common";
+import { SetupGuard } from "@/components/common/SetupGuard";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { AppProvider } from "@/contexts/AppContext";
 import { TourProvider } from "@/components/tour";
@@ -44,6 +45,7 @@ export default function App({
                 <ToastProvider>
                   <TourProvider>
                     <UpdateBanner />
+                    <SetupGuard />
                     <Component {...pageProps} />
                   </TourProvider>
                 </ToastProvider>

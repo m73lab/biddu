@@ -12,6 +12,7 @@ export * as notificationHandlers from "./notification.handlers";
 export * as systemHandlers from "./system.handlers";
 export * as discussionHandlers from "./discussion.handlers";
 export * as ratingHandlers from "./rating.handlers";
+export * as setupHandlers from "./setup.handlers";
 
 // Re-export schemas for convenience
 export {

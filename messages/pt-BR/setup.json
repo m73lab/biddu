@@ -1,0 +1,27 @@
+{
+  "setup": {
+    "seoTitle": "Configuração inicial",
+    "seoDescription": "Crie a conta de administradora da sua instância do Biddu",
+    "title": "Configuração inicial",
+    "subtitle": "Sua instância ainda não tem administradora. Crie a conta para começar.",
+    "brandingTitle": "Quase pronto",
+    "brandingDescription": "Este assistente de etapa única cria a conta de administradora da sua instância. Depois você poderá configurar o e-mail, convidar usuários e criar leilões.",
+    "adminNoteTitle": "Conta de administradora",
+    "adminNoteMessage": "Esta conta será verificada automaticamente e será a administradora da implantação. Ninguém mais poderá usar este assistente depois.",
+    "emailDisabledHint": "O e-mail não está configurado nesta implantação: não há nada para verificar, esta conta entra direto.",
+    "fullName": "Nome completo",
+    "fullNamePlaceholder": "Ada Administradora",
+    "email": "E-mail",
+    "emailPlaceholder": "admin@meu-dominio.com",
+    "password": "Senha",
+    "passwordPlaceholder": "••••••••",
+    "confirmPassword": "Confirmar senha",
+    "confirmPasswordPlaceholder": "••••••••",
+    "showPassword": "Mostrar senha",
+    "hidePassword": "Ocultar senha",
+    "submitButton": "Criar conta de administradora",
+    "submitting": "Criando...",
+    "setupFailed": "Não foi possível concluir a configuração",
+    "alreadyCompleted": "A configuração já foi concluída. Entre com sua conta."
+  }
+}

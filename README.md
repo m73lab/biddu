@@ -72,6 +72,20 @@ openssl rand -base64 32   # CRON_SECRET
 
 Datos persistentes en volúmenes Docker: base SQLite (`biddu-data`), uploads (`biddu-uploads`) y logs (`biddu-logs`).
 
+### Primera entrada (sin credenciales por defecto)
+
+Un despliegue nuevo **no trae usuarios ni contraseñas**. Al abrir la app redirige a `/setup`, donde creas la cuenta administradora (queda verificada y como admin del despliegue). Funciona con o sin correo configurado; después el asistente se desactiva solo.
+
+Para despliegues automatizados puedes sembrar el admin por variables en `.env`:
+
+```bash
+INITIAL_ADMIN_EMAIL="admin@tu-dominio.cl"
+# INITIAL_ADMIN_PASSWORD="..."  # opcional: si la omites se genera una
+                                # y se muestra UNA vez en los logs
+```
+
+Sin proveedor de correo (`EMAIL_PROVIDER` vacío) el login sigue funcionando, pero la verificación por email, el reseteo de contraseña y las notificaciones no pueden enviarse: el registro y el login avisan de esto en pantalla en vez de prometer correos que nunca llegan.
+
 ## Configuración
 
 Toda la configuración vive en `.env` (ver `.env.example`, que documenta cada opción). Lo esencial:
