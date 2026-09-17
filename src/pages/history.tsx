@@ -220,8 +220,7 @@ export default function HistoryPage({ user }: HistoryPageProps) {
                             {formatCurrency(
                               bid.amount,
                               bid.item.currency.symbol,
-                              decimalsForCurrency(bid.item.currency.code),
-                            )}
+                              decimalsForCurrency(bid.item.currency.code), bid.item.currency.code)}
                           </span>
                         </div>
                         <div className="flex flex-col items-end">
@@ -233,8 +232,7 @@ export default function HistoryPage({ user }: HistoryPageProps) {
                             {formatCurrency(
                               bid.item.currentBid || 0,
                               bid.item.currency.symbol,
-                              decimalsForCurrency(bid.item.currency.code),
-                            )}
+                              decimalsForCurrency(bid.item.currency.code), bid.item.currency.code)}
                           </span>
                         </div>
                       </div>
@@ -303,16 +301,14 @@ export default function HistoryPage({ user }: HistoryPageProps) {
                             {formatCurrency(
                               bid.amount,
                               bid.item.currency.symbol,
-                              decimalsForCurrency(bid.item.currency.code),
-                            )}
+                              decimalsForCurrency(bid.item.currency.code), bid.item.currency.code)}
                           </td>
                           <td className="text-right font-mono text-base-content/70">
                             {bid.item.currency.symbol}
                             {formatCurrency(
                               bid.item.currentBid || 0,
                               bid.item.currency.symbol,
-                              decimalsForCurrency(bid.item.currency.code),
-                            )}
+                              decimalsForCurrency(bid.item.currency.code), bid.item.currency.code)}
                           </td>
                           <td className="text-center">
                             {bid.isWinning ? (

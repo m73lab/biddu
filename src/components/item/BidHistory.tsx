@@ -106,7 +106,7 @@ export function BidHistory({
               </div>
               <div className="text-right">
                 <div className="font-bold">
-                  {formatCurrency(bid.amount, currencySymbol, decimalsForCurrency(currencyCode))}
+                  {formatCurrency(bid.amount, currencySymbol, decimalsForCurrency(currencyCode), currencyCode)}
                 </div>
                 <div className="text-xs text-base-content/60">
                   {formatDate(bid.createdAt)}

@@ -1,6 +1,9 @@
+import { localeForCurrency } from "@/utils/formatters";
+
 interface PriceDisplayProps {
   amount: number;
   symbol: string;
+  currencyCode?: string;
   decimals?: number;
   size?: "sm" | "md" | "lg" | "xl";
   className?: string;
@@ -16,11 +19,12 @@ const sizeClasses = {
 export function PriceDisplay({
   amount,
   symbol,
+  currencyCode,
   decimals = 0,
   size = "md",
   className = "",
 }: PriceDisplayProps) {
-  const formatted = amount.toLocaleString("es-CL", {
+  const formatted = amount.toLocaleString(localeForCurrency(currencyCode), {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   });

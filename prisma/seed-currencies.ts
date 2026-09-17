@@ -30,6 +30,16 @@ export const currencies = [
   { code: "ARS", name: "Peso Argentino", symbol: "AR$" },
   { code: "COP", name: "Peso Colombiano", symbol: "CO$" },
   { code: "PEN", name: "Sol Peruano", symbol: "S/" },
+  { code: "UYU", name: "Peso Uruguayo", symbol: "$U" },
+  { code: "PYG", name: "Guaraní", symbol: "Gs" },
+  { code: "BOB", name: "Boliviano", symbol: "Bs" },
+  { code: "DOP", name: "Peso Dominicano", symbol: "RD$" },
+  { code: "CRC", name: "Coló Costarricense", symbol: "₩" },
+  { code: "GTQ", name: "Quetzal Guatemalteco", symbol: "Q" },
+  { code: "HNL", name: "Lempira Hondureñ", symbol: "L" },
+  { code: "NIO", name: "Córdoba Nicaragüense", symbol: "C$" },
+  { code: "PAB", name: "Balboa Panameño", symbol: "B/." },
+  { code: "CUP", name: "Peso Cubano", symbol: "$" },
   { code: "PLN", name: "Zloty Polaco", symbol: "zł" },
   { code: "TRY", name: "Lira Turca", symbol: "₺" },
   { code: "THB", name: "Baht Tailandés", symbol: "฿" },
@@ -55,14 +65,9 @@ export const currencies = [
 ];
 
 export async function seedCurrencies(prismaClient: PrismaClient = prisma) {
-  const existingCount = await prismaClient.currency.count();
-  if (existingCount > 0) {
-    console.log(
-      `⏭️  Currencies already seeded (${existingCount} found), skipping`,
-    );
-    return;
-  }
-
+  // Always upsert (no early skip): newly added currencies must also reach
+  // databases seeded before they existed. update:{} is a no-op for rows
+  // that already exist.
   console.log("💰 Seeding currencies...");
   for (const currency of currencies) {
     await prismaClient.currency.upsert({

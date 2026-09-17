@@ -245,8 +245,7 @@ export const getServerSideProps = withAuth(async (context) => {
       winningBid: formatCurrency(
         item.currentBid ?? 0,
         item.currency.symbol,
-        decimalsForCurrency(item.currency.code),
-      ),
+        decimalsForCurrency(item.currency.code), item.currency.code),
       winnerName: winner.name || winner.email,
       winnerEmail: winner.email,
       winnerPhone: winner.phone || null,

@@ -111,8 +111,7 @@ export function ItemSidebar({
                           {formatCurrency(
                             item.currentBid || item.startingBid,
                             item.currency.symbol,
-                            decimalsForCurrency(item.currency.code),
-                          )}
+                            decimalsForCurrency(item.currency.code), item.currency.code)}
                         </div>
                       </div>
                     </div>

@@ -25,7 +25,7 @@ import { useTranslations } from "next-intl";
 import { useTour } from "@/components/tour";
 import {
   formatCurrency,
-  formatDate,
+  formatDate as formatDateInZone,
   decimalsForCurrency,
   inputStepForCurrency,
 } from "@/utils/formatters";
@@ -92,6 +92,7 @@ interface ItemDetailProps {
     name: string;
     bidderVisibility: string;
     endDate: string | null;
+    timeZone: string;
     winnerConfirmEnabled: boolean;
   };
   auctionItems: SidebarItem[];
@@ -421,14 +422,11 @@ interface AuctionCurrencyContextResponse {
 
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return "Sin fecha de cierre";
-    return new Date(dateStr).toLocaleDateString("es-CL", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      timeZone: "America/Santiago",
-    });
+    return formatDateInZone(
+      dateStr,
+      undefined,
+      auction.timeZone ?? undefined,
+    );
   };
 
   const handleBid = async (e: React.FormEvent) => {
@@ -472,8 +470,7 @@ interface AuctionCurrencyContextResponse {
           amount: formatCurrency(
             minBid,
             "",
-            decimalsForCurrency(item.currency.code),
-          ),
+            decimalsForCurrency(item.currency.code), item.currency.code),
         }),
       );
       setIsLoading(false);
@@ -1126,8 +1123,7 @@ interface AuctionCurrencyContextResponse {
                           {formatCurrency(
                             item.currentBid || item.startingBid,
                             item.currency.symbol,
-                            decimalsForCurrency(item.currency.code),
-                          )}
+                            decimalsForCurrency(item.currency.code), item.currency.code)}
                         </div>
                         <div className="flex items-center gap-2 text-xs text-base-content/50">
                           <span className="icon-[tabler--arrow-up] size-3"></span>
@@ -1135,8 +1131,7 @@ interface AuctionCurrencyContextResponse {
                           {formatCurrency(
                             item.startingBid,
                             item.currency.symbol,
-                            decimalsForCurrency(item.currency.code),
-                          )}
+                            decimalsForCurrency(item.currency.code), item.currency.code)}
                         </div>
                       </div>
 
@@ -1222,8 +1217,7 @@ interface AuctionCurrencyContextResponse {
                                 {formatCurrency(
                                   minBid,
                                   item.currency.symbol,
-                                  decimalsForCurrency(item.currency.code),
-                                )}
+                                  decimalsForCurrency(item.currency.code), item.currency.code)}
                               </span>
                             </label>
 
@@ -1528,8 +1522,7 @@ interface AuctionCurrencyContextResponse {
                               amount={formatCurrency(
                                 item.currentBid ?? 0,
                                 item.currency.symbol,
-                                decimalsForCurrency(item.currency.code),
-                              )}
+                                decimalsForCurrency(item.currency.code), item.currency.code)}
                             />
                           </div>
                         )}
@@ -1555,8 +1548,7 @@ interface AuctionCurrencyContextResponse {
                             {formatCurrency(
                               item.minBidIncrement,
                               item.currency.symbol,
-                              decimalsForCurrency(item.currency.code),
-                            )}
+                              decimalsForCurrency(item.currency.code), item.currency.code)}
                           </span>
                         </div>
                         <div className="flex justify-between items-center">
@@ -1766,6 +1758,7 @@ export const getServerSideProps = withAuth(async (context) => {
         endDate: membership.auction.endDate
           ? membership.auction.endDate.toISOString()
           : null,
+        timeZone: membership.auction.timeZone,
         winnerConfirmEnabled: membership.auction.winnerConfirmEnabled,
       },
       auctionItems,
