@@ -1,0 +1,193 @@
+{
+  "legal": {
+    "privacy": {
+      "title": "Política de Privacidade",
+      "lastUpdated": "Última atualização: 15 de dezembro de 2025",
+      "description": "Sua privacidade é importante para nós",
+      "backToHome": "Voltar ao Início",
+      "sections": {
+        "1": {
+          "title": "Introdução",
+          "content": "A Biddu (\"nós\", \"nosso\" ou \"nos\") se compromete a proteger sua privacidade. Esta Política de Privacidade explica como coletamos, usamos e protegemos suas informações quando você usa nossa plataforma gratuita e de código aberto de leilões para remates, organizações comunitárias e eventos privados."
+        },
+        "2": {
+          "title": "Informações que Coletamos",
+          "content": "Coletamos informações que você nos fornece diretamente ao usar a Biddu:",
+          "accountInfo": "Informações de Conta",
+          "accountInfoDesc": "Seu nome, e-mail, RUT (opcional) e senha quando você cria uma conta.",
+          "auctionData": "Dados de Leilão",
+          "auctionDataDesc": "Informações sobre leilões que você cria ou dos quais participa, lotes que cadastra, lances que faz e seus papéis de membro.",
+          "uploadedContent": "Conteúdo Enviado",
+          "uploadedContentDesc": "Imagens e descrições que você envia para lotes de leilão e miniaturas de leilão.",
+          "preferences": "Preferências",
+          "preferencesDesc": "Suas configurações de notificações por e-mail e preferências de tema."
+        },
+        "3": {
+          "title": "Como Usamos Suas Informações",
+          "content": "Usamos as informações que coletamos para fornecer e melhorar nossos serviços de leilão:",
+          "point1": "Processar suas atividades de leilão, lances e papéis de membro",
+          "point2": "Mostrar atualizações de lances em tempo real e status de leilões aos participantes",
+          "point3": "Enviar notificações por e-mail sobre atividade de leilões quando você opta por isso",
+          "point4": "Gerar resultados de leilão e permitir exportar dados",
+          "point5": "Responder às suas perguntas e dar suporte"
+        },
+        "4": {
+          "title": "Armazenamento de Dados",
+          "content1": "Se você usa a versão hospedada, seus dados são armazenados com segurança em servidores próprios da Biddu. As informações do banco de dados ficam em um motor SQLite localizado no Chile, e as imagens enviadas ficam no sistema de arquivos do servidor.",
+          "content2": "A Biddu é software de código aberto: você pode hospedá-la você mesmo na sua própria infraestrutura com controle total sobre seus dados. Instâncias auto-hospedadas podem usar bancos SQLite locais e armazenamento local."
+        },
+        "5": {
+          "title": "Compartilhamento de Dados",
+          "content1": "Não vendemos, trocamos nem transferimos de nenhuma outra forma suas informações pessoais a terceiros. Seus dados de leilão só são visíveis para os membros dos leilões dos quais você participa, conforme a configuração de privacidade de cada dono de leilão.",
+          "content2": "Os donos de leilão podem configurar privacidade, incluindo lances anônimos para ocultar identidades, restrições de acesso só por convite e permissões por papéis para controlar o que cada membro pode ver e fazer."
+        },
+        "5b": {
+          "title": "Autenticação de terceiros (OAuth)",
+          "content1": "Se você escolhe entrar com Google ou Microsoft, usamos seus serviços OAuth 2.0 para autenticar sua identidade. Quando entra com esses provedores, recebemos suas informações básicas de perfil (nome, e-mail e foto) deles.",
+          "content2": "Não recebemos nem armazenamos sua senha do Google ou Microsoft. O uso das suas informações por cada provedor é regido por suas respectivas políticas de privacidade. Você pode revogar o acesso da Biddu a qualquer momento nas configurações da sua conta Google (myaccount.google.com) ou Microsoft (account.microsoft.com)."
+        },
+        "6": {
+          "title": "Comunicações por E-mail",
+          "content1": "Podemos enviar e-mails de boas-vindas quando você se cadastra, convites de leilão quando alguém convida você, notificações de lance superado quando outro usuário faz um lance maior, e notificações de novos lotes de leilões dos quais você participa.",
+          "content2": "Você pode gerenciar suas preferências de e-mail nas configurações da sua conta a qualquer momento. As notificações de lance superado e novos lotes vêm desativadas por padrão para respeitar sua caixa de entrada."
+        },
+        "7": {
+          "title": "Cookies e Armazenamento Local",
+          "content": "Usamos armazenamento local do navegador para lembrar sua preferência de tema (modo claro ou escuro) e manter sua sessão. Não usamos cookies de rastreamento de terceiros nem serviços de análise que rastreiem seu comportamento entre sites."
+        },
+        "8": {
+          "title": "Transparência de Código Aberto",
+          "content": "A Biddu é 100% código aberto sob Licença MIT. Você pode pedir uma cópia do código-fonte ao administrador da sua instância para ver exatamente como coletamos, armazenamos e tratamos seus dados. Também pode hospedar a Biddu você mesmo para controle total."
+        },
+        "9": {
+          "title": "Seus Direitos (Ley 19.628)",
+          "content1": "Sob a Ley 19.628 sobre Proteção da Vida Privada do Chile e regulações similares, você tem direito a: acessar seus dados pessoais pelas configurações da conta, corrigir informações inexatas atualizando seu perfil, solicitar a exclusão da sua conta e todos os dados associados, e gerenciar suas preferências de e-mail.",
+          "content2": "Para exercer qualquer desses direitos, visite as configurações da sua conta ou fale conosco pelos canais abaixo."
+        },
+        "9b": {
+          "title": "Exclusão de Conta",
+          "content1": "Você pode excluir permanentemente sua conta a qualquer momento em Configurações → Excluir conta. O processo é imediato e irreversível.",
+          "content2": "Ao excluir sua conta, removemos: suas informações de perfil (nome, e-mail, hash de senha), suas configurações e preferências, suas participações em leilões, leilões que você possui (ou os transferimos), lotes que criou, seu histórico completo de lances, todas as suas notificações e contas OAuth conectadas.",
+          "content3": "Se você possui leilões, primeiro deve transferir a propriedade a outro usuário cadastrado ou escolher excluí-los antes de excluir sua conta. Se você é o Administrador de Deploy, primeiro deve transferir esses direitos."
+        },
+        "10": {
+          "title": "Retenção de Dados",
+          "content": "Mantemos seus dados enquanto sua conta estiver ativa. Os dados de leilão são mantidos até o dono do leilão excluí-lo. Ao excluir sua conta, todos os seus dados pessoais são removidos imediata e permanentemente. Não guardamos backups de dados de usuários excluídos."
+        },
+        "11": {
+          "title": "Privacidade de Crianças",
+          "content": "A Biddu não é destinada a menores de 18 anos. Não coletamos intencionalmente informações pessoais de menores de 18 anos. Se você acredita que coletamos informações de uma criança, por favor fale conosco imediatamente."
+        },
+        "12": {
+          "title": "Mudanças nesta Política",
+          "content": "Podemos atualizar esta Política de Privacidade de tempos em tempos. Quando fizermos mudanças, publicaremos a nova versão nesta página e atualizaremos a data de \"Última atualização\" acima. Recomendamos revisar esta política periodicamente."
+        },
+        "13": {
+          "title": "Fale Conosco",
+          "content": "Se tiver perguntas sobre esta Política de Privacidade ou como tratamos seus dados, por favor fale conosco pela <a href=\"/#contacto\" class=\"text-primary hover:underline\">seção de contato</a>."
+        }
+      }
+    },
+    "terms": {
+      "title": "Termos de Serviço",
+      "lastUpdated": "Última atualização: 15 de dezembro de 2025",
+      "description": "Por favor leia estes termos com atenção",
+      "backToHome": "Voltar ao Início",
+      "sections": {
+        "1": {
+          "title": "Aceitação dos Termos",
+          "content": "Ao acessar ou usar a Biddu, você aceita estes Termos de Serviço. Se não concorda, por favor não use nosso serviço. Estes termos valem para todos os usuários, na versão hospedada ou auto-hospedada."
+        },
+        "2": {
+          "title": "O que é a Biddu?",
+          "content": "A Biddu é uma plataforma gratuita e de código aberto de leilões para remates, arrecadação de fundos, organizações comunitárias, clubes esportivos, bombeiros, empresas e uso pessoal. Crie e gerencie leilões, convide participantes e facilite lances em tempo real, em pesos chilenos e outras moedas.",
+          "disclaimerTitle": "Aviso Importante",
+          "disclaimer": "A Biddu facilita os lances mas <strong class=\"text-base-content\">não processa pagamentos</strong>. Todas as transações são liquidadas offline entre os participantes. Não somos um mercado nem um processador de pagamentos."
+        },
+        "3": {
+          "title": "Contas de usuário",
+          "content1": "Para usar a Biddu, crie uma conta com informações precisas: nome, e-mail e senha segura. Opcionalmente pode registrar seu RUT. Você é responsável por manter suas credenciais seguras e não deve compartilhar sua conta.",
+          "content2": "Você deve ter pelo menos 18 anos ou consentimento dos pais para usar a Biddu. Mantenha os dados da conta atualizados para receber notificações importantes."
+        },
+        "3b": {
+          "title": "Autenticação de terceiros",
+          "content1": "A Biddu oferece login via Google e Microsoft OAuth por conveniência. Ao usá-los, você autoriza o provedor a compartilhar seu perfil básico (nome, e-mail, foto) conosco. Usamos isso só para criar e administrar sua conta.",
+          "content2": "Seu uso do login de terceiros também está sujeito aos Termos e à Política de cada provedor. Você pode desconectar Google ou Microsoft da Biddu a qualquer momento, embora possa precisar definir uma senha para continuar acessando sua conta."
+        },
+        "4": {
+          "title": "Papéis e Permissões",
+          "content": "Os leilões usam permissões por papéis. Os donos são responsáveis por gerenciar membros e resolver disputas.",
+          "owner": "Dono",
+          "ownerDesc": "Controle total: configurações, membros, lotes e exclusão.",
+          "admin": "Admin",
+          "adminDesc": "Pode gerenciar membros, adicionar e editar lotes e mudar configurações.",
+          "creator": "Criador",
+          "creatorDesc": "Pode adicionar novos lotes e editar os próprios lotes.",
+          "bidder": "Licitante",
+          "bidderDesc": "Pode ver lotes e dar lances no leilão."
+        },
+        "5": {
+          "title": "Participação em Leilões",
+          "content1": "Ao participar, você aceita honrar seus lances vencedores e concluir transações com o vendedor. Descreva seus lotes com precisão e respeite prazos e regras do dono do leilão.",
+          "content2": "Cada leilão pode ter regras próprias do dono. Revise as diretrizes específicas antes de participar."
+        },
+        "6": {
+          "title": "Uso Aceitável",
+          "content1": "Use a Biddu de forma responsável e legal. Nada de propósitos ilegais, lotes fraudulentos ou manipulação de lances.",
+          "content2": "Assédio, abuso ou ameaças são estritamente proibidos. Nada de acesso não autorizado, bots ou scripts automatizados, nem conteúdo malicioso."
+        },
+        "7": {
+          "title": "Sem Processamento de Pagamentos",
+          "content1": "A Biddu não processa pagamentos nem coleta dados de pagamento. Vencedores e vendedores são os únicos responsáveis por combinar pagamento, entrega e resolver disputas.",
+          "content2": "A Biddu não responde por disputas, perdas ou danos de transações offline. Recomendamos combinar pagamento e retirada antes do encerramento."
+        },
+        "8": {
+          "title": "Propriedade do Conteúdo",
+          "content1": "Você mantém a propriedade de tudo que envia, incluindo imagens e descrições. Ao enviar, concede à Biddu licença não exclusiva e gratuita para exibir esse conteúdo aos participantes para operar o serviço.",
+          "content2": "Você declara ter direito sobre o conteúdo enviado e que ele não infringe direitos de terceiros, incluindo autorais, marcas ou privacidade."
+        },
+        "9": {
+          "title": "Licença de Código Aberto",
+          "content": "A Biddu é código aberto sob Licença MIT. Você pode usar, modificar e distribuir conforme a licença. O código-fonte pode ser solicitado ao administrador da sua instância."
+        },
+        "10": {
+          "title": "Auto-hospedagem",
+          "content": "Você pode hospedar a Biddu na sua infraestrutura. Ao fazê-lo, é o único responsável por segurança, manutenção, backups, conformidade legal, suporte e resolução de disputas dos seus usuários."
+        },
+        "11": {
+          "title": "Hospedagem",
+          "content1": "A versão hospedada roda em infraestrutura própria no Chile, com menor latência e conformidade local. Se preferir controle total, auto-hospede o projeto.",
+          "commitmentTitle": "Nosso Compromisso:",
+          "commitment": "A Biddu se esforça para ser grátis e acessível a todos, usando serviços gratuitos e abertos sempre que possível.",
+          "content2": "Fazemos o possível para manter o serviço no ar, mas pode haver limites de uso, instabilidade ou mudanças. Para uso crítico, recomendamos auto-hospedar."
+        },
+        "12": {
+          "title": "Isenção de Garantias",
+          "content": "A Biddu é fornecida \"como está\" e \"conforme disponibilidade\", sem garantias expressas ou implícitas. Não garantimos serviço ininterrupto, seguro ou livre de erros. O uso é por sua conta e risco."
+        },
+        "13": {
+          "title": "Limitação de Responsabilidade",
+          "content": "Na máxima medida permitida por lei, a Biddu e seus criadores não respondem por danos indiretos, incidentais ou consequentes do uso do serviço, incluindo lucros cessantes, dados, transações ou interrupções."
+        },
+        "14": {
+          "title": "Encerramento de Conta",
+          "content1": "Reservamos o direito de suspender ou encerrar contas que violem estes termos.",
+          "content2": "Você pode excluir sua conta a qualquer momento em Configurações → Excluir conta. É imediato e permanente. Antes, decida sobre leilões que possui: transfira a outro usuário ou exclua-os. Admins de Deploy transferem direitos primeiro.",
+          "content3": "Após a exclusão: dados pessoais removidos permanentemente, participações encerradas, lotes criados excluídos, histórico de lances excluído e sessão encerrada. Irreversível."
+        },
+        "15": {
+          "title": "Mudanças nos Termos",
+          "content": "Podemos atualizar estes Termos periodicamente. Em mudanças relevantes, avisaremos na plataforma e atualizaremos a data de \"Última atualização\". O uso continuado após mudanças é aceitação dos novos termos."
+        },
+        "16": {
+          "title": "Lei Aplicável",
+          "content": "Estes termos se regem pelas leis da República do Chile. Disputas se submetem aos tribunais de Santiago do Chile, sem prejuízo dos direitos do consumidor da Ley 19.496."
+        },
+        "17": {
+          "title": "Contato",
+          "content": "Dúvidas sobre estes Termos? Fale conosco pela <a href=\"/#contacto\" class=\"text-primary hover:underline\">seção de contato</a>."
+        }
+      }
+    }
+  }
+}

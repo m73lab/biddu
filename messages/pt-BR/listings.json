@@ -1,0 +1,25 @@
+{
+  "listings": {
+    "subtitle": "Gerencie os lotes que você cadastrou para leilão",
+    "bulkEdit": "Edição em massa",
+    "csvImport": "Importar CSV",
+    "active": "Ativos",
+    "ended": "Encerrados",
+    "bids": "{count, plural, =0 {Sem lances} =1 {1 lance} other {# lances}}",
+    "noActive": "Sem lotes ativos",
+    "noEnded": "Sem lotes encerrados",
+    "empty": {
+      "title": "Nenhum lote ainda",
+      "description": "Você ainda não cadastrou nenhum lote para leilão. Vá até um leilão e adicione seu primeiro lote!"
+    },
+    "drafts": {
+      "title": "Rascunhos",
+      "description": "Estes lotes ainda não estão visíveis para outros membros do leilão. Clique para editar e publicar.",
+      "editAndPublish": "Clique para editar e publicar"
+    },
+    "justEnded": {
+      "title": "Encerrados recentemente",
+      "description": "Estes lotes foram encerrados nos últimos 3 dias e precisam da sua atenção. Entre em contato com os vencedores para combinar a entrega."
+    }
+  }
+}

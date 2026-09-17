@@ -1,0 +1,83 @@
+{
+  "errors": {
+    "generic": "Ocorreu um erro. Por favor tente novamente.",
+    "somethingWentWrong": "Algo deu errado. Por favor tente novamente.",
+    "networkError": "Erro de rede. Por favor verifique sua conexão.",
+    "unauthorized": "Você não tem autorização para realizar esta ação.",
+    "notFound": "O recurso solicitado não foi encontrado.",
+    "forbidden": "Você não tem permissão para acessar este recurso.",
+    "validation": {
+      "required": "Este campo é obrigatório",
+      "invalidEmail": "Por favor informe um e-mail válido",
+      "passwordTooShort": "A senha deve ter pelo menos {min} caracteres",
+      "passwordsDoNotMatch": "As senhas não coincidem",
+      "invalidAmount": "Por favor informe um valor válido",
+      "minBid": "O lance mínimo é {symbol}{amount}"
+    },
+    "auth": {
+      "invalidCredentials": "E-mail ou senha inválidos",
+      "emailInUse": "Este e-mail já está cadastrado",
+      "accountNotFound": "Nenhuma conta encontrada com este e-mail",
+      "invalidToken": "Token inválido ou expirado",
+      "sessionExpired": "Sua sessão expirou. Por favor entre novamente.",
+      "tooManyAttempts": "Muitas tentativas com falha. Aguarde 15 minutos antes de tentar de novo."
+    },
+    "auction": {
+      "createFailed": "Erro ao criar o leilão",
+      "updateFailed": "Erro ao atualizar o leilão",
+      "deleteFailed": "Erro ao excluir o leilão",
+      "notFound": "Leilão não encontrado",
+      "alreadyEnded": "Este leilão já foi encerrado",
+      "notMember": "Você não é membro deste leilão"
+    },
+    "item": {
+      "createFailed": "Erro ao criar o lote",
+      "updateFailed": "Erro ao atualizar o lote",
+      "deleteFailed": "Erro ao excluir o lote",
+      "notFound": "Lote não encontrado"
+    },
+    "bid": {
+      "placeFailed": "Erro ao fazer o lance",
+      "tooLow": "Seu lance está muito baixo",
+      "auctionEnded": "Este leilão foi encerrado",
+      "itemEnded": "Os lances para este lote foram encerrados",
+      "ownItem": "Você não pode dar lances no seu próprio lote"
+    },
+    "invite": {
+      "sendFailed": "Erro ao enviar o convite",
+      "invalidInvite": "Convite inválido ou expirado",
+      "alreadyMember": "Você já é membro deste leilão"
+    },
+    "profile": {
+      "updateFailed": "Erro ao atualizar perfil",
+      "passwordChangeFailed": "Erro ao trocar a senha",
+      "incorrectPassword": "A senha atual está incorreta"
+    },
+    "upload": {
+      "imageFailed": "Erro ao enviar imagem",
+      "thumbnailFailed": "Erro ao enviar miniatura",
+      "deleteFailed": "Erro ao excluir imagem",
+      "reorderFailed": "Erro ao reordenar imagens"
+    },
+    "member": {
+      "updateRoleFailed": "Erro ao atualizar o papel do membro",
+      "removeFailed": "Erro ao remover membro"
+    },
+    "notification": {
+      "markReadFailed": "Erro ao marcar notificação como lida",
+      "markAllReadFailed": "Erro ao marcar todas as notificações como lidas"
+    },
+    "settings": {
+      "updateFailed": "Erro ao atualizar configurações"
+    },
+    "discussion": {
+      "createFailed": "Erro ao publicar discussão",
+      "updateFailed": "Erro ao atualizar discussão",
+      "deleteFailed": "Erro ao excluir discussão",
+      "notFound": "Comentário não encontrado",
+      "disabled": "Os comentários estão desativados para este lote",
+      "tooLong": "O comentário é muito longo (máx 2000 caracteres)",
+      "empty": "O comentário não pode estar vazio"
+    }
+  }
+}

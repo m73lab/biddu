@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const LOCALES = ["en", "pl", "hu", "de", "es"];
+const LOCALES = ["en", "pl", "hu", "de", "es", "pt-BR"];
 
 export default function proxy(request: NextRequest) {
   const isMaintenanceMode = process.env.MAINTENANCE_MODE === "true";
@@ -27,7 +27,7 @@ export default function proxy(request: NextRequest) {
   if (isMaintenanceMode && !isExcludedPath) {
     const url = request.nextUrl.clone();
     // Preserve the locale prefix if present
-    const localeMatch = pathname.match(/^\/(en|pl|hu|de|es)(\/|$)/);
+    const localeMatch = pathname.match(/^\/(en|pl|hu|de|es|pt-BR)(\/|$)/);
     if (localeMatch) {
       url.pathname = `/${localeMatch[1]}/maintenance`;
     } else {
