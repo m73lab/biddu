@@ -31,6 +31,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      # Pin the runtime stage: without `target`, Compose builds the LAST
+      # stage (migrator), and the app container would run migrations in a
+      # restart loop instead of serving traffic.
+      target: runner
       args:
         NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
         NEXT_PUBLIC_REALTIME_DRIVER: ${NEXT_PUBLIC_REALTIME_DRIVER:-disabled}
