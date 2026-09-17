@@ -13,6 +13,7 @@ interface AuctionCardProps {
     name: string;
     description: string | null;
     endDate: string | null;
+    timeZone?: string;
     role: string;
     thumbnailUrl: string | null;
     _count: {
@@ -27,7 +28,7 @@ export function AuctionCard({ auction, onDelete }: AuctionCardProps) {
   const t = useTranslations("auction.card");
   const tRoles = useTranslations("auction.roles");
   const tSettings = useTranslations("auction.settings");
-  const { formatShortDate } = useFormatters();
+  const { formatShortDate } = useFormatters(auction.timeZone);
   const ended = isAuctionEnded(auction.endDate);
   const href = ended
     ? `/auctions/${auction.id}/results`

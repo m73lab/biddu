@@ -40,7 +40,9 @@
       "defaultAntiSnipeExtension": "Extension amount",
       "defaultAntiSnipeExtensionHint": "How much time to add to the end when triggered. Between 5 seconds and 60 minutes.",
       "seconds": "seconds",
-      "minutes": "minutes"
+      "minutes": "minutes",
+      "timeZone": "Time zone",
+      "timeZoneHint": "This auction's dates are shown in this time zone."
     },
     "card": {
       "ended": "Ended",

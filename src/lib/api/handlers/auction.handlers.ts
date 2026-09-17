@@ -8,6 +8,19 @@ import {
   getMaxEndDate,
 } from "@/lib/end-date-limit";
 import { z } from "zod";
+/** IANA time zone guard (Intl throws on unknown zones). */
+function isValidTimeZone(tz: unknown): boolean {
+  if (typeof tz !== "string" || tz.length === 0 || tz.length > 60) {
+    return false;
+  }
+  try {
+    Intl.DateTimeFormat(undefined, { timeZone: tz });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 
 // ============================================================================
 // Schemas
@@ -20,6 +33,10 @@ export const createAuctionSchema = z.object({
   memberCanInvite: z.boolean().optional(),
   bidderVisibility: z.enum(["VISIBLE", "ANONYMOUS", "PER_BID"]).optional(),
   endDate: z.string().optional(),
+  timeZone: z
+    .string()
+    .optional()
+    .refine((v) => v === undefined || isValidTimeZone(v), "Invalid IANA time zone"),
   itemEndMode: z.enum(["AUCTION_END", "CUSTOM", "NONE"]).optional(),
   defaultAntiSnipe: z.boolean().optional(),
   defaultAntiSnipeThreshold: z.number().int().min(60).max(3600).optional(),
@@ -34,6 +51,14 @@ export const updateAuctionSchema = z.object({
   bidderVisibility: z.enum(["VISIBLE", "ANONYMOUS", "PER_BID"]).optional(),
   itemEndMode: z.enum(["AUCTION_END", "CUSTOM", "NONE"]).optional(),
   endDate: z.string().nullable().optional(),
+  timeZone: z
+    .string()
+    .nullable()
+    .optional()
+    .refine(
+      (v) => v === undefined || v === null || isValidTimeZone(v),
+      "Invalid IANA time zone",
+    ),
   defaultItemsEditableByAdmin: z.boolean().optional(),
   defaultAntiSnipe: z.boolean().optional(),
   defaultAntiSnipeThreshold: z.number().int().min(60).max(3600).optional(),
