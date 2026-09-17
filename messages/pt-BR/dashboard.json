@@ -43,6 +43,7 @@
       "join": "Buscar leilão",
       "cancel": "Cancelar",
       "invalid": "Código inválido ou vencido"
-    }
+    },
+    "limitReached": "Limite atingido"
   }
 }

@@ -43,6 +43,7 @@
       "join": "Find auction",
       "cancel": "Cancel",
       "invalid": "Invalid or expired code"
-    }
+    },
+    "limitReached": "Limit reached"
   }
 }

@@ -9,7 +9,7 @@ import * as auctionService from "@/lib/services/auction.service";
 import * as itemService from "@/lib/services/item.service";
 import { prisma } from "@/lib/prisma";
 import { formatCurrency, decimalsForCurrency } from "@/utils/formatters";
-import { waLink } from "@/utils/phone";
+import { waLink, callingCodeForTimeZone } from "@/utils/phone";
 
 interface ContactPageProps {
   user: {
@@ -19,6 +19,7 @@ interface ContactPageProps {
   };
   auctionId: string;
   auctionName: string;
+  auctionTimeZone: string | null;
   itemId: string;
   itemName: string;
   winningBid: string;
@@ -32,6 +33,7 @@ export default function ContactWinnerPage({
   user,
   auctionId,
   auctionName,
+  auctionTimeZone,
   itemId,
   itemName,
   winningBid,
@@ -146,7 +148,7 @@ export default function ContactWinnerPage({
               </a>
               {winnerPhone ? (
                 <a
-                  href={waLink(winnerPhone, message)}
+                  href={waLink(winnerPhone, message, callingCodeForTimeZone(auctionTimeZone))}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn btn-success gap-2"
@@ -217,7 +219,7 @@ export const getServerSideProps = withAuth(async (context) => {
     }),
     prisma.auction.findUnique({
       where: { id: auctionId },
-      select: { name: true },
+      select: { name: true, timeZone: true },
     }),
   ]);
   if (!winner || !auction) {
@@ -240,6 +242,7 @@ export const getServerSideProps = withAuth(async (context) => {
       },
       auctionId,
       auctionName: auction.name,
+      auctionTimeZone: auction.timeZone ?? null,
       itemId,
       itemName: item.name,
       winningBid: formatCurrency(

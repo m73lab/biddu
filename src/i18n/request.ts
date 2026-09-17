@@ -20,6 +20,13 @@ export default getRequestConfig(async ({ requestLocale }) => {
       ...(await import(`../../messages/${locale}/settings.json`)).default,
       ...(await import(`../../messages/${locale}/errors.json`)).default,
       ...(await import(`../../messages/${locale}/legal.json`)).default,
+      ...(await import(`../../messages/${locale}/listings.json`)).default,
+      ...(await import(`../../messages/${locale}/bulkEdit.json`)).default,
+      ...(await import(`../../messages/${locale}/csvImport.json`)).default,
+      ...(await import(`../../messages/${locale}/discussions.json`)).default,
+      ...(await import(`../../messages/${locale}/tour.json`)).default,
+      ...(await import(`../../messages/${locale}/profile.json`)).default,
+      ...(await import(`../../messages/${locale}/maintenance.json`)).default,
     },
   };
 });

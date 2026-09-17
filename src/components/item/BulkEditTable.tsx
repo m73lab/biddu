@@ -85,6 +85,7 @@ export function BulkEditTable({
 }: BulkEditTableProps) {
   const t = useTranslations("bulkEdit");
   const tCommon = useTranslations("common");
+  const tMember = useTranslations("member");
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [editingCell, setEditingCell] = useState<{
@@ -678,6 +679,7 @@ function BulkEditRow({
   const t = useTranslations("bulkEdit");
   const tItem = useTranslations("item.edit");
   const tCommon = useTranslations("common");
+  const tMember = useTranslations("member");
   const hasBids = item.bidCount > 0;
   const isOwnItem = item.creatorId === currentUserId;
 
@@ -866,7 +868,7 @@ function BulkEditRow({
             )}
             <div className="min-w-0">
               <div className="text-sm font-medium truncate">
-                {item.creatorName || tCommon("member.noName")}
+                {item.creatorName || tMember("noName")}
               </div>
               <div className="text-xs text-base-content/50 truncate">
                 {item.creatorEmail}
@@ -916,7 +918,7 @@ function BulkEditRow({
             hour: "2-digit",
             minute: "2-digit",
           })}
-          {` · ${item.creatorName || tCommon("member.noName")}`}
+          {` · ${item.creatorName || tMember("noName")}`}
         </div>
       </td>
 
