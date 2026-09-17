@@ -43,7 +43,6 @@
       "join": "Buscar subasta",
       "cancel": "Cancelar",
       "invalid": "Código no válido o vencido"
-    },
-    "limitReached": "Límite alcanzado"
+    }
   }
 }
