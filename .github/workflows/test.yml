@@ -35,15 +35,17 @@ jobs:
       - name: Prisma generate
         run: npx prisma generate
 
-      - name: Migrations apply on a fresh database
+      - name: Migrations match schema on a fresh database
         # Guards the self-hosted first boot: `migrate deploy` must succeed on
         # an empty SQLite file (this is what the compose `migrate` service
-        # runs). Catches schema-vs-migrations drift (models added via db push
-        # without a migration) before it bricks fresh deployments.
+        # runs) AND produce exactly the schema (catches models/columns added
+        # via db push without a migration, which brick fresh deployments).
         run: |
-          rm -f /tmp/fresh-deploy-check.db
+          rm -f /tmp/fresh-deploy-check.db /tmp/schema-push-check.db
           DATABASE_URL=file:/tmp/fresh-deploy-check.db npx prisma migrate deploy
-          rm -f /tmp/fresh-deploy-check.db
+          DATABASE_URL=file:/tmp/schema-push-check.db npx prisma db push --accept-data-loss
+          node scripts/check-migration-drift.mjs /tmp/fresh-deploy-check.db /tmp/schema-push-check.db
+          rm -f /tmp/fresh-deploy-check.db /tmp/schema-push-check.db
 
       - name: Typecheck
         run: npx tsc --noEmit
