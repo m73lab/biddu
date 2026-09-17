@@ -12,13 +12,21 @@ export default function proxy(request: NextRequest) {
     pathname === "/maintenance" ||
     LOCALES.some((locale) => pathname === `/${locale}/maintenance`);
 
+  // The initial-setup wizard must stay reachable even in maintenance mode:
+  // on a fresh deployment it is the only way in.
+  const isSetupPage =
+    pathname === "/setup" ||
+    LOCALES.some((locale) => pathname === `/${locale}/setup`);
+
   // Skip maintenance check for:
   // - The maintenance page itself (any locale)
+  // - The initial-setup wizard (any locale)
   // - Static files and assets
   // - API routes
   // - Next.js internals
   const isExcludedPath =
     isMaintenancePage ||
+    isSetupPage ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
     pathname.includes(".") || // Static files (images, fonts, etc.)

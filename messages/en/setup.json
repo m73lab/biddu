@@ -1,0 +1,27 @@
+{
+  "setup": {
+    "seoTitle": "Initial setup",
+    "seoDescription": "Create the administrator account for your Biddu instance",
+    "title": "Initial setup",
+    "subtitle": "Your instance has no administrator yet. Create the account to get started.",
+    "brandingTitle": "Almost there",
+    "brandingDescription": "This one-step wizard creates the administrator account for your instance. Afterwards you can configure email, invite users and create auctions.",
+    "adminNoteTitle": "Administrator account",
+    "adminNoteMessage": "This account is verified automatically and becomes the deployment admin. Nobody else will be able to use this wizard afterwards.",
+    "emailDisabledHint": "Email is not configured on this deployment: there is nothing to verify, this account signs straight in.",
+    "fullName": "Full name",
+    "fullNamePlaceholder": "Ada Admin",
+    "email": "Email address",
+    "emailPlaceholder": "admin@my-domain.com",
+    "password": "Password",
+    "passwordPlaceholder": "••••••••",
+    "confirmPassword": "Confirm password",
+    "confirmPasswordPlaceholder": "••••••••",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "submitButton": "Create administrator account",
+    "submitting": "Creating...",
+    "setupFailed": "Could not complete the setup",
+    "alreadyCompleted": "Setup was already completed. Sign in with your account."
+  }
+}

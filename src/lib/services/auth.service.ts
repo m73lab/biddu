@@ -106,7 +106,7 @@ export async function registerUser(input: RegisterInput) {
       appUrl,
     });
 
-    await sendEmail({
+    const emailSent = await sendEmail({
       to: existingUser.email,
       toName: existingUser.name || undefined,
       subject: "La cuenta ya existe - Biddu",
@@ -117,7 +117,7 @@ export async function registerUser(input: RegisterInput) {
     });
 
     // Return success to prevent email enumeration
-    return { success: true, emailSent: true, isExistingUser: true };
+    return { success: true, emailSent, isExistingUser: true };
   }
 
   // Hash password and create user (emailVerified = null until verified)
@@ -134,10 +134,17 @@ export async function registerUser(input: RegisterInput) {
   });
 
   // Send email verification email instead of welcome email
-  // Welcome email will be sent after verification
-  await sendEmailVerification(user.id, user.email, user.name || "");
+  // Welcome email will be sent after verification.
+  // NOTE: the result is propagated honestly: on deployments without email
+  // configured the send is skipped and `emailSent` is false, so the UI can
+  // tell the user instead of promising an email that will never arrive.
+  const verification = await sendEmailVerification(
+    user.id,
+    user.email,
+    user.name || "",
+  );
 
-  return { success: true, user, emailSent: true };
+  return { success: true, user, emailSent: verification.success };
 }
 
 /**
@@ -339,7 +346,10 @@ export async function sendEmailVerification(
     verificationUrl,
   });
 
-  await sendEmail({
+  // Propagate the real outcome: without a configured provider the send is
+  // skipped (not an error), and callers report it honestly instead of
+  // promising an email that will never arrive.
+  const sent = await sendEmail({
     to: email,
     toName: name || undefined,
     subject: "Verifica tu correo - Biddu",
@@ -349,9 +359,15 @@ export async function sendEmailVerification(
     metadata: { userId },
   });
 
-  console.log(`[Email Verification] Email sent to ${email}`);
+  if (sent) {
+    console.log(`[Email Verification] Email sent to ${email}`);
+  } else {
+    console.log(
+      `[Email Verification] Email NOT sent to ${email} (no email provider configured)`,
+    );
+  }
 
-  return { success: true };
+  return { success: sent };
 }
 
 /**
