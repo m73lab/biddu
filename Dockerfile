@@ -9,11 +9,20 @@ COPY package.json package-lock.json ./
 COPY prisma ./prisma/
 RUN npm install
 
-FROM node:20-bookworm-slim AS builder
+# `prebuild` stops right after `prisma generate`: both `builder` (Next.js
+# production build) and `migrator` (one-shot migrations) start from here,
+# so the migrate image never pays for a Next.js build it will not use.
+FROM node:20-bookworm-slim AS prebuild
 WORKDIR /app
 # Which Prisma schema to generate the client from. Default (self-hosted):
 # SQLite. Cloud builds override with prisma/schema.cloud.prisma (PostgreSQL).
 ARG PRISMA_SCHEMA=prisma/schema.prisma
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN npx prisma generate --schema=$PRISMA_SCHEMA
+
+FROM prebuild AS builder
+WORKDIR /app
 ARG DATABASE_URL_BUILD=
 # NEXT_PUBLIC_* vars are inlined by Next at BUILD time (unreadable at
 # runtime), so they must arrive as build args. Empty defaults keep plain
@@ -29,9 +38,6 @@ ARG NEXT_PUBLIC_PUSHER_CLUSTER=
 ARG NEXT_PUBLIC_RECAPTCHA_SITE_KEY=
 ARG NEXT_PUBLIC_WHATSAPP_NUMBER=
 ARG NEXT_PUBLIC_CONTACT_EMAIL=
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-RUN npx prisma generate --schema=$PRISMA_SCHEMA
 ENV NEXT_TELEMETRY_DISABLED=1
 # NOTE: plain `next build`, NOT `npm run build`: the latter re-runs
 # `prisma generate` with the default schema and would overwrite the
@@ -70,12 +76,12 @@ CMD ["node", "server.js"]
 # compose starts this before the app (service_completed_successfully), so a
 # fresh volume always gets a migrated database instead of an empty SQLite
 # file that 500s on the first DB-backed request.
-# Shares every cached layer with the builder above (only CMD differs):
+# Shares every cached layer with the prebuild above (only CMD differs):
 # full node_modules (prisma CLI + engines), prisma/ (schema, migrations,
 # prisma.config.ts) and the generated client are all already in place.
 # Uses prisma.config.ts defaults (self-host SQLite schema); DATABASE_URL
 # arrives from compose environment, pointing at the persisted volume file.
 # =============================================================================
-FROM builder AS migrator
+FROM prebuild AS migrator
 WORKDIR /app
 CMD ["npx", "prisma", "migrate", "deploy"]
