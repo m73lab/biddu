@@ -45,7 +45,15 @@ export function getClientConfig(): ClientRealtimeConfig {
   }
 
   if (driver === "soketi") {
-    const host = process.env.NEXT_PUBLIC_SOKETI_HOST || "127.0.0.1";
+    // Default to the page's own host: self-hosted deployments rarely know
+    // their LAN hostname/IP at build time (NEXT_PUBLIC_* is baked in), and
+    // a wrong host fails silently in the browser. An explicit
+    // NEXT_PUBLIC_SOKETI_HOST still wins when set (required for public
+    // domains behind a TLS proxy).
+    const host =
+      process.env.NEXT_PUBLIC_SOKETI_HOST ||
+      (typeof window !== "undefined" ? window.location.hostname : undefined) ||
+      "127.0.0.1";
     const port = parseInt(process.env.NEXT_PUBLIC_SOKETI_PORT || "6001", 10);
     const useTLS = process.env.NEXT_PUBLIC_SOKETI_USE_TLS === "true";
 

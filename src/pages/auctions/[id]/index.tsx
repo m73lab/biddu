@@ -1,10 +1,12 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import useSWR from "swr";
 import { getMessages, Locale } from "@/i18n";
 import { fetcher } from "@/lib/fetcher";
 import * as auctionService from "@/lib/services/auction.service";
+import { useAuctionChannel, useEvent, Events } from "@/hooks/realtime";
+import type { BidNewEvent } from "@/lib/realtime/events";
 import { PageLayout, BackLink, EmptyState } from "@/components/common";
 import { AuctionSidebar } from "@/components/auction";
 import { ItemCard, ItemListItem } from "@/components/item";
@@ -103,7 +105,7 @@ interface AuctionDetailProps {
   // Client-side data fetching with polling for live bid updates.
   // SSR seeds fallbackData: first paint comes from props, SWR
   // revalidates in background (no second skeleton, no double fetch).
-  const { data, isLoading } = useSWR<AuctionDetailsData>(
+  const { data, isLoading, mutate } = useSWR<AuctionDetailsData>(
     hasLeft ? null : `/api/auctions/${auctionId}/details`,
     fetcher,
     {
@@ -113,6 +115,39 @@ interface AuctionDetailProps {
       keepPreviousData: true,
     },
   );
+
+  // Live bid ticks: the server publishes every BID_NEW to the auction
+  // channel as well as the item channel, so the overview updates instantly
+  // without waiting for the next poll (and without one subscription per
+  // item). Patches the cached item in place, no refetch.
+  const auctionChannel = useAuctionChannel(hasLeft ? null : auctionId);
+  const handleAuctionBid = useCallback(
+    (event: BidNewEvent) => {
+      if (event.auctionId !== auctionId) return;
+      mutate(
+        (current) => {
+          if (!current) return current;
+          let changed = false;
+          const items = current.items.map((it) => {
+            if (it.id !== event.itemId) return it;
+            changed = true;
+            return {
+              ...it,
+              currentBid: event.highestBid,
+              highestBidderId: event.bidderId,
+              userHasBid: it.userHasBid || event.bidderId === user.id,
+              _count: { bids: it._count.bids + 1 },
+            };
+          });
+          if (!changed) return current;
+          return { ...current, items };
+        },
+        { revalidate: false },
+      );
+    },
+    [auctionId, mutate, user.id],
+  );
+  useEvent(auctionChannel, Events.BID_NEW, handleAuctionBid);
 
   const auction = data?.auction;
   const items = useMemo(() => data?.items ?? [], [data?.items]);

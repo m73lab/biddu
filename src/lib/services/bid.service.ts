@@ -399,6 +399,9 @@ export async function placeBid(
     newEndDate: newEndDate?.toISOString() || undefined,
   };
   publish(Channels.item(itemId), Events.BID_NEW, bidEvent);
+  // Also publish to the auction channel so auction-level views (which
+  // cannot afford one subscription per item) update live on every bid.
+  publish(Channels.privateAuction(item.auction.id), Events.BID_NEW, bidEvent);
 
   // Notify previous bidder they've been outbid
   if (previousBidderId && previousBidderId !== userId) {

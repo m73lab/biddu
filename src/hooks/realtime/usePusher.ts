@@ -70,6 +70,21 @@ function getPusherClient(): PusherJS | null {
 
   connectionAttempted = true;
   const config = getClientConfig();
+  // Hard failure, diagnosed loudly: an https page can never open ws://
+  // (browsers block it as mixed content), so a non-TLS Soketi silently
+  // degrades every page to minute-scale polling. This single log line is
+  // the difference between "bids feel broken" and a 2-minute fix.
+  if (
+    typeof window !== "undefined" &&
+    config.driver === "soketi" &&
+    window.location.protocol === "https:" &&
+    !config.forceTLS
+  ) {
+    logError(
+      "Page is https but Soketi USE_TLS=false: browsers block ws:// as mixed content, realtime will NOT connect. " +
+        "Point NEXT_PUBLIC_SOKETI_HOST at the public domain with NEXT_PUBLIC_SOKETI_USE_TLS=true (wss) proxied through your TLS terminator.",
+    );
+  }
   log("Initializing Pusher client", {
     driver: config.driver,
     wsHost: config.wsHost,
