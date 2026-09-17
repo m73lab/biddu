@@ -11,7 +11,7 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 const nextConfig: NextConfig = {
   output: "standalone",
   i18n: {
-    locales: ["es"],
+    locales: ["es", "pt-BR"],
     defaultLocale: "es",
   },
   turbopack: {

@@ -1,0 +1,48 @@
+{
+  "dashboard": {
+    "title": "Painel",
+    "welcome": "Bem-vindo de volta, {name}!",
+    "createAuction": "Criar Leilão",
+    "stats": {
+      "totalBids": "Total de Lances",
+      "totalBidAmount": "Valor Total em Lances",
+      "itemsBidOn": "Lotes com Lance",
+      "currentlyWinning": "Vencendo Agora",
+      "totalValueWinning": "Valor Total (Vencendo)"
+    },
+    "activeBids": {
+      "title": "Seus Lances Ativos"
+    },
+    "myListings": {
+      "title": "Seus Lotes",
+      "subtitle": "Lotes que você cadastrou para leilão",
+      "bids": "{count, plural, =0 {Sem lances} =1 {1 lance} other {# lances}}"
+    },
+    "auctions": {
+      "title": "Leilões que você participa"
+    },
+    "empty": {
+      "title": "Nenhum leilão ainda",
+      "description": "Você ainda não participou nem criou nenhum leilão. Crie seu primeiro leilão ou entre em um usando um link de convite.",
+      "createFirst": "Crie Seu Primeiro Leilão"
+    },
+    "seo": {
+      "title": "Painel",
+      "description": "Gerencie seus leilões e lances"
+    },
+    "myAuctions": {
+      "title": "Meus leilões",
+      "description": "Leilões que você criou e administra",
+      "joinedEmptyTitle": "Você ainda não participa de leilões de outros",
+      "joinedEmptyDescription": "Quando aceitar um convite ou entrar com um link, aparecerão aqui. Enquanto isso você pode criar o seu."
+    },
+    "joinByCode": {
+      "button": "Adicionar código",
+      "title": "Entrar com código",
+      "description": "Digite o código que compartilharam com você para ver o leilão e participar.",
+      "join": "Buscar leilão",
+      "cancel": "Cancelar",
+      "invalid": "Código inválido ou vencido"
+    }
+  }
+}

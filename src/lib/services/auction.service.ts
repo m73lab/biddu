@@ -26,6 +26,7 @@ export interface AuctionListItem {
   name: string;
   description: string | null;
   endDate: string | null;
+  timeZone: string;
   createdAt: string;
   role: string;
   thumbnailUrl: string | null;
@@ -42,6 +43,7 @@ export interface CreateAuctionInput {
   memberCanInvite?: boolean;
   bidderVisibility?: "VISIBLE" | "ANONYMOUS" | "PER_BID";
   endDate?: string | null;
+  timeZone?: string;
   itemEndMode?: "AUCTION_END" | "CUSTOM" | "NONE";
   defaultAntiSnipe?: boolean;
   defaultAntiSnipeThreshold?: number;
@@ -56,6 +58,7 @@ export interface UpdateAuctionInput {
   bidderVisibility?: "VISIBLE" | "ANONYMOUS" | "PER_BID";
   itemEndMode?: "AUCTION_END" | "CUSTOM" | "NONE";
   endDate?: string | null;
+  timeZone?: string | null;
   defaultItemsEditableByAdmin?: boolean;
   defaultAntiSnipe?: boolean;
     defaultAntiSnipeThreshold?: number;
@@ -73,6 +76,7 @@ export interface UpdateAuctionInput {
   memberCanInvite: boolean;
   bidderVisibility: string;
   endDate: string | null;
+  timeZone: string;
   itemEndMode: string;
   inviteToken: string | null;
   createdAt: string;
@@ -234,6 +238,7 @@ export async function getUserAuctions(
     name: m.auction.name,
     description: m.auction.description,
     endDate: m.auction.endDate?.toISOString() || null,
+    timeZone: m.auction.timeZone,
     createdAt: m.auction.createdAt.toISOString(),
     role: m.role,
     thumbnailUrl: m.auction.thumbnailUrl
@@ -283,6 +288,7 @@ export async function getOpenAuctionsForUser(
     name: auction.name,
     description: auction.description,
     endDate: auction.endDate?.toISOString() || null,
+    timeZone: auction.timeZone,
     createdAt: auction.createdAt.toISOString(),
     role: leftIds.has(auction.id) ? "Left" : "Open",
     thumbnailUrl: auction.thumbnailUrl
@@ -348,6 +354,7 @@ export async function createAuction(
       memberCanInvite: input.memberCanInvite || false,
       bidderVisibility: input.bidderVisibility || "VISIBLE",
       endDate: input.endDate ? new Date(input.endDate) : null,
+      timeZone: input.timeZone || "America/Santiago",
       itemEndMode: input.itemEndMode || "CUSTOM",
       defaultAntiSnipe: input.defaultAntiSnipe ?? false,
       defaultAntiSnipeThreshold: input.defaultAntiSnipeThreshold ?? 300,
@@ -395,6 +402,9 @@ export async function updateAuction(
     updateData.itemEndMode = input.itemEndMode;
   if (input.endDate !== undefined) {
     updateData.endDate = input.endDate ? new Date(input.endDate) : null;
+  }
+  if (input.timeZone !== undefined) {
+    updateData.timeZone = input.timeZone || "America/Santiago";
   }
   if (input.defaultItemsEditableByAdmin !== undefined) {
     updateData.defaultItemsEditableByAdmin = input.defaultItemsEditableByAdmin;
@@ -787,6 +797,7 @@ export async function getAuctionResultsData(
       name: auction.name,
       description: auction.description,
       endDate: auction.endDate?.toISOString() || null,
+      timeZone: auction.timeZone,
       isEnded,
     },
     winners,
@@ -839,6 +850,7 @@ export interface PublicAuctionData {
   description: string | null;
   thumbnailUrl: string | null;
   endDate: string | null;
+  timeZone: string;
   joinMode: string;
   creatorName: string | null;
   _count: {
@@ -885,6 +897,7 @@ export async function getPublicAuctionData(
       ? getPublicUrl(auction.thumbnailUrl)
       : null,
     endDate: auction.endDate?.toISOString() || null,
+    timeZone: auction.timeZone,
     joinMode: auction.joinMode,
     creatorName: auction.creator.name,
     _count: auction._count,

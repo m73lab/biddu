@@ -167,8 +167,7 @@ function BidItemCard({ item, userId }: { item: BidItem; userId: string }) {
             {formatCurrency(
               item.currentBid || 0,
               item.currencySymbol,
-              decimalsForCurrency(item.currencyCode),
-            )}
+              decimalsForCurrency(item.currencyCode), item.currencyCode)}
           </span>
         </div>
       </div>
@@ -244,8 +243,7 @@ function UserItemCard({ item }: { item: UserItem }) {
             {formatCurrency(
               item.currentBid || item.startingBid,
               item.currencySymbol,
-              decimalsForCurrency(item.currencyCode),
-            )}
+              decimalsForCurrency(item.currencyCode), item.currencyCode)}
           </span>
         </div>
       </div>

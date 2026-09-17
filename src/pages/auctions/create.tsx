@@ -11,7 +11,11 @@ import { useTranslations } from "next-intl";
 import { useTour } from "@/components/tour";
 import { withAuth } from "@/lib/auth/withAuth";
 import { getMaxEndDate } from "@/lib/end-date-limit";
-import { toDateTimeLocalValue } from "@/utils/formatters";
+import {
+  toDateTimeLocalValue,
+  zonedTimeToUtc,
+  AUCTION_TIMEZONES,
+} from "@/utils/formatters";
 
 interface CreateAuctionProps {
   user: {
@@ -46,13 +50,18 @@ export default function CreateAuctionPage({
 
     const formData = new FormData(e.currentTarget);
     const endDateRaw = (formData.get("endDate") as string) || "";
+    const timeZoneRaw =
+      (formData.get("timeZone") as string) || "America/Santiago";
     const data = {
       name: formData.get("name") as string,
       description: (formData.get("description") as string) || undefined,
       joinMode: formData.get("joinMode") as string,
       memberCanInvite: formData.get("memberCanInvite") === "on",
       bidderVisibility: formData.get("bidderVisibility") as string,
-      endDate: endDateRaw ? new Date(endDateRaw).toISOString() : undefined,
+      endDate: endDateRaw
+        ? zonedTimeToUtc(endDateRaw, timeZoneRaw).toISOString()
+        : undefined,
+      timeZone: timeZoneRaw,
       itemEndMode: formData.get("itemEndMode") as string,
       defaultAntiSnipe: antiSnipeEnabled,
       defaultAntiSnipeThreshold: antiSnipeThreshold,
@@ -256,6 +265,29 @@ export default function CreateAuctionPage({
                 <label className="label">
                   <span className="label-text-alt text-base-content/60">
                     {t("endDateHint")}
+                  </span>
+                </label>
+              </div>
+
+              <div className="form-control">
+                <label className="label" htmlFor="timeZone">
+                  <span className="label-text font-medium">{t("timeZone")}</span>
+                </label>
+                <select
+                  id="timeZone"
+                  name="timeZone"
+                  className="select select-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                  defaultValue="America/Santiago"
+                >
+                  {AUCTION_TIMEZONES.map((tz) => (
+                    <option key={tz} value={tz}>
+                      {tz}
+                    </option>
+                  ))}
+                </select>
+                <label className="label">
+                  <span className="label-text-alt text-base-content/60">
+                    {t("timeZoneHint")}
                   </span>
                 </label>
               </div>

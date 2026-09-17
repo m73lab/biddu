@@ -1,0 +1,51 @@
+{
+  "csvImport": {
+    "seo": {
+      "title": "Importar CSV",
+      "description": "Importar múltiplos lotes de leilão de um arquivo CSV"
+    },
+    "title": "Importar CSV",
+    "subtitle": "Importar múltiplos lotes de um arquivo CSV",
+    "selectAuction": "Selecionar leilão de destino",
+    "selectAuctionPlaceholder": "Escolha um leilão...",
+    "noAuctions": "Você não tem leilões onde possa adicionar lotes. Crie um leilão primeiro.",
+    "uploadCSV": "Enviar arquivo CSV",
+    "downloadTemplate": "Baixar modelo",
+    "csvFormat": "Formato CSV",
+    "csvFormatDesc": "Seu CSV deve ter cabeçalhos na primeira linha. Colunas suportadas:",
+    "previewAndEdit": "Pré-visualizar e editar",
+    "importAll": "Importar {count} lotes",
+    "importing": "Importando...",
+    "importingTo": "Os lotes serão importados para: {auction}",
+    "parseSuccess": "{count} lotes processados corretamente",
+    "parseWarnings": "{count} avisos encontrados durante o processamento",
+    "parseError": "Erro ao processar o arquivo CSV",
+    "importSuccess": "{count} lotes importados corretamente",
+    "importPartial": "{success} lotes importados, {failed} com falha",
+    "importResult": "{success} importados, {failed} com falha",
+    "fixErrorsFirst": "Por favor corrija todos os erros antes de importar",
+    "quotaStatus": "{used} de {limit} lotes usados neste leilão",
+    "overQuota": "Este leilão tem {used}/{limit} lotes e seu arquivo traz {count} válidos: só cabem {remaining}. Remova linhas ou auto-hospede sem limites.",
+    "errorsFound": "{count} lote(s) têm erros",
+    "fixErrorsBeforeImport": "Corrija os erros destacados antes de importar",
+    "selectItems": "Selecione lotes para editar",
+    "selected": "{count} lote(s) selecionado(s)",
+    "publishAll": "Publicar todos",
+    "unpublishAll": "Despublicar todos",
+    "applyToSelected": "Aplicar",
+    "removeSelected": "Remover selecionados",
+    "removeItem": "Remover lote",
+    "name": "Nome",
+    "description": "Descrição",
+    "currency": "Moeda",
+    "startingBid": "Lance inicial",
+    "minIncrement": "Incremento mín.",
+    "status": "Status",
+    "noItems": "Não há lotes para importar. Envie um arquivo CSV para começar.",
+    "cannotSelectWithErrors": "Corrija os erros antes de selecionar",
+    "validation": {
+      "required": "Este campo é obrigatório",
+      "invalid": "Valor inválido"
+    }
+  }
+}

@@ -1,4 +1,8 @@
-import { formatCurrency, decimalsForCurrency } from "@/utils/formatters";
+import {
+  formatCurrency,
+  decimalsForCurrency,
+  localeForCurrency,
+} from "@/utils/formatters";
 
 export interface CurrencyDisplayProfile {
   symbol: string;
@@ -57,7 +61,7 @@ export function formatAuctionAmount(
       : typeof profile.precision === "number"
         ? profile.precision
         : decimalsForCurrency(profile.code);
-  const grouped = amount.toLocaleString("es-CL", {
+  const grouped = amount.toLocaleString(localeForCurrency(profile.code), {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   });

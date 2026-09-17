@@ -1,4 +1,5 @@
 import Head from "next/head";
+import { useLocale } from "next-intl";
 
 export const SITE_URL = "https://biddu.cl";
 export const SITE_NAME = "Biddu";
@@ -75,6 +76,8 @@ export function SEO({
     : `${SITE_NAME} - Plataforma de Subastas Gratuita para Chile`;
 
   const canonicalUrl = canonical || SITE_URL;
+  const pageLocale = useLocale();
+  const ogLocale = pageLocale === "pt-BR" ? "pt_BR" : "es_CL";
 
   const defaultStructuredData = {
     "@context": "https://schema.org",
@@ -188,7 +191,7 @@ export function SEO({
       <meta property="og:image:height" content="630" />
       <meta property="og:image:alt" content={ogImageAlt} />
       <meta property="og:site_name" content={SITE_NAME} />
-      <meta property="og:locale" content="es_CL" />
+      <meta property="og:locale" content={ogLocale} />
 
       {article && (
         <>

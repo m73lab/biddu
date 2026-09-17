@@ -10,7 +10,12 @@ import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { getMessages, Locale } from "@/i18n";
 import { useConfirmDialog } from "@/hooks/ui";
 import { useTranslations } from "next-intl";
-import { toDateTimeLocalValue } from "@/utils/formatters";
+import {
+  toDateTimeLocalValue,
+  toDateTimeLocalValueInZone,
+  zonedTimeToUtc,
+  AUCTION_TIMEZONES,
+} from "@/utils/formatters";
 import { getMaxEndDate } from "@/lib/end-date-limit";
 import { withAuth } from "@/lib/auth/withAuth";
 
@@ -29,6 +34,7 @@ interface AuctionSettingsProps {
     bidderVisibility: string;
     itemEndMode: string;
     endDate: string | null;
+    timeZone: string;
     isEnded: boolean;
     thumbnailUrl: string | null;
     defaultItemsEditableByAdmin: boolean;
@@ -112,8 +118,12 @@ export default function AuctionSettingsPage({
     bidderVisibility: auction.bidderVisibility,
     itemEndMode: auction.itemEndMode,
     endDate: auction.endDate
-      ? toDateTimeLocalValue(new Date(auction.endDate))
+      ? toDateTimeLocalValueInZone(
+          new Date(auction.endDate),
+          auction.timeZone ?? "America/Santiago",
+        )
       : "",
+    timeZone: auction.timeZone ?? "America/Santiago",
     defaultItemsEditableByAdmin: auction.defaultItemsEditableByAdmin,
     defaultAntiSnipe: auction.defaultAntiSnipe,
     defaultAntiSnipeThreshold: auction.defaultAntiSnipeThreshold,
@@ -291,8 +301,9 @@ export default function AuctionSettingsPage({
         body: JSON.stringify({
           ...formData,
           endDate: formData.endDate
-            ? new Date(formData.endDate).toISOString()
+            ? zonedTimeToUtc(formData.endDate, formData.timeZone).toISOString()
             : null,
+          timeZone: formData.timeZone,
         }),
       });
 
@@ -629,6 +640,31 @@ export default function AuctionSettingsPage({
                 <label className="label">
                   <span className="label-text-alt text-base-content/60">
                     {tCreate("endDateHint")}
+                  </span>
+                </label>
+              </div>
+
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-medium">
+                    {tCreate("timeZone")}
+                  </span>
+                </label>
+                <select
+                  name="timeZone"
+                  value={formData.timeZone}
+                  onChange={handleChange}
+                  className="select select-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                >
+                  {AUCTION_TIMEZONES.map((tz) => (
+                    <option key={tz} value={tz}>
+                      {tz}
+                    </option>
+                  ))}
+                </select>
+                <label className="label">
+                  <span className="label-text-alt text-base-content/60">
+                    {tCreate("timeZoneHint")}
                   </span>
                 </label>
               </div>
@@ -1245,6 +1281,7 @@ export const getServerSideProps = withAuth(async (context) => {
         bidderVisibility: auction.bidderVisibility,
         itemEndMode: auction.itemEndMode,
         endDate: auction.endDate,
+        timeZone: auction.timeZone ?? "America/Santiago",
         isEnded: auction.endDate
           ? new Date(auction.endDate) < new Date()
           : false,

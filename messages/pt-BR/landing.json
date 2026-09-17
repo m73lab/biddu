@@ -1,0 +1,159 @@
+{
+  "landing": {
+    "nav": {
+      "features": "Recursos",
+      "howItWorks": "Como funciona",
+      "useCases": "Casos de uso",
+      "faq": "Perguntas"
+    },
+    "hero": {
+      "title": "Leilões online",
+      "titleHighlight": "à chilena",
+      "description": "Crie o leilão do seu clube, quartel de bombeiros, pequena empresa ou família em minutos. Lances em tempo real, em pesos chilenos e sem taxas. Pagamento e entrega combinados pessoalmente, como sempre.",
+      "startAuction": "Criar meu leilão grátis",
+      "secondaryCta": "Ver como funciona",
+      "stats": [
+        {
+          "value": "100%",
+          "label": "Grátis, sem taxas"
+        },
+        {
+          "value": "$ CLP",
+          "label": "Pesos chilenos"
+        },
+        {
+          "value": "24/7",
+          "label": "Lances em tempo real"
+        }
+      ],
+      "previewTitle": "Leilão da Companhia",
+      "previewBid": "Lance atual",
+      "previewButton": "Dar lance",
+      "previewBidders": "Bombeiros · Vizinhos · Sócios"
+    },
+    "features": {
+      "sectionTitle": "Tudo que você precisa",
+      "sectionTitleHighlight": "para seu leilão",
+      "sectionDescription": "Sem planilhas, sem grupos caóticos de WhatsApp, sem taxas. Só seu leilão funcionando.",
+      "realTimeBidding": {
+        "title": "Lances em tempo real",
+        "description": "As ofertas aparecem na hora para todos os participantes, sem recarregar a página."
+      },
+      "privateSecure": {
+        "title": "Privados ou abertos",
+        "description": "Só por convite, com link ou abertos a todos. Você decide quem participa, com papéis e lances anônimos se quiser."
+      },
+      "multiCurrency": {
+        "title": "Em pesos chilenos",
+        "description": "Valores em $ CLP sem decimais estranhos, com horário do Chile. Também suporta outras moedas se precisar."
+      },
+      "smartNotifications": {
+        "title": "Avisos que chegam",
+        "description": "Sino no app e e-mails em espanhol: avisam se superarem você, se vencer, se há novos lotes ou comentários."
+      },
+      "richMedia": {
+        "title": "Lotes com fotos",
+        "description": "Envie imagens para cada lote, importe por CSV ou edite vários de uma vez. Seus leilões com cara profissional."
+      },
+      "offlineExchange": {
+        "title": "Pagamento offline, organizado",
+        "description": "Sem gateways nem taxas: pagamento e entrega combinados pessoalmente, e a plataforma registra cada etapa."
+      }
+    },
+    "useCases": {
+      "sectionTitle": "Feita para",
+      "sectionTitleHighlight": "a vida real",
+      "sectionDescription": "Onde há uma comunidade juntando grana, a Biddu encaixa perfeito.",
+      "charity": {
+        "title": "Bombeiros e causas",
+        "description": "Leilões beneficentes da sua companhia ou causa: publique os lotes doados, receba lances de vizinhos e adjudique ao maior lance."
+      },
+      "declutter": {
+        "title": "Pequenas empresas e liquidação",
+        "description": "Liquide estoque, equipamentos ou mercadoria com leilões organizados: fotos, lance mínimo, incrementos e resultados exportáveis."
+      },
+      "family": {
+        "title": "Clubes esportivos",
+        "description": "Financie o clube com leilões entre sócios e torcedores: camisas, prêmios e experiências, tudo num só lugar."
+      },
+      "office": {
+        "title": "Família e amigos",
+        "description": "O leilão do fim de semana, a rifa da turma ou a venda de garagem: convide por e-mail e vença o melhor lance."
+      }
+    },
+    "howItWorks": {
+      "sectionTitle": "Da ideia ao leilão",
+      "sectionTitleHighlight": "em minutos",
+      "sectionDescription": "Sem manuais nem cursos. Simples assim:",
+      "step1": {
+        "title": "Crie seu leilão",
+        "description": "Dê nome, descrição e escolha quem pode entrar: só convidados, com link ou aberto."
+      },
+      "step2": {
+        "title": "Envie os lotes",
+        "description": "Adicione itens com fotos, lance inicial e incremento mínimo. Ou importe tudo por CSV."
+      },
+      "step3": {
+        "title": "Convide a dar lances",
+        "description": "Envie convites por e-mail. Quem não tem conta se cadastra e volta direto ao seu leilão."
+      },
+      "step4": {
+        "title": "Veja os lances ao vivo",
+        "description": "Cada oferta aparece na hora e todos recebem avisos. Ao fechar, adjudica ao maior lance."
+      },
+      "step5": {
+        "title": "Combine pagamento e entrega",
+        "description": "O app mostra o contato do vencedor e registra: pendente, pago e entregue."
+      },
+      "newBid": "Novo lance"
+    },
+    "impact": {
+      "sectionTitle": "Grana para",
+      "sectionTitleHighlight": "quem a junta",
+      "sectionDescription": "Cada leilão move recursos reais para comunidades reais.",
+      "totalValue": "Valor total leiloado",
+      "itemsCollected": "Lotes adjudicados",
+      "exampleAuctionName": "Leilão de Natal",
+      "moreItems": "ver lotes"
+    },
+    "faq": {
+      "eyebrow": "Perguntas frequentes",
+      "title": "Dúvidas?",
+      "subtitle": "As de sempre, respondidas sem enrolação.",
+      "items": [
+        {
+          "q": "A Biddu é realmente grátis?",
+          "a": "Sim. A Biddu é 100% grátis e de código aberto sob licença MIT. Sem taxas nem limites: auto-hospede no seu servidor."
+        },
+        {
+          "q": "Como se cobra se alguém vence um lance?",
+          "a": "O pagamento é 100% offline: o vencedor combina diretamente com o dono do lote (transferência, dinheiro, o que combinarem). A plataforma não processa pagamentos nem cobra taxas; só registra: pendente, pago e entregue."
+        },
+        {
+          "q": "Preciso de RUT para me cadastrar?",
+          "a": "Não, o RUT é opcional. Só precisa nome, e-mail e senha. Se participa de leilões formais, pode adicionar ao perfil."
+        },
+        {
+          "q": "Em que moeda são os lances?",
+          "a": "Por padrão em pesos chilenos ($ CLP), sem decimais e com horário do Chile. Também dá para criar leilões em outras moedas."
+        },
+        {
+          "q": "Posso ter a Biddu no meu servidor?",
+          "a": "Sim, é auto-hospedável com Docker e licença MIT. Clone o repositório e suba com docker compose up."
+        },
+        {
+          "q": "Meus dados estão seguros?",
+          "a": "Seus dados só são visíveis para membros dos seus leilões. Pode exportá-los ou excluir sua conta (com todos os dados) quando quiser. Leia a Política de Privacidade para detalhes."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Comece seu primeiro leilão hoje",
+      "description": "Grátis, em espanhol e sem taxas. Sua comunidade vai agradecer.",
+      "getStarted": "Criar conta grátis",
+      "freeForever": "Grátis para sempre · Sem cartão",
+      "selfHostTitle": "Prefere hospedar você?",
+      "selfHostDescription": "A Biddu é código aberto e auto-hospedável com Docker. Controle total dos seus dados na sua infraestrutura."
+    }
+  }
+}

@@ -40,7 +40,9 @@
       "defaultAntiSnipeExtension": "Duración de la extensión",
       "defaultAntiSnipeExtensionHint": "Cuánto tiempo añadir al fin. Entre 5 segundos y 60 minutos.",
       "seconds": "segundos",
-      "minutes": "minutos"
+      "minutes": "minutos",
+      "timeZone": "Zona horaria",
+      "timeZoneHint": "Las fechas de esta subasta se muestran en esta zona horaria."
     },
     "card": {
       "ended": "Finalizada",

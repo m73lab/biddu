@@ -159,6 +159,7 @@ model Auction {
     // Timing settings
     endDate           DateTime?         // null = indefinite
     itemEndMode       ItemEndMode       @default(CUSTOM)
+    timeZone          String            @default("America/Santiago")
 
     // Anti-fraud (opt-in per auction)
     bidderApproval       Boolean       @default(false) // New members join as PENDING until approved to bid

@@ -1,7 +1,9 @@
 import { useLocale } from "next-intl";
+import { localeForCurrency } from "@/utils/formatters";
 
-export function useFormatters() {
+export function useFormatters(timeZone?: string) {
   const locale = useLocale();
+  const zone = timeZone ?? "America/Santiago";
 
   const formatDate = (
     date: Date | string,
@@ -12,6 +14,7 @@ export function useFormatters() {
       dateStyle: "medium",
       timeStyle: "short",
       ...options,
+      timeZone: zone,
     }).format(dateObj);
   };
 
@@ -20,6 +23,7 @@ export function useFormatters() {
     return new Intl.DateTimeFormat(locale, {
       month: "short",
       day: "numeric",
+      timeZone: zone,
     }).format(dateObj);
   };
 
@@ -27,6 +31,7 @@ export function useFormatters() {
     const dateObj = typeof date === "string" ? new Date(date) : date;
     return new Intl.DateTimeFormat(locale, {
       dateStyle: "full",
+      timeZone: zone,
     }).format(dateObj);
   };
 
@@ -65,7 +70,7 @@ export function useFormatters() {
   };
 
   const formatCurrency = (amount: number, currency: string = "CLP") => {
-    return new Intl.NumberFormat(locale, {
+    return new Intl.NumberFormat(localeForCurrency(currency) ?? locale, {
       style: "currency",
       currency,
     }).format(amount);

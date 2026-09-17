@@ -1,0 +1,43 @@
+{
+  "profile": {
+    "title": "Meu perfil",
+    "subtitle": "Seu avatar, reputação e atividade",
+    "backToDashboard": "Voltar ao painel",
+    "avatarTitle": "Foto de perfil",
+    "avatarHint": "Seu avatar é gerado automaticamente. Tente a sorte com o botão aleatório ou volte ao original.",
+    "random": "Aleatório",
+    "reset": "Redefinir",
+    "save": "Salvar alterações",
+    "saving": "Salvando...",
+    "saveSuccess": "Avatar atualizado",
+    "saveFailed": "Não foi possível salvar o avatar",
+    "ratingTitle": "Minha reputação",
+    "noRatings": "Você ainda não tem avaliações. Complete sua primeira venda ou compra.",
+    "asSeller": "como vendedor",
+    "asBuyer": "como comprador",
+    "anonymous": "Anônimo",
+    "statsTitle": "Atividade",
+    "bidsPlaced": "Lances feitos",
+    "auctionsWon": "Leilões vencidos",
+    "itemsSold": "Lotes vendidos",
+    "auctionsCreated": "Leilões criados",
+    "auctionsJoined": "Leilões participados",
+    "personal": {
+      "title": "Dados pessoais",
+      "email": "E-mail",
+      "emailCannotChange": "O e-mail não pode ser alterado",
+      "displayName": "Nome de exibição",
+      "displayNamePlaceholder": "Seu nome",
+      "nameRequired": "O nome é obrigatório",
+      "phone": "WhatsApp / Telefone",
+      "phonePlaceholder": "+55 11 91234-5678",
+      "phoneHint": "Para que entrem em contato sobre seus lances vencedores",
+      "phoneInvalid": "Telefone inválido. Exemplo: +55 11 91234-5678",
+      "rutHint": "O dígito verificador é validado",
+      "rutInvalid": "RUT inválido. Exemplo: 12.345.678-9",
+      "optional": "opcional",
+      "saved": "Dados atualizados com sucesso",
+      "saveFailed": "Não foi possível salvar"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "discussions": {
+    "title": "Discussões",
+    "empty": "Ainda não há discussões. Seja o primeiro a compartilhar sua opinião!",
+    "disabled": "As discussões estão desativadas para este lote.",
+    "locked": "As discussões estão fechadas porque o lote foi encerrado.",
+    "placeholder": "Compartilhe sua opinião sobre este lote...",
+    "replyPlaceholder": "Escreva uma resposta...",
+    "submit": "Publicar",
+    "submitting": "Publicando...",
+    "reply": "Responder",
+    "orderBy": "Ordenar por",
+    "newest": "Mais recentes primeiro",
+    "oldest": "Mais antigas primeiro",
+    "edited": "editado",
+    "editedAt": "Editado em",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "confirmDelete": "Tem certeza?",
+    "cancel": "Cancelar",
+    "deleteSuccess": "Discussão excluída",
+    "updateSuccess": "Discussão atualizada",
+    "createSuccess": "Discussão publicada",
+    "settings": "Discussões",
+    "enableDiscussions": "Habilitar discussões",
+    "enableDiscussionsDescription": "Permitir que os membros do leilão discutam este lote",
+    "anonymous": "Anônimo",
+    "itemOwner": "Proprietário"
+  }
+}

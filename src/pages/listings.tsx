@@ -361,8 +361,7 @@ function JustEndedCard({ item }: { item: UserItem }) {
             {formatCurrency(
               item.currentBid || item.startingBid,
               item.currencySymbol,
-              decimalsForCurrency(item.currencyCode),
-            )}
+              decimalsForCurrency(item.currencyCode), item.currencyCode)}
           </span>
         </div>
         {item.winner && (
@@ -446,8 +445,7 @@ function ListingCard({
                 {formatCurrency(
                   item.currentBid || item.startingBid,
                   item.currencySymbol,
-                  decimalsForCurrency(item.currencyCode),
-                )}
+                  decimalsForCurrency(item.currencyCode), item.currencyCode)}
               </span>
             </div>
           </div>
