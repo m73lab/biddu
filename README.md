@@ -70,7 +70,7 @@ openssl rand -base64 32   # CRON_SECRET
 | `biddu-caddy` | 80 / 443 | Reverse proxy con HTTPS local |
 | `soketi` | 6001 | WebSocket realtime (opcional) |
 
-Datos persistentes en volúmenes Docker: base SQLite (`biddu-data`), uploads (`biddu-uploads`) y logs (`biddu-logs`).
+Datos persistentes en volúmenes Docker: base SQLite (`biddu-data`), uploads (`biddu-uploads`) y logs (`biddu-logs`). Las migraciones Prisma se aplican solas al arrancar (servicio `migrate`, antes de la app), así que un volumen nuevo queda operativo sin pasos manuales.
 
 ### Primera entrada (sin credenciales por defecto)
 

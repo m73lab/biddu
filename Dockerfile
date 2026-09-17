@@ -64,3 +64,18 @@ ENV HOSTNAME="0.0.0.0"
 ENV PORT=3000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 CMD ["node", "server.js"]
+
+# =============================================================================
+# Migrator (one-shot): applies pending Prisma migrations, then exits.
+# compose starts this before the app (service_completed_successfully), so a
+# fresh volume always gets a migrated database instead of an empty SQLite
+# file that 500s on the first DB-backed request.
+# Shares every cached layer with the builder above (only CMD differs):
+# full node_modules (prisma CLI + engines), prisma/ (schema, migrations,
+# prisma.config.ts) and the generated client are all already in place.
+# Uses prisma.config.ts defaults (self-host SQLite schema); DATABASE_URL
+# arrives from compose environment, pointing at the persisted volume file.
+# =============================================================================
+FROM builder AS migrator
+WORKDIR /app
+CMD ["npx", "prisma", "migrate", "deploy"]

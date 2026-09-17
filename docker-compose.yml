@@ -7,6 +7,24 @@ name: biddu
 
 services:
   # ---------------------------------------------------------------------------
+  # Migrate - one-shot Prisma migrations, runs to completion BEFORE the app.
+  # Uses the `migrator` Dockerfile target (same cached layers as the app
+  # image). Must point at the SAME database file as `biddu` below.
+  # ---------------------------------------------------------------------------
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: migrator
+    container_name: biddu-migrate
+    restart: "no"
+    environment:
+      # Database (SQLite - stored in volume; same file as the app uses)
+      - DATABASE_URL=file:./data/biddu.db
+    volumes:
+      - biddu-data:/app/data
+
+  # ---------------------------------------------------------------------------
   # SubastaYa Application
   # ---------------------------------------------------------------------------
   biddu:
@@ -77,13 +95,24 @@ services:
       - SOKETI_HOST=soketi
       # Features
       - ALLOW_OPEN_AUCTIONS=${ALLOW_OPEN_AUCTIONS:-false}
+      # Initial setup seed for automated deploys (inert once configured;
+      # the /setup wizard is the interactive alternative)
+      - INITIAL_ADMIN_EMAIL=${INITIAL_ADMIN_EMAIL:-}
+      - INITIAL_ADMIN_PASSWORD=${INITIAL_ADMIN_PASSWORD:-}
+      # Managed-cloud deployments set HOSTED=true to disable /setup entirely
+      - HOSTED=${HOSTED:-}
+      # Maintenance mode (the /setup wizard stays reachable while active)
+      - MAINTENANCE_MODE=${MAINTENANCE_MODE:-false}
     volumes:
       # Persist database and uploads
       - biddu-data:/app/data
       - biddu-uploads:/app/public/uploads
       - biddu-logs:/app/logs
     depends_on:
-      - soketi
+      soketi:
+        condition: service_started
+      migrate:
+        condition: service_completed_successfully
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:3000/api/health"]
       interval: 30s
