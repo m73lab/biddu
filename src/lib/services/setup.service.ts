@@ -168,7 +168,9 @@ export async function ensureEnvAdmin(): Promise<EnvSeedResult> {
       where: { id: "system", deploymentAdminEmail: null },
       data: { deploymentAdminEmail: email },
     });
-    logger.info({ email }, "Env-seeded admin ensured (existing user)");
+    // Debug, not info: the status endpoint calls ensureEnvAdmin on every
+    // poll, so this path runs constantly once the admin exists.
+    logger.debug({ email }, "Env-seeded admin ensured (existing user)");
     return { applied: true, email };
   }
 
