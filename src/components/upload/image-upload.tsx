@@ -30,6 +30,7 @@ export function ImageUpload({
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const remaining = Math.max(0, maxImages - images.length);
 
   const uploadFile = async (file: File) => {
     const formData = new FormData();
@@ -162,6 +163,18 @@ export function ImageUpload({
 
   return (
     <div className="space-y-4">
+      {/* Available counter - always visible */}
+      <div className="flex items-center justify-between gap-3 rounded-xl bg-base-200/60 border border-base-content/10 px-4 py-2.5">
+        <span className="flex items-center gap-2 text-sm font-semibold">
+          <span className="icon-[tabler--photo] size-5 text-secondary"></span>
+          {images.length}/{maxImages} {t("images")}
+        </span>
+        <span
+          className={`badge font-semibold ${remaining === 0 ? "badge-error" : remaining <= 2 ? "badge-warning" : "badge-success"}`}
+        >
+          {t("remaining", { count: remaining })}
+        </span>
+      </div>
       {/* Upload Area */}
       <div
         className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
@@ -202,8 +215,7 @@ export function ImageUpload({
               </button>
             </p>
             <p className="text-xs text-base-content/40">
-              {t("imageFormats")} • {t("maxSize")} • {images.length}/{maxImages}{" "}
-              {t("images")}
+              {t("imageFormats")} • {t("maxSize")}
             </p>
           </div>
         )}

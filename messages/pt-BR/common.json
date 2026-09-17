@@ -153,7 +153,8 @@
     "remove": "Remover",
     "thumbnailFormats": "JPEG, PNG, WebP, GIF • Máx 5MB • Quadrada recomendada",
     "uploadSuccess": "Envio com sucesso",
-    "deleteSuccess": "Excluído com sucesso"
+    "deleteSuccess": "Excluído com sucesso",
+    "remaining": "restam {count} disponíveis"
   },
   "notifications": {
     "title": "Notificações",

@@ -154,7 +154,8 @@
     "remove": "Remove",
     "thumbnailFormats": "JPEG, PNG, WebP, GIF • Max 5MB • Square recommended",
     "uploadSuccess": "Upload successful",
-    "deleteSuccess": "Deleted successfully"
+    "deleteSuccess": "Deleted successfully",
+    "remaining": "{count} remaining"
   },
   "notifications": {
     "title": "Notifications",
