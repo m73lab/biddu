@@ -52,7 +52,7 @@ FROM node:20-bookworm-slim AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN apt-get update && apt-get install -y --no-install-recommends wget openssl && rm -rf /var/lib/apt/lists/* && groupadd --system --gid 1001 nodejs && useradd --system --uid 1001 --gid nodejs nextjs
+RUN apt-get update && apt-get install -y --no-install-recommends wget openssl gosu && rm -rf /var/lib/apt/lists/* && groupadd --system --gid 1001 nodejs && useradd --system --uid 1001 --gid nodejs nextjs
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
@@ -61,14 +61,18 @@ COPY --from=builder /app/src/generated ./src/generated
 # Next standalone tracing omits ESM files of @swc/helpers that Next's
 # require-hook loads dynamically at runtime: copy the full package.
 COPY --from=builder /app/node_modules/@swc/helpers/ ./node_modules/@swc/helpers/
+COPY --from=builder /app/docker/entrypoint.sh ./entrypoint.sh
 # .next must be writable by the runtime user: ISR revalidation rewrites
 # the prerender cache in place (EACCES otherwise).
-RUN mkdir -p ./data ./public/uploads ./logs && chown -R nextjs:nodejs ./.next ./data ./public/uploads ./logs
-USER nextjs
+RUN mkdir -p ./data ./public/uploads ./logs && chown -R nextjs:nodejs ./.next ./data ./public/uploads ./logs && chmod +x ./entrypoint.sh
+# NOTE: no `USER` here on purpose. The entrypoint starts as root to fix
+# volume mountpoint ownership (mounts shadow the chown above), then drops
+# to `nextjs` via gosu before exec-ing the CMD.
 EXPOSE 3000
 ENV HOSTNAME="0.0.0.0"
 ENV PORT=3000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
+ENTRYPOINT ["./entrypoint.sh"]
 CMD ["node", "server.js"]
 
 # =============================================================================
@@ -84,4 +88,9 @@ CMD ["node", "server.js"]
 # =============================================================================
 FROM prebuild AS migrator
 WORKDIR /app
-CMD ["npx", "prisma", "migrate", "deploy"]
+# The migrator runs as root (one-shot, no network service) and creates the
+# database file root-owned; the recursive chown hands /app/data back to the
+# runtime user (uid:gid 1001:1001, the `nextjs` user created in the runner
+# stage) so the app can write afterwards. The app entrypoint additionally
+# fixes mountpoint ownership on every boot.
+CMD ["sh", "-c", "npx prisma migrate deploy && chown -R 1001:1001 /app/data"]
