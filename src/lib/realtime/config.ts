@@ -46,10 +46,13 @@ export function getRealtimeConfig(): RealtimeConfig {
       key: process.env.NEXT_PUBLIC_SOKETI_APP_KEY || "",
       secret: process.env.SOKETI_APP_SECRET || "",
       cluster: "default",
-      // Server connects internally, so use separate SOKETI_HOST (defaults to 127.0.0.1)
-      host: process.env.SOKETI_HOST || "127.0.0.1",
-      port: parseInt(process.env.NEXT_PUBLIC_SOKETI_PORT || "6001", 10),
-      useTLS: process.env.NEXT_PUBLIC_SOKETI_USE_TLS === "true",
+      // Server-side connection, independent from the browser-facing
+      // NEXT_PUBLIC_* (which point at the public TLS host/port). Inside
+      // the docker-compose network Soketi is reachable as `soketi:6001`
+      // over plain HTTP; override for other topologies.
+      host: process.env.SOKETI_HOST || "soketi",
+      port: parseInt(process.env.SOKETI_PORT || "6001", 10),
+      useTLS: process.env.SOKETI_USE_TLS === "true",
     };
   }
 
