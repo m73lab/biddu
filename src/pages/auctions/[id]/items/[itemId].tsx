@@ -259,7 +259,7 @@ interface AuctionCurrencyContextResponse {
     try {
       const r = getWsReport();
       const vivo = getWsConnectionState();
-      return `WS driver=${r.driver} host=${r.host ?? "-"} port=${r.port ?? "-"} tls=${r.tls} key=${r.keySet ? "si" : "NO"} estado=${r.lastState ?? "nunca"} vivo=${vivo} ret=${r.lastReturn ?? "-"} error=${r.lastError ?? "-"}`;
+      return `WS driver=${r.driver} host=${r.host ?? "-"} port=${r.port ?? "-"} tls=${r.tls} key=${r.keySet ? "si" : "NO"} estado=${r.lastState ?? "nunca"} vivo=${vivo} ret=${r.lastReturn ?? "-"} inst=${r.instanceId} error=${r.lastError ?? "-"}`;
     } catch {
       return "WS reporte no disponible";
     }
