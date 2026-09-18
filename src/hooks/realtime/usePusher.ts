@@ -40,6 +40,20 @@ function logError(message: string, error?: unknown) {
   );
 }
 
+/**
+ * Unconditional lifecycle log (always visible, no debug flag, no filter
+ * level tricks): connection state, subscriptions and received events.
+ * Payload details stay behind isDebugEnabled(); these lines only report
+ * WHAT is happening so a silent realtime failure is impossible to miss.
+ */
+function wslog(message: string, data?: unknown) {
+  if (data !== undefined) {
+    console.log(`[WS] ${message}`, data);
+  } else {
+    console.log(`[WS] ${message}`);
+  }
+}
+
 // Singleton Pusher instance
 let pusherInstance: PusherJS | null = null;
 let connectionAttempted = false;
@@ -49,27 +63,42 @@ let connectionFailed = false;
  * Get or create the singleton Pusher client instance
  */
 function getPusherClient(): PusherJS | null {
+  const startedConfig = getClientConfig();
+  wslog("init", {
+    driver: startedConfig.driver,
+    host: startedConfig.wsHost ?? null,
+    port: startedConfig.wsPort ?? startedConfig.wssPort ?? null,
+    tls: startedConfig.forceTLS,
+    keySet: startedConfig.key !== "",
+  });
+
   if (!isClientRealtimeEnabled()) {
+    wslog("DESHABILITADO: sin driver o sin key (realtime apagado, solo polling)");
     log("Realtime is disabled");
     return null;
   }
 
   if (connectionFailed) {
+    wslog("sin iniciar: una conexion anterior FALLO (revisa los errores de arriba)");
     log("Connection previously failed, returning null");
     return null;
   }
 
   if (pusherInstance) {
+    wslog("reutilizando cliente existente", {
+      estado: pusherInstance.connection.state,
+    });
     return pusherInstance;
   }
 
   if (connectionAttempted) {
+    wslog("init ya intentado, esperando estado de conexion");
     log("Connection already attempted, returning null");
     return null;
   }
 
   connectionAttempted = true;
-  const config = getClientConfig();
+  const config = startedConfig;
   // Hard failure, diagnosed loudly: an https page can never open ws://
   // (browsers block it as mixed content), so a non-TLS Soketi silently
   // degrades every page to minute-scale polling. This single log line is
@@ -120,25 +149,36 @@ function getPusherClient(): PusherJS | null {
     pusherInstance.connection.bind(
       "state_change",
       (states: { previous: string; current: string }) => {
+        wslog(`estado: ${states.previous} -> ${states.current}`);
+        if (states.current === "connected") {
+          wslog("exito: CONECTADO al servidor realtime");
+        }
+        if (states.current === "failed") {
+          wslog("FALLO: conexion al servidor realtime fallida (cae a polling)");
+        }
         log(`Connection state: ${states.previous} → ${states.current}`);
       },
     );
 
     pusherInstance.connection.bind("connected", () => {
+      wslog("exito: CONECTADO al servidor realtime");
       log("Connected successfully!");
     });
 
     // Handle connection errors
     pusherInstance.connection.bind("error", (err: Error) => {
+      wslog("FALLO: error de conexion realtime", err);
       logError("Connection error:", err);
       connectionFailed = true;
     });
 
     pusherInstance.connection.bind("failed", () => {
+      wslog("FALLO: conexion imposible, cae a polling");
       logError("Connection failed. Falling back to polling.");
       connectionFailed = true;
     });
 
+    wslog("cliente creado, conectando...");
     log("Pusher client created, connecting...");
   } catch (error) {
     logError("Failed to initialize Pusher client:", error);
@@ -203,17 +243,22 @@ export function useChannel(channelName: ChannelName | null): Channel | null {
     // Check cache first
     let ch = channelCache.get(channelName);
     if (!ch) {
+      wslog(`suscribiendo canal: ${channelName}`);
       log(`Subscribing to channel: ${channelName}`);
       ch = pusher.subscribe(channelName);
       channelCache.set(channelName, ch);
 
       // Log subscription success/failure for private channels
       ch.bind("pusher:subscription_succeeded", () => {
+        wslog(`exito: SUSCRITO a ${channelName}`);
         log(`Subscribed to channel: ${channelName}`);
       });
       ch.bind("pusher:subscription_error", (error: unknown) => {
+        wslog(`FALLO suscripcion a ${channelName}`, error);
         logError(`Failed to subscribe to channel: ${channelName}`, error);
       });
+    } else {
+      wslog(`canal en cache: ${channelName}`);
     }
 
     return ch;
@@ -236,8 +281,10 @@ export function useEvent<E extends keyof EventPayloadMap>(
     }
 
     log(`Binding event: ${event} on channel: ${channel.name}`);
+    wslog(`escuchando evento '${event}' en ${channel.name}`);
 
     const wrappedCallback = (data: EventPayloadMap[E]) => {
+      wslog(`exito: EVENTO '${event}' recibido en ${channel.name}`, data);
       log(`Received event: ${event}`, data);
       callback(data);
     };
@@ -326,6 +373,7 @@ export function useRealtimeSWRConfig(baseInterval: number): RealtimeSWRConfig {
     // Realtime is enabled and connected - disable all automatic revalidation
     // SWR will only fetch on mount, all updates come via realtime
     if (isEnabled && isConnected) {
+      wslog("modo: SOCKET conectado, sin polling (todo llega por eventos)");
       return {
         refreshInterval: 0,
         revalidateOnFocus: false,
@@ -336,6 +384,9 @@ export function useRealtimeSWRConfig(baseInterval: number): RealtimeSWRConfig {
 
     // Realtime is enabled but not connected - use longer polling as fallback
     if (isEnabled && !isConnected) {
+      wslog(
+        `modo: SIN socket, polling fallback cada ${Math.max(baseInterval, 60000)}ms`,
+      );
       return {
         refreshInterval: Math.max(baseInterval, 60000), // At least 60s
         revalidateOnFocus: true,
@@ -345,6 +396,7 @@ export function useRealtimeSWRConfig(baseInterval: number): RealtimeSWRConfig {
     }
 
     // Realtime disabled - use normal polling
+    wslog(`modo: realtime DESHABILITADO, polling cada ${baseInterval}ms`);
     return {
       refreshInterval: baseInterval,
       revalidateOnFocus: true,

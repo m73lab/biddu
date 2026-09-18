@@ -94,7 +94,8 @@
     "outbid": "Outbid",
     "won": "Won",
     "lost": "Lost",
-    "live": "Live"
+    "live": "Live",
+    "polling": "Slow updates (no socket)"
   },
   "time": {
     "ends": "Ends",
