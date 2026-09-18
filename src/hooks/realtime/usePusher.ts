@@ -56,6 +56,7 @@ export interface WsReport {
   lastError: string | null;
   /** Exact return branch of the last getPusherClient() call. */
   lastReturn: string | null;
+  instanceId: string;
 }
 
 const wsReport: WsReport = {
@@ -67,6 +68,9 @@ const wsReport: WsReport = {
   lastState: null,
   lastError: null,
   lastReturn: null,
+  // Random per module evaluation: if two different IDs ever show up, the
+  // module was duplicated across chunks (two singletons, two sockets).
+  instanceId: Math.random().toString(36).slice(2, 8),
 };
 
 export function getWsReport(): WsReport {
@@ -297,7 +301,12 @@ function getPusherClient(): PusherJS | null {
           wslog("exito: CONECTADO al servidor realtime");
         }
         if (states.current === "failed") {
+          // NOTE: handled HERE (not only in the direct "failed" binding
+          // below): observed in production that state_change fires while
+          // the direct binding does not always run.
+          wsReport.lastError = "conexion imposible (failed)";
           wslog("FALLO: conexion al servidor realtime fallida (cae a polling)");
+          probeRawWebSocket(config);
         }
         log(`Connection state: ${states.previous} → ${states.current}`);
       },
