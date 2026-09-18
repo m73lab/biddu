@@ -65,7 +65,14 @@ export function getClientConfig(): ClientRealtimeConfig {
       wsPort: useTLS ? undefined : port,
       wssPort: useTLS ? port : undefined,
       forceTLS: useTLS,
-      enabledTransports: useTLS ? ["wss"] : ["ws", "wss"],
+      // Always enable both: pusher-js 8.x builds the default strategy by
+      // testing the NON-TLS `ws` transport as the support gate. With
+      // enabledTransports: ["wss"] alone, that gate is a no-op
+      // (UnsupportedStrategy), isSupported() returns false, and connect()
+      // silently goes to 'failed' without ever opening a socket. With both
+      // enabled and forceTLS, the client still connects over wss (which
+      // Caddy proxies), so forcing wss-only buys nothing but this bug.
+      enabledTransports: ["ws", "wss"],
       disableStats: true,
       authEndpoint: "/api/pusher/auth",
     };
