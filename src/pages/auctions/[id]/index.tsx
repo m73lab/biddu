@@ -6,7 +6,11 @@ import { getMessages, Locale } from "@/i18n";
 import { fetcher } from "@/lib/fetcher";
 import * as auctionService from "@/lib/services/auction.service";
 import { useAuctionChannel, useEvent, Events } from "@/hooks/realtime";
-import type { BidNewEvent } from "@/lib/realtime/events";
+import type {
+  BidNewEvent,
+  ItemEndedEvent,
+  AuctionClosedEvent,
+} from "@/lib/realtime/events";
 import { PageLayout, BackLink, EmptyState } from "@/components/common";
 import { AuctionSidebar } from "@/components/auction";
 import { ItemCard, ItemListItem } from "@/components/item";
@@ -148,6 +152,50 @@ interface AuctionDetailProps {
     [auctionId, mutate, user.id],
   );
   useEvent(auctionChannel, Events.BID_NEW, handleAuctionBid);
+
+  // Live item-ended updates: paper over the profile so an item the owner
+  // ended (or an auction close that ends every item) reads as terminated
+  // immediately. No refetch: closing an auction delivers N events at once,
+  // the AUCTION_CLOSED handler below does the single reconciliation fetch.
+  const handleItemEnded = useCallback(
+    (event: ItemEndedEvent) => {
+      if (event.auctionId !== auctionId) return;
+      mutate(
+        (current) => {
+          if (!current) return current;
+          let changed = false;
+          const items = current.items.map((it) => {
+            if (it.id !== event.itemId) return it;
+            changed = true;
+            return { ...it, endDate: new Date().toISOString() };
+          });
+          if (!changed) return current;
+          return { ...current, items };
+        },
+        { revalidate: false },
+      );
+    },
+    [auctionId, mutate],
+  );
+  useEvent(auctionChannel, Events.ITEM_ENDED, handleItemEnded);
+
+  // Live auction-closed update: the owner closed the auction, so mark it
+  // terminated in the cache; the default revalidation reconciles items to
+  // server truth in a single fetch.
+  const handleAuctionClosed = useCallback(
+    (event: AuctionClosedEvent) => {
+      if (event.auctionId !== auctionId) return;
+      mutate((current) => {
+        if (!current) return current;
+        return {
+          ...current,
+          auction: { ...current.auction, endDate: new Date().toISOString() },
+        };
+      });
+    },
+    [auctionId, mutate],
+  );
+  useEvent(auctionChannel, Events.AUCTION_CLOSED, handleAuctionClosed);
 
   const auction = data?.auction;
   const items = useMemo(() => data?.items ?? [], [data?.items]);
