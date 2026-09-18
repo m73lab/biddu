@@ -10,6 +10,7 @@ import {
   getClientConfig,
   isClientRealtimeEnabled,
 } from "@/lib/realtime/client";
+import type { ClientRealtimeConfig } from "@/lib/realtime/client";
 import { Events, Channels } from "@/lib/realtime/events";
 import type { EventPayloadMap, ChannelName } from "@/lib/realtime/events";
 
@@ -81,6 +82,81 @@ export function getWsConnectionState(): string {
     return "nunca";
   } catch {
     return "desconocido";
+  }
+}
+
+let rawProbeDone = false;
+
+/**
+ * One-shot raw WebSocket probe (no pusher-js involved): opens a bare socket
+ * to the same URL the client uses and reports exactly what the browser
+ * gets back (open / error / close code / silence). This is the layer
+ * pusher-js hides: it distinguishes "red bloquea el socket" (1006/silencio)
+ * from "el servidor lo rechaza" (1008/1011, visible en logs de Soketi) from
+ * "el socket funciona y el problema es otro" (101/open).
+ */
+function probeRawWebSocket(config: ClientRealtimeConfig): void {
+  if (rawProbeDone || typeof window === "undefined") return;
+  rawProbeDone = true;
+  try {
+    const scheme = config.forceTLS ? "wss" : "ws";
+    const port = config.forceTLS
+      ? (config.wssPort ?? 443)
+      : (config.wsPort ?? 80);
+    const url =
+      `${scheme}://${config.wsHost}:${port}/app/${config.key}` +
+      `?protocol=7&client=js&flash=false`;
+    wslog("sonda: abriendo WebSocket crudo", `${scheme}://${config.wsHost}:${port}/app/<key>`);
+    const ws = new WebSocket(url);
+    let settled = false;
+    const done = (msg: string, data?: unknown) => {
+      if (settled) return;
+      settled = true;
+      wsReport.lastError = msg;
+      if (data !== undefined) wslog(`sonda: ${msg}`, data);
+      else wslog(`sonda: ${msg}`);
+      try {
+        ws.close();
+      } catch {
+        /* noop */
+      }
+    };
+    const timer = setTimeout(() => {
+      done(
+        "sonda TIMEOUT 8s sin respuesta: el navegador no logra ni el handshake " +
+          "(extension bloqueando WebSocket? prueba en incognito)",
+      );
+      clearTimeout(timer);
+    }, 8000);
+    ws.onopen = () => {
+      clearTimeout(timer);
+      done("sonda OK 101: el socket crudo SI conecta (revisa auth pusher/canales)");
+    };
+    ws.onerror = () => {
+      wslog("sonda: evento error (sin detalle, el navegador no da mas)");
+    };
+    ws.onclose = (ev) => {
+      clearTimeout(timer);
+      const reason = typeof ev.reason === "string" && ev.reason ? ` (${ev.reason})` : "";
+      if (ev.code === 1006) {
+        done(
+          `sonda close 1006: conexion caida antes del handshake (red, firewall, ` +
+            `adblock o proxy matando el upgrade)${reason}`,
+        );
+      } else if (ev.code === 1008 || ev.code === 1011) {
+        done(
+          `sonda close ${ev.code}: el SERVIDOR rechazo el socket${reason} ` +
+            `(revisa logs de Soketi/Caddy)`,
+        );
+      } else {
+        done(`sonda close ${ev.code}${reason}`);
+      }
+    };
+  } catch (error) {
+    wsReport.lastError = `sonda: new WebSocket lanzo excepcion: ${String(
+      (error as Error)?.message ?? error,
+    )}`;
+    wslog("sonda: FALLO al crear WebSocket crudo", error);
   }
 }
 
@@ -235,6 +311,7 @@ function getPusherClient(): PusherJS | null {
       wslog("FALLO: conexion imposible, cae a polling");
       logError("Connection failed. Falling back to polling.");
       connectionFailed = true;
+      probeRawWebSocket(config);
     });
 
     wslog("cliente creado, conectando...");
@@ -260,6 +337,7 @@ function getPusherClient(): PusherJS | null {
           `(extension de privacidad/adblock, proxy o red). Prueba en incógnito.`;
         wslog("FALLO: socket colgado en estado", s);
         wslog("pista: deshabilita extensiones o prueba en ventana de incógnito");
+        probeRawWebSocket(config);
       }
     }, 15000);
   } catch (error) {
