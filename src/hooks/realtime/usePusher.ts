@@ -94,6 +94,12 @@ export function getWsConnectionState(): string {
 
 let rawProbeDone = false;
 
+// True on the first OBSERVED transition. If the client is created but no
+// transition ever fires, the failure happened synchronously inside the
+// constructor (before bindings attached) and no event-driven path
+// (retry/watchdog/probe) would ever trigger for it.
+let everTransitioned = false;
+
 // Reconnect budget for terminal `failed` states. The first attempt often
 // loses against page-load congestion (chunks/APIs saturating the pipe) while
 // a later identical attempt succeeds, so a terminal failure is retried a few
@@ -141,8 +147,10 @@ function scheduleReconnect(): void {
  * from "el servidor lo rechaza" (1008/1011, visible en logs de Soketi) from
  * "el socket funciona y el problema es otro" (101/open).
  */
-function probeRawWebSocket(config: ClientRealtimeConfig): void {
-  if (rawProbeDone || typeof window === "undefined") return;
+function probeRawWebSocket(
+  config: ClientRealtimeConfig | null | undefined,
+): void {
+  if (rawProbeDone || typeof window === "undefined" || !config) return;
   rawProbeDone = true;
   try {
     const scheme = config.forceTLS ? "wss" : "ws";
@@ -334,6 +342,7 @@ function getPusherClient(): PusherJS | null {
     pusherInstance.connection.bind(
       "state_change",
       (states: { previous: string; current: string }) => {
+        everTransitioned = true;
         wsReport.lastState = states.current;
         wslog(`estado: ${states.previous} -> ${states.current}`);
         if (states.current === "connected") {
@@ -403,6 +412,31 @@ function getPusherClient(): PusherJS | null {
         probeRawWebSocket(config);
       }
     }, 15000);
+
+    // Startup audit: if NO transition was ever observed and the state is
+    // already terminal/absent a few seconds after creation, the failure
+    // happened synchronously inside the constructor (before bindings
+    // attached) or was otherwise swallowed: no event-driven path (retry,
+    // watchdog, probe) would ever trigger for it. Give it the same
+    // treatment. In-flight states (connecting) belong to the watchdog
+    // above. One-shot per client creation.
+    setTimeout(() => {
+      if (everTransitioned) return;
+      const s = pusherInstance?.connection.state;
+      if (
+        !s ||
+        s === "connected" ||
+        s === "connecting" ||
+        s === "unavailable"
+      ) {
+        return;
+      }
+      wsReport.lastError =
+        `sin transiciones observadas (estado '${s}'): fallo silencioso al iniciar`;
+      wslog("FALLO silencioso al iniciar, estado actual:", s);
+      scheduleReconnect();
+      probeRawWebSocket(config);
+    }, 4000);
   } catch (error) {
     wsReport.lastError = `constructor lanzo: ${String((error as Error)?.message ?? error)}`;
     wsReport.lastReturn = "threw";
