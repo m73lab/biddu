@@ -41,6 +41,35 @@ function logError(message: string, error?: unknown) {
 }
 
 /**
+ * Last computed client config + connection state, readable without a
+ * console: the live badge shows it as a tooltip so a silent realtime
+ * failure can be diagnosed visually.
+ */
+export interface WsReport {
+  driver: string;
+  host: string | null;
+  port: number | null;
+  tls: boolean;
+  keySet: boolean;
+  lastState: string | null;
+  lastError: string | null;
+}
+
+const wsReport: WsReport = {
+  driver: "desconocido",
+  host: null,
+  port: null,
+  tls: false,
+  keySet: false,
+  lastState: null,
+  lastError: null,
+};
+
+export function getWsReport(): WsReport {
+  return { ...wsReport };
+}
+
+/**
  * Unconditional lifecycle log (always visible, no debug flag, no filter
  * level tricks): connection state, subscriptions and received events.
  * Payload details stay behind isDebugEnabled(); these lines only report
@@ -64,6 +93,11 @@ let connectionFailed = false;
  */
 function getPusherClient(): PusherJS | null {
   const startedConfig = getClientConfig();
+  wsReport.driver = startedConfig.driver;
+  wsReport.host = startedConfig.wsHost ?? null;
+  wsReport.port = startedConfig.wsPort ?? startedConfig.wssPort ?? null;
+  wsReport.tls = startedConfig.forceTLS;
+  wsReport.keySet = startedConfig.key !== "";
   wslog("init", {
     driver: startedConfig.driver,
     host: startedConfig.wsHost ?? null,
@@ -149,6 +183,7 @@ function getPusherClient(): PusherJS | null {
     pusherInstance.connection.bind(
       "state_change",
       (states: { previous: string; current: string }) => {
+        wsReport.lastState = states.current;
         wslog(`estado: ${states.previous} -> ${states.current}`);
         if (states.current === "connected") {
           wslog("exito: CONECTADO al servidor realtime");
@@ -167,12 +202,14 @@ function getPusherClient(): PusherJS | null {
 
     // Handle connection errors
     pusherInstance.connection.bind("error", (err: Error) => {
+      wsReport.lastError = err?.message ?? String(err);
       wslog("FALLO: error de conexion realtime", err);
       logError("Connection error:", err);
       connectionFailed = true;
     });
 
     pusherInstance.connection.bind("failed", () => {
+      wsReport.lastError = "conexion imposible (failed)";
       wslog("FALLO: conexion imposible, cae a polling");
       logError("Connection failed. Falling back to polling.");
       connectionFailed = true;
@@ -254,6 +291,10 @@ export function useChannel(channelName: ChannelName | null): Channel | null {
         log(`Subscribed to channel: ${channelName}`);
       });
       ch.bind("pusher:subscription_error", (error: unknown) => {
+        // eslint-disable-next-line react-hooks/immutability -- module-level diagnostic report, not component state
+        wsReport.lastError = `suscripcion ${channelName}: ${String(
+          (error as { message?: string })?.message ?? error,
+        )}`;
         wslog(`FALLO suscripcion a ${channelName}`, error);
         logError(`Failed to subscribe to channel: ${channelName}`, error);
       });
