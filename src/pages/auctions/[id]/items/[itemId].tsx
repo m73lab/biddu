@@ -16,6 +16,7 @@ import {
   useEvent,
   useRealtimeSWRConfig,
   useRealtimeStatus,
+  getWsReport,
   Events,
 } from "@/hooks/realtime";
 import type { BidNewEvent } from "@/lib/realtime/events";
@@ -248,9 +249,19 @@ interface AuctionCurrencyContextResponse {
   const swrConfig = useRealtimeSWRConfig(baseRefreshInterval);
 
   // Real socket state for the live badge (green = socket, amber = polling).
+  // The tooltip carries the WS report (driver/host/port/tls/key/state)
+  // so a silent failure is diagnosable without opening the console.
   const { isConnected: wsConnected, isEnabled: wsEnabled } =
     useRealtimeStatus();
   const liveOk = wsEnabled && wsConnected;
+  const wsReportText = (() => {
+    try {
+      const r = getWsReport();
+      return `WS driver=${r.driver} host=${r.host ?? "-"} port=${r.port ?? "-"} tls=${r.tls} key=${r.keySet ? "si" : "NO"} estado=${r.lastState ?? "nunca"} error=${r.lastError ?? "-"}`;
+    } catch {
+      return "WS reporte no disponible";
+    }
+  })();
 
   // Bid history pagination (server-driven, like admin lists)
   const [bidPage, setBidPage] = useState(1);
@@ -1120,14 +1131,17 @@ interface AuctionCurrencyContextResponse {
                           </span>
                           {!isEnded && (
                             liveOk ? (
-                              <span className="badge badge-sm badge-success gap-1 animate-pulse">
+                              <span
+                                className="badge badge-sm badge-success gap-1 animate-pulse"
+                                title={wsReportText}
+                              >
                                 <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
                                 {tStatus("live")}
                               </span>
                             ) : (
                               <span
                                 className="badge badge-sm badge-warning gap-1"
-                                title={tStatus("polling")}
+                                title={`${tStatus("polling")} — ${wsReportText}`}
                               >
                                 <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
                                 {tStatus("polling")}
