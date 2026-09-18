@@ -54,6 +54,8 @@ export interface WsReport {
   keySet: boolean;
   lastState: string | null;
   lastError: string | null;
+  /** Exact return branch of the last getPusherClient() call. */
+  lastReturn: string | null;
 }
 
 const wsReport: WsReport = {
@@ -64,6 +66,7 @@ const wsReport: WsReport = {
   keySet: false,
   lastState: null,
   lastError: null,
+  lastReturn: null,
 };
 
 export function getWsReport(): WsReport {
@@ -200,12 +203,14 @@ function getPusherClient(): PusherJS | null {
   if (!isClientRealtimeEnabled()) {
     wslog("DESHABILITADO: sin driver o sin key (realtime apagado, solo polling)");
     log("Realtime is disabled");
+    wsReport.lastReturn = "disabled";
     return null;
   }
 
   if (connectionFailed) {
     wslog("sin iniciar: una conexion anterior FALLO (revisa los errores de arriba)");
     log("Connection previously failed, returning null");
+    wsReport.lastReturn = "prev-failed";
     return null;
   }
 
@@ -213,24 +218,29 @@ function getPusherClient(): PusherJS | null {
     wslog("reutilizando cliente existente", {
       estado: pusherInstance.connection.state,
     });
+    wsReport.lastReturn = "cached";
     return pusherInstance;
   }
 
   if (connectionAttempted) {
     wslog("init ya intentado, esperando estado de conexion");
     log("Connection already attempted, returning null");
+    wsReport.lastReturn = "attempted-again";
+    return null;
+  }
+
+  // No socket on the server: subscriptions only make sense in the browser.
+  // (Creating the client during SSR would open server-side sockets and can
+  // mask init problems; the client creates it on first browser render and
+  // both sides agree on isConnected=false, so no hydration mismatch.)
+  // Checked BEFORE flagging the attempt so SSR noise never blocks the browser.
+  if (typeof window === "undefined") {
+    wsReport.lastReturn = "ssr";
     return null;
   }
 
   connectionAttempted = true;
   const config = startedConfig;
-  // No socket on the server: subscriptions only make sense in the browser.
-  // (Creating the client during SSR would open server-side sockets and can
-  // mask init problems; the client creates it on first browser render and
-  // both sides agree on isConnected=false, so no hydration mismatch.)
-  if (typeof window === "undefined") {
-    return null;
-  }
   // Hard failure, diagnosed loudly: an https page can never open ws://
   // (browsers block it as mixed content), so a non-TLS Soketi silently
   // degrades every page to minute-scale polling. This single log line is
@@ -341,11 +351,15 @@ function getPusherClient(): PusherJS | null {
       }
     }, 15000);
   } catch (error) {
+    wsReport.lastError = `constructor lanzo: ${String((error as Error)?.message ?? error)}`;
+    wsReport.lastReturn = "threw";
+    wslog("FALLO al crear cliente realtime", error);
     logError("Failed to initialize Pusher client:", error);
     connectionFailed = true;
     return null;
   }
 
+  wsReport.lastReturn = "created";
   return pusherInstance;
 }
 
