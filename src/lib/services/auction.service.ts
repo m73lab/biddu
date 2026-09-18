@@ -4,6 +4,11 @@ import * as memberService from "./member.service";
 import * as itemService from "./item.service";
 import { MemberRole } from "@/generated/prisma/enums";
 import type { Auction, AuctionMember } from "@/generated/prisma/client";
+import { publish, Channels, Events } from "@/lib/realtime";
+import type {
+  ItemEndedEvent,
+  AuctionClosedEvent,
+} from "@/lib/realtime/events";
 
 // ============================================================================
 // Types
@@ -574,6 +579,39 @@ export async function closeAuction(
       winner: item.bids[0].user,
       currencyCode: item.currencyCode,
     }));
+
+  // Broadcast realtime events so open views flip to the ended state live:
+  // - item:ended on each item channel (per-item watchers) and the auction
+  //   channel (so the overview and other members' sidebars update).
+  // - auction:closed on the auction channel (member overview).
+  for (const item of items) {
+    const topBid = item.bids[0] ?? null;
+    const itemEndedEvent: ItemEndedEvent = {
+      itemId: item.id,
+      auctionId,
+      itemName: item.name,
+      winnerId: topBid?.user.id ?? null,
+      winnerName: topBid?.user.name ?? null,
+      winningBid: topBid?.amount ?? null,
+      currencyCode: item.currencyCode,
+    };
+    publish(Channels.item(item.id), Events.ITEM_ENDED, itemEndedEvent);
+    publish(
+      Channels.privateAuction(auctionId),
+      Events.ITEM_ENDED,
+      itemEndedEvent,
+    );
+  }
+
+  const auctionClosedEvent: AuctionClosedEvent = {
+    auctionId,
+    name: auction.name,
+  };
+  publish(
+    Channels.privateAuction(auctionId),
+    Events.AUCTION_CLOSED,
+    auctionClosedEvent,
+  );
 
   return {
     auction: {

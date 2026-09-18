@@ -14,6 +14,8 @@ import {
 } from "@/lib/end-date-limit";
 import { prisma } from "@/lib/prisma";
 import { parsePagination } from "@/lib/api/pagination";
+import { publish, Channels, Events } from "@/lib/realtime";
+import type { ItemEndedEvent } from "@/lib/realtime/events";
 import {
   formatCurrency,
   decimalsForCurrency,
@@ -322,6 +324,36 @@ export const updateItem: ApiHandler = async (req, res, ctx) => {
     item._count.bids > 0,
     ctx.session!.user.id,
   );
+
+  // Broadcast ITEM_ENDED when the owner ends the item now (transition from
+  // active to ended in this request) so open bidder/buyer views flip to the
+  // ended state live instead of waiting for the next poll.
+  const now = new Date();
+  const wasEnded = !!item.endDate && item.endDate < now;
+  const nowEnded = updated.endDate !== null && updated.endDate <= now;
+  if (!wasEnded && nowEnded) {
+    const winner = updated.highestBidderId
+      ? await prisma.user.findUnique({
+          where: { id: updated.highestBidderId },
+          select: { name: true },
+        })
+      : null;
+    const itemEndedEvent: ItemEndedEvent = {
+      itemId: updated.id,
+      auctionId,
+      itemName: updated.name,
+      winnerId: updated.highestBidderId ?? null,
+      winnerName: winner?.name ?? null,
+      winningBid: updated.currentBid,
+      currencyCode: updated.currencyCode,
+    };
+    publish(Channels.item(itemId), Events.ITEM_ENDED, itemEndedEvent);
+    publish(
+      Channels.privateAuction(auctionId),
+      Events.ITEM_ENDED,
+      itemEndedEvent,
+    );
+  }
 
   res.status(200).json({
     ...updated,

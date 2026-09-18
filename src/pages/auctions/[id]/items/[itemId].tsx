@@ -371,6 +371,26 @@ interface AuctionCurrencyContextResponse {
 
   useEvent(itemChannel, Events.BID_NEW, handleNewBid);
 
+  // Handle realtime item-ended events: the owner ended the item (or the
+  // auction closed, which ends every item). Flip the item to the ended
+  // state instantly, then revalidate so the server truth replaces it
+  // (winner card, contact access, etc.).
+  const handleItemEnded = useCallback(() => {
+    mutate(
+      (current) =>
+        current
+          ? {
+              ...current,
+              item: {
+                ...current.item,
+                endDate: new Date().toISOString(),
+              },
+            }
+          : current,
+    );
+  }, [mutate]);
+  useEvent(itemChannel, Events.ITEM_ENDED, handleItemEnded);
+
   const item = data?.item ?? initialItem;
   const bids: Bid[] = data?.bids ?? initialBids;
   const bidsTotal = data?.pagination?.total ?? initialPagination.total;
