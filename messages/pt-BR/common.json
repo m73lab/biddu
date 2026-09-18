@@ -93,7 +93,8 @@
     "outbid": "Superado",
     "won": "Vencido",
     "lost": "Perdido",
-    "live": "Ao vivo"
+    "live": "Ao vivo",
+    "polling": "Atualização lenta (sem socket)"
   },
   "time": {
     "ends": "Termina",

@@ -15,6 +15,7 @@ import {
   useItemChannel,
   useEvent,
   useRealtimeSWRConfig,
+  useRealtimeStatus,
   Events,
 } from "@/hooks/realtime";
 import type { BidNewEvent } from "@/lib/realtime/events";
@@ -245,6 +246,11 @@ interface AuctionCurrencyContextResponse {
   // When realtime is connected: disables polling (updates come via WebSocket)
   // When realtime is disconnected: falls back to polling
   const swrConfig = useRealtimeSWRConfig(baseRefreshInterval);
+
+  // Real socket state for the live badge (green = socket, amber = polling).
+  const { isConnected: wsConnected, isEnabled: wsEnabled } =
+    useRealtimeStatus();
+  const liveOk = wsEnabled && wsConnected;
 
   // Bid history pagination (server-driven, like admin lists)
   const [bidPage, setBidPage] = useState(1);
@@ -1113,10 +1119,20 @@ interface AuctionCurrencyContextResponse {
                             {t("bid.currentBid")}
                           </span>
                           {!isEnded && (
-                            <span className="badge badge-sm badge-success gap-1 animate-pulse">
-                              <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
-                              {tStatus("live")}
-                            </span>
+                            liveOk ? (
+                              <span className="badge badge-sm badge-success gap-1 animate-pulse">
+                                <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
+                                {tStatus("live")}
+                              </span>
+                            ) : (
+                              <span
+                                className="badge badge-sm badge-warning gap-1"
+                                title={tStatus("polling")}
+                              >
+                                <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
+                                {tStatus("polling")}
+                              </span>
+                            )
                           )}
                         </div>
                         <div className="text-4xl font-extrabold text-primary tracking-tight mb-2">
