@@ -94,6 +94,45 @@ export function getWsConnectionState(): string {
 
 let rawProbeDone = false;
 
+// Reconnect budget for terminal `failed` states. The first attempt often
+// loses against page-load congestion (chunks/APIs saturating the pipe) while
+// a later identical attempt succeeds, so a terminal failure is retried a few
+// times with backoff before surrendering to polling. Budget resets on every
+// successful connection.
+let reconnectAttempts = 0;
+const MAX_RECONNECT_ATTEMPTS = 3;
+const RECONNECT_DELAYS_MS = [5000, 15000, 30000];
+
+function scheduleReconnect(): void {
+  if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+    wslog("reintentos agotados, queda polling");
+    return;
+  }
+  const delay =
+    RECONNECT_DELAYS_MS[reconnectAttempts] ??
+    RECONNECT_DELAYS_MS[RECONNECT_DELAYS_MS.length - 1];
+  reconnectAttempts += 1;
+  wsReport.lastError = `reintentando socket (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS}) en ${delay}ms...`;
+  wslog(
+    `reintento ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS} en ${delay}ms`,
+  );
+  setTimeout(() => {
+    const p = pusherInstance;
+    if (!p || p.connection.state === "connected") return;
+    try {
+      p.disconnect();
+    } catch {
+      /* noop: best effort to reset a dead transport */
+    }
+    try {
+      p.connect();
+      wslog("reconexion solicitada");
+    } catch (error) {
+      wslog("FALLO al solicitar reconexion", error);
+    }
+  }, delay);
+}
+
 /**
  * One-shot raw WebSocket probe (no pusher-js involved): opens a bare socket
  * to the same URL the client uses and reports exactly what the browser
@@ -299,6 +338,10 @@ function getPusherClient(): PusherJS | null {
         wslog(`estado: ${states.previous} -> ${states.current}`);
         if (states.current === "connected") {
           wslog("exito: CONECTADO al servidor realtime");
+          // Success resets everything: future calls work and a later failure
+          // gets a fresh retry budget.
+          reconnectAttempts = 0;
+          connectionFailed = false;
         }
         if (states.current === "failed") {
           // NOTE: handled HERE (not only in the direct "failed" binding
@@ -306,6 +349,7 @@ function getPusherClient(): PusherJS | null {
           // the direct binding does not always run.
           wsReport.lastError = "conexion imposible (failed)";
           wslog("FALLO: conexion al servidor realtime fallida (cae a polling)");
+          scheduleReconnect();
           probeRawWebSocket(config);
         }
         log(`Connection state: ${states.previous} → ${states.current}`);

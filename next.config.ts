@@ -8,6 +8,25 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
+// The browser WebSocket endpoint must be allowlisted explicitly: CSP
+// scheme matching does NOT cover wss: by https: (nor by 'self' on an https
+// origin), so without an explicit wss://host entry the browser kills the
+// socket silently and realtime degrades to slow polling. Values come from
+// the same vars as the Soketi client (baked at build time).
+function soketiConnectSources(): string[] {
+  const host = (process.env.NEXT_PUBLIC_SOKETI_HOST || "").trim();
+  if (!host) return [];
+  const tls = process.env.NEXT_PUBLIC_SOKETI_USE_TLS === "true";
+  const port = tls
+    ? process.env.NEXT_PUBLIC_SOKETI_PORT || "443"
+    : process.env.NEXT_PUBLIC_SOKETI_PORT || "80";
+  const scheme = tls ? "wss" : "ws";
+  const defaultPort = tls ? "443" : "80";
+  const sources = [`${scheme}://${host}`];
+  if (port !== defaultPort) sources.push(`${scheme}://${host}:${port}`);
+  return sources;
+}
+
 const nextConfig: NextConfig = {
   output: "standalone",
   i18n: {
@@ -78,7 +97,10 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https://www.gstatic.com https:",
               "font-src 'self' data:",
-              "connect-src 'self' https://www.google.com https: ws://127.0.0.1:* ws://192.168.1.16:* wss://192.168.1.16:* wss://127.0.0.1:* ws://localhost:* wss://localhost:* wss://*.pusher.com",
+              "connect-src 'self' https://www.google.com https: ws://127.0.0.1:* ws://192.168.1.16:* wss://192.168.1.16:* wss://127.0.0.1:* ws://localhost:* wss://localhost:* wss://*.pusher.com" +
+              (soketiConnectSources().length > 0
+                ? ` ${soketiConnectSources().join(" ")}`
+                : ""),
               "frame-src 'self' https://www.google.com https://www.recaptcha.net",
               "frame-ancestors 'none'",
               "base-uri 'self'",
