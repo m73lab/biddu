@@ -70,6 +70,21 @@ export function getWsReport(): WsReport {
 }
 
 /**
+ * Live connection state straight from the client (not just the last
+ * transition we observed): catches sockets stuck in `connecting` where no
+ * state_change ever fires.
+ */
+export function getWsConnectionState(): string {
+  try {
+    if (pusherInstance) return pusherInstance.connection.state;
+    if (connectionFailed) return "failed";
+    return "nunca";
+  } catch {
+    return "desconocido";
+  }
+}
+
+/**
  * Unconditional lifecycle log (always visible, no debug flag, no filter
  * level tricks): connection state, subscriptions and received events.
  * Payload details stay behind isDebugEnabled(); these lines only report
@@ -133,6 +148,13 @@ function getPusherClient(): PusherJS | null {
 
   connectionAttempted = true;
   const config = startedConfig;
+  // No socket on the server: subscriptions only make sense in the browser.
+  // (Creating the client during SSR would open server-side sockets and can
+  // mask init problems; the client creates it on first browser render and
+  // both sides agree on isConnected=false, so no hydration mismatch.)
+  if (typeof window === "undefined") {
+    return null;
+  }
   // Hard failure, diagnosed loudly: an https page can never open ws://
   // (browsers block it as mixed content), so a non-TLS Soketi silently
   // degrades every page to minute-scale polling. This single log line is
@@ -217,6 +239,29 @@ function getPusherClient(): PusherJS | null {
 
     wslog("cliente creado, conectando...");
     log("Pusher client created, connecting...");
+
+    // Snapshot the state right away: the initial `connecting` transition
+    // can fire synchronously inside the constructor, before our binding
+    // above runs, which would otherwise leave lastState as "nunca" forever.
+    wsReport.lastState = pusherInstance.connection.state;
+    wslog(`estado actual tras crear: ${pusherInstance.connection.state}`);
+
+    // Watchdog: a socket stuck in `connecting` with zero transitions is
+    // the signature of something silently swallowing the WebSocket
+    // (privacy extension, broken proxy, filtered network). pusher-js may
+    // never emit failed/error for it, so say so explicitly instead of
+    // leaving the page on slow polling with no explanation. One-shot:
+    // polling already covers updates, this only reports.
+    setTimeout(() => {
+      const s = pusherInstance?.connection.state;
+      if (s && s !== "connected" && s !== "failed" && s !== "disconnected") {
+        wsReport.lastError =
+          `colgado en '${s}' >15s sin transiciones: algo bloquea el WebSocket ` +
+          `(extension de privacidad/adblock, proxy o red). Prueba en incógnito.`;
+        wslog("FALLO: socket colgado en estado", s);
+        wslog("pista: deshabilita extensiones o prueba en ventana de incógnito");
+      }
+    }, 15000);
   } catch (error) {
     logError("Failed to initialize Pusher client:", error);
     connectionFailed = true;

@@ -17,6 +17,7 @@ import {
   useRealtimeSWRConfig,
   useRealtimeStatus,
   getWsReport,
+  getWsConnectionState,
   Events,
 } from "@/hooks/realtime";
 import type { BidNewEvent } from "@/lib/realtime/events";
@@ -257,7 +258,8 @@ interface AuctionCurrencyContextResponse {
   const wsReportText = (() => {
     try {
       const r = getWsReport();
-      return `WS driver=${r.driver} host=${r.host ?? "-"} port=${r.port ?? "-"} tls=${r.tls} key=${r.keySet ? "si" : "NO"} estado=${r.lastState ?? "nunca"} error=${r.lastError ?? "-"}`;
+      const vivo = getWsConnectionState();
+      return `WS driver=${r.driver} host=${r.host ?? "-"} port=${r.port ?? "-"} tls=${r.tls} key=${r.keySet ? "si" : "NO"} estado=${r.lastState ?? "nunca"} vivo=${vivo} error=${r.lastError ?? "-"}`;
     } catch {
       return "WS reporte no disponible";
     }
