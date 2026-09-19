@@ -124,7 +124,7 @@ export default function LandingPage() {
       "Modo subasta silenciosa",
       "Subastas privadas solo por invitación",
       "Gestión de miembros con permisos por roles",
-      "Soporte multi-moneda con Peso Chileno (CLP)",
+      "Soporte multi-moneda (CLP, USD y más)",
       "Carga de imágenes",
       "Notificaciones por correo en español",
       "Diseño responsive",
@@ -171,7 +171,7 @@ export default function LandingPage() {
         name: "¿En qué moneda son las pujas?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Por defecto en pesos chilenos ($ CLP), sin decimales y con hora de Chile.",
+          text: "En la moneda que elijas al crear la subasta, con formato y hora local correspondientes.",
         },
       },
       {

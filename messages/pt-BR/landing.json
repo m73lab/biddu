@@ -44,8 +44,8 @@
         "description": "Só por convite, com link ou abertos a todos. Você decide quem participa, com papéis e lances anônimos se quiser."
       },
       "multiCurrency": {
-        "title": "Em pesos chilenos",
-        "description": "Valores em $ CLP sem decimais estranhos, com horário do Chile. Também suporta outras moedas se precisar."
+        "title": "Multimoeda",
+        "description": "Crie leilões em pesos chilenos, dólares ou outras moedas, com formato e horário local de cada país."
       },
       "smartNotifications": {
         "title": "Avisos que chegam",
@@ -135,7 +135,7 @@
         },
         {
           "q": "Em que moeda são os lances?",
-          "a": "Por padrão em pesos chilenos ($ CLP), sem decimais e com horário do Chile. Também dá para criar leilões em outras moedas."
+          "a": "Na moeda que você escolher ao criar o leilão: pesos chilenos ($ CLP), dólares ou outras moedas, com formato e horário local correspondentes."
         },
         {
           "q": "Posso ter a Biddu no meu servidor?",

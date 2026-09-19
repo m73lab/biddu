@@ -44,8 +44,8 @@
         "description": "Solo por invitación, con enlace o abiertas a todos. Tú decides quién participa, con roles y pujas anónimas si quieres."
       },
       "multiCurrency": {
-        "title": "En pesos chilenos",
-        "description": "Montos en $ CLP sin decimales raros, con hora de Chile. También soporta otras monedas si las necesitas."
+        "title": "Multi-moneda",
+        "description": "Crea subastas en pesos chilenos, dólares u otras monedas, con formato y hora local de cada país."
       },
       "smartNotifications": {
         "title": "Avisos que sí llegan",
@@ -135,7 +135,7 @@
         },
         {
           "q": "¿En qué moneda son las pujas?",
-          "a": "Por defecto en pesos chilenos ($ CLP), sin decimales y con hora de Chile. También puedes crear subastas en otras monedas."
+          "a": "En la moneda que elijas al crear la subasta: pesos chilenos ($ CLP), dólares u otras monedas, con formato y hora local correspondientes."
         },
         {
           "q": "¿Puedo tener Biddu en mi propio servidor?",
