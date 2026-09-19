@@ -12,6 +12,8 @@
       "welcome": "Mostramos o essencial em poucos passos. Você pode pular o tour quando quiser.",
       "createTitle": "Crie seu leilão",
       "create": "Daqui você cria um leilão em menos de um minuto: nome, descrição e data de encerramento.",
+      "joinCodeTitle": "Entre com um código",
+      "joinCode": "Se alguém compartilhou um código com você, adicione-o aqui para entrar em um leilão privado.",
       "quotaTitle": "Uso e limites",
       "quota": "Cada leilão mostra seus lotes, pessoas e fotos usadas. O selo vermelho marca os encerrados.",
       "myAuctionsTitle": "Meus leilões",

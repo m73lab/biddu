@@ -8,8 +8,8 @@
     },
     "hero": {
       "title": "Online auctions",
-      "titleHighlight": "the Chilean way",
-      "description": "Create your club, firefighter company, small business or family auction in minutes. Real-time bidding, Chilean pesos, no fees. Payment and delivery are arranged in person, as always.",
+      "titleHighlight": "across Latin America",
+      "description": "Create your club, firefighter company, small business or family auction in minutes. Real-time bidding, in the currency you choose, no fees. Payment and delivery are arranged in person, as always.",
       "startAuction": "Create my free auction",
       "secondaryCta": "See how it works",
       "stats": [
@@ -18,8 +18,8 @@
           "label": "Free, no fees"
         },
         {
-          "value": "$ CLP",
-          "label": "Chilean pesos"
+          "value": "$ · US$",
+          "label": "Multiple currencies"
         },
         {
           "value": "24/7",

@@ -32,6 +32,12 @@ export const TOURS: Record<TourId, TourStepDef[]> = {
       contentKey: "dashboard.create",
     },
     {
+      target: '[data-tour="join-code"]',
+      titleKey: "dashboard.joinCodeTitle",
+      contentKey: "dashboard.joinCode",
+      optional: true,
+    },
+    {
       target: '[data-tour="quota-panel"]',
       titleKey: "dashboard.quotaTitle",
       contentKey: "dashboard.quota",

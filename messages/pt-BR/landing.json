@@ -8,8 +8,8 @@
     },
     "hero": {
       "title": "Leilões online",
-      "titleHighlight": "à chilena",
-      "description": "Crie o leilão do seu clube, quartel de bombeiros, pequena empresa ou família em minutos. Lances em tempo real, em pesos chilenos e sem taxas. Pagamento e entrega combinados pessoalmente, como sempre.",
+      "titleHighlight": "para toda a América Latina",
+      "description": "Crie o leilão do seu clube, quartel de bombeiros, pequena empresa ou família em minutos. Lances em tempo real, na moeda que você escolher e sem taxas. Pagamento e entrega combinados pessoalmente, como sempre.",
       "startAuction": "Criar meu leilão grátis",
       "secondaryCta": "Ver como funciona",
       "stats": [
@@ -18,8 +18,8 @@
           "label": "Grátis, sem taxas"
         },
         {
-          "value": "$ CLP",
-          "label": "Pesos chilenos"
+          "value": "$ · US$",
+          "label": "Multimoeda"
         },
         {
           "value": "24/7",

@@ -8,8 +8,8 @@
     },
     "hero": {
       "title": "Remates online",
-      "titleHighlight": "a la chilena",
-      "description": "Crea la subasta de tu club, compañía de bomberos, pyme o familia en minutos. Pujas en tiempo real, en pesos chilenos y sin comisiones. El pago y la entrega se coordinan en persona, como siempre.",
+      "titleHighlight": "en toda Latinoamérica",
+      "description": "Crea la subasta de tu club, compañía de bomberos, pyme o familia en minutos. Pujas en tiempo real, en la moneda que elijas y sin comisiones. El pago y la entrega se coordinan en persona, como siempre.",
       "startAuction": "Crear mi subasta gratis",
       "secondaryCta": "Ver cómo funciona",
       "stats": [
@@ -18,8 +18,8 @@
           "label": "Gratis, sin comisiones"
         },
         {
-          "value": "$ CLP",
-          "label": "Pesos chilenos"
+          "value": "$ · US$",
+          "label": "Multi-moneda"
         },
         {
           "value": "24/7",

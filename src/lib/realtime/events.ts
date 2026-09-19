@@ -85,6 +85,7 @@ export interface BidNewEvent {
   currencyProfileId?: string;
   bidderId: string;
   bidderName: string | null; // null if anonymous
+  bidderAvatarSeed?: string | null; // custom avatar seed (null if anonymous)
   isAnonymous: boolean;
   timestamp: string;
   highestBid: number;

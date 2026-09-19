@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import useSWR from "swr";
 import { getMessages, Locale } from "@/i18n";
 import { fetcher } from "@/lib/fetcher";
-import { PageLayout, EmptyState, SEO, ConfirmModal } from "@/components/common";
+import { PageLayout, EmptyState, SEO, ConfirmModal, Pagination } from "@/components/common";
 import { AuctionCard } from "@/components/auction";
 import { useToast } from "@/components/ui/toast";
 import { StatsCard, CurrencyStatsCard } from "@/components/ui/stats-card";
@@ -105,7 +105,7 @@ interface DashboardProps {
 interface SlotBalance {
   extras: Record<string, number>;
   perAuctionExtras: Record<string, Record<string, number>>;
-  items: any[];
+  items: unknown[];
 }
 
 function BidItemCard({ item, userId }: { item: BidItem; userId: string }) {
@@ -251,12 +251,12 @@ function UserItemCard({ item }: { item: UserItem }) {
   );
 }
 
-function QuotaPanel({ auctions }: { auctions: any[] }) {
+function QuotaPanel({ auctions }: { auctions: Auction[] }) {
   const t = useTranslations("dashboard.slots");
   const tCard = useTranslations("auction.card");
   const { data: slots } = useSWR<SlotBalance>("/api/user/slots", fetcher);
   const perAuctionExtras = slots?.perAuctionExtras || {};
-  const owned = auctions.filter((a: any) => a.role === "OWNER");
+  const owned = auctions.filter((a) => a.role === "OWNER");
   const max = 1 + (slots?.extras?.maxAuctions || 0);
   const current = owned.length;
   const [expanded, setExpanded] = useState(false);
@@ -294,7 +294,7 @@ function QuotaPanel({ auctions }: { auctions: any[] }) {
           )}
         </div>
         <div className="space-y-4 mt-4">
-          {visible.map((a: any) => {
+          {visible.map((a) => {
             const extras = perAuctionExtras[a.id] || { maxItems: 0, maxMembers: 0, maxImages: 0 };
             const limits = { items: 3 + (extras.maxItems || 0), members: 10 + (extras.maxMembers || 0), images: 3 + (extras.maxImages || 0) };
             const used = {
@@ -482,6 +482,22 @@ export default function DashboardPage({ user }: DashboardProps) {
     () => sortItems(bidItems, bidSort),
     [bidItems, bidSort],
   );
+  // Paginación client-side de "Mis Pujas" (el listado ya viene completo).
+  const [bidPage, setBidPage] = useState(1);
+  const [bidPageSize, setBidPageSize] = useState(10);
+  const bidTotalPages = Math.max(
+    1,
+    Math.ceil(sortedBidItems.length / bidPageSize),
+  );
+  const safeBidPage = Math.min(bidPage, bidTotalPages);
+  const paginatedBidItems = useMemo(
+    () =>
+      sortedBidItems.slice(
+        (safeBidPage - 1) * bidPageSize,
+        safeBidPage * bidPageSize,
+      ),
+    [sortedBidItems, safeBidPage, bidPageSize],
+  );
   // Slots/cuotas son feature solo-cloud: si la ruta no existe (self-hosted),
   // no hay límites que aplicar.
   const { data: quotaSlots } = useSWR<SlotBalance>(
@@ -662,11 +678,23 @@ export default function DashboardPage({ user }: DashboardProps) {
             </div>
             <div className="card bg-base-100 shadow">
               <div className="card-body p-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 max-h-80 overflow-y-auto">
-                  {sortedBidItems.map((item) => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                  {paginatedBidItems.map((item) => (
                     <BidItemCard key={item.id} item={item} userId={user.id} />
                   ))}
                 </div>
+                {sortedBidItems.length > bidPageSize && (
+                  <Pagination
+                    page={safeBidPage}
+                    pageSize={bidPageSize}
+                    total={sortedBidItems.length}
+                    onPageChange={setBidPage}
+                    onPageSizeChange={(size) => {
+                      setBidPageSize(size);
+                      setBidPage(1);
+                    }}
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -799,6 +827,7 @@ export default function DashboardPage({ user }: DashboardProps) {
                       )}
                       <button
                         onClick={() => setIsJoinModalOpen(true)}
+                        data-tour="join-code"
                         className="btn btn-outline gap-1.5"
                       >
                         <span className="icon-[tabler--ticket] size-5"></span>
@@ -818,6 +847,7 @@ export default function DashboardPage({ user }: DashboardProps) {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setIsJoinModalOpen(true)}
+                    data-tour="join-code"
                     className="btn btn-outline btn-sm gap-1.5"
                   >
                     <span className="icon-[tabler--ticket] size-4"></span>

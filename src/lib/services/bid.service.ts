@@ -67,7 +67,7 @@ export async function getItemBids(itemId: string): Promise<BidWithUser[]> {
     where: { auctionItemId: itemId },
     include: {
       user: {
-        select: { id: true, name: true, email: true },
+        select: { id: true, name: true, email: true, avatarSeed: true },
       },
     },
     orderBy: { amount: "desc" },
@@ -321,7 +321,7 @@ export async function placeBid(
     }),
     prisma.user.findUnique({
       where: { id: userId },
-      select: { name: true },
+      select: { name: true, avatarSeed: true },
     }),
   ]);
 
@@ -393,6 +393,7 @@ export async function placeBid(
     currencyProfileId: input.currencyProfileId,
     bidderId: userId,
     bidderName: shouldBeAnonymous ? null : bidder?.name || null,
+    bidderAvatarSeed: shouldBeAnonymous ? null : bidder?.avatarSeed ?? null,
     isAnonymous: shouldBeAnonymous,
     timestamp: bid.createdAt.toISOString(),
     highestBid: input.amount,
