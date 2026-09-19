@@ -864,9 +864,9 @@ interface AuctionCurrencyContextResponse {
                 </div>
               )}
 
-              <div className="flex flex-col xl:flex-row gap-8 items-start">
-                {/* Main Content */}
-                <div className="flex-1 w-full min-w-0">
+              <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_24rem] xl:gap-8 items-start">
+                {/* Info: title + gallery (mobile first) */}
+                <div className="min-w-0 order-1 xl:col-start-1 xl:row-start-1">
                   <div className="card bg-base-100/80 backdrop-blur-sm border border-base-content/5 shadow-xl">
                     <div className="card-body p-6 sm:p-8">
                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
@@ -1010,24 +1010,14 @@ interface AuctionCurrencyContextResponse {
                           </div>
                         </div>
                       )}
+                    </div>
+                  </div>
+                </div>
 
-                      {item.description && (
-                        <div className="mb-8">
-                          <h2 className="font-bold text-lg mb-3 flex items-center gap-2">
-                            <span className="icon-[tabler--file-description] size-5 text-primary"></span>
-                            {t("create.description")}
-                          </h2>
-                          <div className="bg-base-200/30 p-4 rounded-xl border border-base-content/5">
-                            <RichTextRenderer
-                              content={item.description}
-                              className="text-base-content/80"
-                            />
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="divider opacity-50"></div>
-
+                {/* Bid history (mobile: right below the bid panel) */}
+                <div className="min-w-0 order-3 xl:col-start-1 xl:row-start-2">
+                  <div className="card bg-base-100/80 backdrop-blur-sm border border-base-content/5 shadow-xl">
+                    <div className="card-body p-6 sm:p-8">
                       {/* Bid History */}
                         <div data-tour="bid-history">
                         <div className="flex items-center justify-between mb-6">
@@ -1178,8 +1168,32 @@ interface AuctionCurrencyContextResponse {
                             />
                           )}
                         </div>
+                    </div>
+                  </div>
+                </div>
 
-                      <div className="divider opacity-50"></div>
+                {/* Description + discussions */}
+                <div className="min-w-0 order-4 xl:col-start-1 xl:row-start-3">
+                  <div className="card bg-base-100/80 backdrop-blur-sm border border-base-content/5 shadow-xl">
+                    <div className="card-body p-6 sm:p-8">
+                      {item.description && (
+                        <div className="mb-8">
+                          <h2 className="font-bold text-lg mb-3 flex items-center gap-2">
+                            <span className="icon-[tabler--file-description] size-5 text-primary"></span>
+                            {t("create.description")}
+                          </h2>
+                          <div className="bg-base-200/30 p-4 rounded-xl border border-base-content/5">
+                            <RichTextRenderer
+                              content={item.description}
+                              className="text-base-content/80"
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {item.description && (
+                        <div className="divider opacity-50"></div>
+                      )}
 
                       {/* Discussions Section */}
                         <div data-tour="discussions">
@@ -1194,13 +1208,13 @@ interface AuctionCurrencyContextResponse {
                             locked={!!isEnded}
                           />
                         </div>
-                      </div>
                     </div>
                   </div>
+                </div>
 
-                  {/* Sidebar - Bidding */}
-                <div className="w-full xl:w-96 shrink-0">
-                  <div className="card bg-base-100/80 backdrop-blur-sm border border-base-content/5 shadow-xl sticky top-4">
+                {/* Bid panel (mobile: order 2, right under the gallery) */}
+                <div className="min-w-0 order-2 xl:col-start-2 xl:row-start-1 xl:row-span-3 xl:self-start xl:sticky xl:top-4">
+                  <div className="card bg-base-100/80 backdrop-blur-sm border border-base-content/5 shadow-xl">
                     <div className="card-body p-6">
                       <h2 className="card-title flex items-center gap-2 mb-2">
                         <span className="icon-[tabler--gavel] size-6 text-primary"></span>
