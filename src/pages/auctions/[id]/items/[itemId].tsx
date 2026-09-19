@@ -283,6 +283,7 @@ interface AuctionCurrencyContextResponse {
       revalidateOnFocus: swrConfig.revalidateOnFocus,
       revalidateOnReconnect: swrConfig.revalidateOnReconnect,
       revalidateIfStale: swrConfig.revalidateIfStale,
+      revalidateOnMount: swrConfig.revalidateOnMount,
     },
   );
 
@@ -385,16 +386,23 @@ interface AuctionCurrencyContextResponse {
   // (winner card, contact access, etc.).
   const handleItemEnded = useCallback(() => {
     mutate(
-      (current) =>
-        current
-          ? {
-              ...current,
-              item: {
-                ...current.item,
-                endDate: new Date().toISOString(),
-              },
-            }
-          : current,
+      (current) => {
+        // Seed from SSR props when the SWR cache is empty (fallbackData is
+        // not stored in the cache), so an end event right after mount still
+        // flips the view instead of being dropped.
+        const base = current ?? {
+          item: initialItem,
+          bids: initialBids,
+          pagination: initialPagination,
+        };
+        return {
+          ...base,
+          item: {
+            ...base.item,
+            endDate: new Date().toISOString(),
+          },
+        };
+      },
     );
   }, [mutate]);
   useEvent(itemChannel, Events.ITEM_ENDED, handleItemEnded);
@@ -656,7 +664,7 @@ interface AuctionCurrencyContextResponse {
       const res = await fetch(`/api/auctions/${auction.id}/items/${item.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ endDate: new Date().toISOString() }),
+        body: JSON.stringify({ endNow: true }),
       });
 
       if (!res.ok) {

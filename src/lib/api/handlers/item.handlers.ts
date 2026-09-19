@@ -23,6 +23,10 @@ import {
 } from "@/utils/formatters";
 import { z } from "zod";
 
+// A client-provided end date within this window of the server clock is
+// treated as "ending now" (clock-skew tolerance for the "end now" button).
+const CLOCK_SKEW_TOLERANCE_MS = 120_000;
+
 // ============================================================================
 // Schemas
 // ============================================================================
@@ -60,6 +64,9 @@ export const updateItemSchema = z.object({
   maxBid: z.number().positive().nullable().optional(),
   bidderAnonymous: z.boolean().optional(),
   endDate: z.string().nullable().optional(),
+  // "End now": use the SERVER clock instead of the caller's (which can be
+  // skewed) so the item truly ends and the ended transition broadcasts.
+  endNow: z.boolean().optional(),
   isPublished: z.boolean().optional(),
   commentsEnabled: z.boolean().optional(),
   discussionsEnabled: z.boolean().optional(),
@@ -250,6 +257,14 @@ export const updateItem: ApiHandler = async (req, res, ctx) => {
 
   const { validatedBody } = req as ValidatedRequest<UpdateItemBody>;
 
+  // "End now": pin the end date to the SERVER clock. Relying on the caller's
+  // clock is fragile: a browser skewed ahead makes the item end in the
+  // future, so the ended transition isn't detected/broadcast and bids keep
+  // being accepted for a while.
+  if (validatedBody.endNow) {
+    validatedBody.endDate = new Date().toISOString();
+  }
+
   // Validate isPublished changes - cannot unpublish items with bids
   if (validatedBody.isPublished === false && item._count.bids > 0) {
     throw new BadRequestError(
@@ -259,10 +274,22 @@ export const updateItem: ApiHandler = async (req, res, ctx) => {
 
   // Validate end date changes
   if (validatedBody.endDate !== undefined) {
-    const newEndDate = validatedBody.endDate
+    let newEndDate = validatedBody.endDate
       ? new Date(validatedBody.endDate)
       : null;
     const now = new Date();
+
+    // Clock-skew guard for callers that send their own "now": snap a near-now
+    // end date to the server clock so the item truly ends and the ended
+    // transition fires even when the caller's clock runs ahead.
+    if (
+      newEndDate &&
+      newEndDate.getTime() <= now.getTime() + CLOCK_SKEW_TOLERANCE_MS
+    ) {
+      newEndDate = now;
+      validatedBody.endDate = now.toISOString();
+    }
+
     const isItemEnded = item.endDate && item.endDate < now;
 
     if (isItemEnded && newEndDate && newEndDate > now) {
