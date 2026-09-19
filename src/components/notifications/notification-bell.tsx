@@ -5,6 +5,7 @@ import {
   useNotifications,
   type Notification,
 } from "@/contexts/NotificationContext";
+import { stripHtmlToText } from "@/utils/text";
 
 export function NotificationBell() {
   const t = useTranslations("notifications");
@@ -200,7 +201,7 @@ export function NotificationBell() {
                           {notification.title}
                         </p>
                         <p className="text-xs text-base-content/60 line-clamp-2">
-                          {notification.message}
+                          {stripHtmlToText(notification.message)}
                         </p>
                         <p className="text-xs text-base-content/40 mt-1">
                           {formatTime(notification.createdAt)}

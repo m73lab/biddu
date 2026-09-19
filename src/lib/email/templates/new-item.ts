@@ -1,4 +1,5 @@
 import { renderLayout, theme, escapeHtml } from "../layout";
+import { stripHtmlToText } from "@/utils/text";
 
 const content = `
     <mj-text font-size="22px" font-weight="600" color="${theme.colors.text.main}">
@@ -46,7 +47,7 @@ export function getNewItemTemplateData(data: {
     : "";
 
   const descriptionSection = data.itemDescription
-    ? `<mj-text font-size="14px" color="${theme.colors.text.muted}" padding="8px 0">${escapeHtml(data.itemDescription)}</mj-text>`
+    ? `<mj-text font-size="14px" color="${theme.colors.text.muted}" padding="8px 0">${escapeHtml(stripHtmlToText(data.itemDescription))}</mj-text>`
     : "";
 
   return {

@@ -7,6 +7,7 @@ import {
   useNotifications,
   type Notification,
 } from "@/contexts/NotificationContext";
+import { stripHtmlToText } from "@/utils/text";
 
 interface MobileNotificationSheetProps {
   isOpen: boolean;
@@ -261,7 +262,7 @@ export function MobileNotificationSheet({
                             )}
                           </div>
                           <p className="text-sm text-base-content/70 mt-0.5 line-clamp-2">
-                            {notification.message}
+                            {stripHtmlToText(notification.message)}
                           </p>
                           <p className="text-xs text-base-content/50 mt-1.5">
                             {formatTime(notification.createdAt)}
