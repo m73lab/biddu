@@ -25,6 +25,7 @@ export function Navbar({ user }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [mobileNotificationsOpen, setMobileNotificationsOpen] = useState(false);
+  const [mobileSignOutOpen, setMobileSignOutOpen] = useState(false);
 
   const { unreadCount } = useNotifications();
   const { isUserAuctionAdmin } = useAppContext();
@@ -42,7 +43,17 @@ export function Navbar({ user }: NavbarProps) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Lock body scroll while the mobile sign-out sheet is open
+  useEffect(() => {
+    if (!mobileSignOutOpen) return;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileSignOutOpen]);
+
   return (
+    <>
     <nav
       className={`sticky top-0 z-50 transition-all duration-300 ${
         scrolled
@@ -107,21 +118,30 @@ export function Navbar({ user }: NavbarProps) {
           </div>
         </div>
 
-        {/* Mobile Notification Bell */}
-        <button
-          onClick={() => setMobileNotificationsOpen(true)}
-          className="md:hidden btn btn-ghost btn-sm btn-circle"
-          aria-label={t("notifications")}
-        >
-          <div className="indicator">
-            <span className="icon-[tabler--bell] size-6"></span>
-            {unreadCount > 0 && (
-              <span className="indicator-item badge badge-primary badge-xs">
-                {unreadCount > 9 ? "9+" : unreadCount}
-              </span>
-            )}
-          </div>
-        </button>
+        {/* Mobile actions: notifications + sign out */}
+        <div className="flex items-center gap-1 md:hidden">
+          <button
+            onClick={() => setMobileNotificationsOpen(true)}
+            className="btn btn-ghost btn-sm btn-circle"
+            aria-label={t("notifications")}
+          >
+            <div className="indicator">
+              <span className="icon-[tabler--bell] size-6"></span>
+              {unreadCount > 0 && (
+                <span className="indicator-item badge badge-primary badge-xs">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+            </div>
+          </button>
+          <button
+            onClick={() => setMobileSignOutOpen(true)}
+            className="btn btn-ghost btn-sm btn-circle text-error/80 hover:text-error"
+            aria-label={t("signOut")}
+          >
+            <span className="icon-[tabler--logout] size-6"></span>
+          </button>
+        </div>
 
         <div className="hidden md:flex items-center gap-3">
           {/* Notifications */}
@@ -265,5 +285,43 @@ export function Navbar({ user }: NavbarProps) {
         onClose={() => setMobileNotificationsOpen(false)}
       />
     </nav>
+
+    {mobileSignOutOpen && (
+      <>
+        <div
+          className="fixed inset-0 bg-black/50 z-[60] md:hidden"
+          onClick={() => setMobileSignOutOpen(false)}
+        />
+        <div className="md:hidden fixed inset-x-0 bottom-0 z-[60] animate-in slide-in-from-bottom duration-300">
+          <div className="bg-base-100 rounded-t-3xl shadow-2xl">
+            <div className="flex justify-center pt-3 pb-2">
+              <div className="w-10 h-1 bg-base-content/20 rounded-full" />
+            </div>
+            <div className="px-6 py-4 flex flex-col items-center text-center gap-2">
+              <span className="icon-[tabler--logout] size-10 text-error" />
+              <h2 className="text-lg font-bold">{t("signOut")}</h2>
+              <p className="text-sm text-base-content/60">
+                {t("signOutConfirm")}
+              </p>
+            </div>
+            <div className="px-4 pb-6 pt-2 grid grid-cols-2 gap-3">
+              <button
+                onClick={() => setMobileSignOutOpen(false)}
+                className="btn btn-ghost"
+              >
+                {tCommon("cancel")}
+              </button>
+              <button
+                onClick={() => signOut({ callbackUrl: "/login" })}
+                className="btn btn-error"
+              >
+                {t("signOut")}
+              </button>
+            </div>
+          </div>
+        </div>
+      </>
+    )}
+    </>
   );
 }
