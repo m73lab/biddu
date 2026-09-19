@@ -462,6 +462,13 @@ export function useRealtimeStatus(): {
     const pusher = getPusherClient();
     return pusher?.connection.state === "connected" || false;
   });
+  // Socket up but a private channel failed to subscribe = realtime is dead
+  // for this session (no events). Force the polling fallback in that case.
+  const [channelDown, setChannelDown] = useState(() => channelSubError);
+
+  useEffect(() => {
+    return onChannelSubError(() => setChannelDown(true));
+  }, []);
 
   useEffect(() => {
     const pusher = getPusherClient();
@@ -481,13 +488,30 @@ export function useRealtimeStatus(): {
   }, []);
 
   return {
-    isConnected,
+    isConnected: isConnected && !channelDown,
     isEnabled: isClientRealtimeEnabled(),
   };
 }
 
 // Simple channel cache - no external store needed
 const channelCache = new Map<string, Channel>();
+
+// Any private-channel subscription failure means the session receives no
+// realtime events even though the socket says "connected". Consumers watch
+// this to fall back to polling rather than freezing the view.
+let channelSubError = false;
+const channelSubErrorListeners = new Set<() => void>();
+function reportChannelSubError(): void {
+  if (channelSubError) return;
+  channelSubError = true;
+  channelSubErrorListeners.forEach((listener) => listener());
+}
+function onChannelSubError(listener: () => void): () => void {
+  channelSubErrorListeners.add(listener);
+  return () => {
+    channelSubErrorListeners.delete(listener);
+  };
+}
 
 /**
  * Hook to subscribe to a channel and listen for events
@@ -521,6 +545,7 @@ export function useChannel(channelName: ChannelName | null): Channel | null {
         )}`;
         wslog(`FALLO suscripcion a ${channelName}`, error);
         logError(`Failed to subscribe to channel: ${channelName}`, error);
+        reportChannelSubError();
       });
     } else {
       wslog(`canal en cache: ${channelName}`);
@@ -628,6 +653,14 @@ export interface RealtimeSWRConfig {
   revalidateOnFocus: boolean;
   revalidateOnReconnect: boolean;
   revalidateIfStale: boolean;
+  /**
+   * Always fetch once on mount. Critical: `fallbackData` (SSR props) is NOT
+   * written to the SWR cache, so without this the cache stays empty on
+   * client-side navigations (where the socket is already connected and all
+   * auto-revalidation is off) and `mutate(updater)` receives `undefined`,
+   * silently no-oping realtime/optimistic updates until a full reload.
+   */
+  revalidateOnMount: boolean;
 }
 
 export function useRealtimeSWRConfig(baseInterval: number): RealtimeSWRConfig {
@@ -644,6 +677,9 @@ export function useRealtimeSWRConfig(baseInterval: number): RealtimeSWRConfig {
         revalidateOnFocus: false,
         revalidateOnReconnect: false,
         revalidateIfStale: false,
+        // Seed the SWR cache once: fallbackData alone never reaches the cache,
+        // so realtime mutate() would otherwise no-op on client-side navigations.
+        revalidateOnMount: true,
       };
     }
 
@@ -657,6 +693,7 @@ export function useRealtimeSWRConfig(baseInterval: number): RealtimeSWRConfig {
         revalidateOnFocus: true,
         revalidateOnReconnect: true,
         revalidateIfStale: true,
+        revalidateOnMount: true,
       };
     }
 
@@ -667,6 +704,7 @@ export function useRealtimeSWRConfig(baseInterval: number): RealtimeSWRConfig {
       revalidateOnFocus: true,
       revalidateOnReconnect: true,
       revalidateIfStale: false,
+      revalidateOnMount: true,
     };
   }, [isConnected, isEnabled, baseInterval]);
 }
