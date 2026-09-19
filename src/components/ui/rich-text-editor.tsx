@@ -9,6 +9,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState, useSyncExternalStore, useRef } from "react";
 import { createPortal } from "react-dom";
 import DOMPurify from "dompurify";
+import { stripHtmlToText } from "@/utils/text";
 
 interface RichTextEditorProps {
   name: string;
@@ -416,9 +417,5 @@ export function RichTextRenderer({
 
 // Utility to strip HTML tags for plain text previews (e.g., in cards)
 export function stripHtmlTags(html: string): string {
-  if (!html) return "";
-  return html
-    .replace(/<[^>]*>/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+  return stripHtmlToText(html);
 }

@@ -3,6 +3,7 @@ import { NotificationType } from "@/generated/prisma/client";
 import type { Notification } from "@/generated/prisma/client";
 import { publish, Events, Channels } from "@/lib/realtime";
 import { formatAuctionAmount } from "@/lib/currency-display";
+import { stripHtmlToText } from "@/utils/text";
 import type {
   NotificationNewEvent,
   NotificationCountEvent,
@@ -376,11 +377,12 @@ export async function notifyNewItem(
   auctionId: string,
   itemId: string,
 ): Promise<Notification> {
-  // Truncate description to 50 chars
-  const truncatedDescription = itemDescription
-    ? itemDescription.length > 50
-      ? itemDescription.substring(0, 50) + "..."
-      : itemDescription
+  // Descripción como texto plano (el rich text viene en HTML) y truncado
+  const plainDescription = stripHtmlToText(itemDescription);
+  const truncatedDescription = plainDescription
+    ? plainDescription.length > 50
+      ? plainDescription.substring(0, 50) + "..."
+      : plainDescription
     : "Sin descripción";
 
   return createNotification({
