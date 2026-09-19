@@ -44,8 +44,8 @@
         "description": "Invite-only, link access or fully open. You decide who joins, with roles and anonymous bidding if you like."
       },
       "multiCurrency": {
-        "title": "Chilean pesos first",
-        "description": "Amounts in $ CLP with no odd decimals, on Chile time. Other currencies supported too."
+        "title": "Multi-currency",
+        "description": "Run auctions in Chilean pesos, US dollars or other currencies, with proper formatting and local time for each country."
       },
       "smartNotifications": {
         "title": "Notifications that arrive",
@@ -135,7 +135,7 @@
         },
         {
           "q": "Which currency are bids in?",
-          "a": "Chilean pesos ($ CLP) by default, no decimals, on Chile time. You can also create auctions in other currencies."
+          "a": "In whichever currency you choose when creating the auction: Chilean pesos ($ CLP), US dollars or other currencies, with matching formatting and local time."
         },
         {
           "q": "Can I run Biddu on my own server?",
