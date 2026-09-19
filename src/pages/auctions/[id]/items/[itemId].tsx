@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { getMessages, Locale } from "@/i18n";
@@ -233,6 +233,8 @@ interface AuctionCurrencyContextResponse {
   const [relistAuctionId, setRelistAuctionId] = useState(auction.id);
   const [isRelisting, setIsRelisting] = useState(false);
   const router = useRouter();
+  const bidFormRef = useRef<HTMLFormElement | null>(null);
+  const bidInputRef = useRef<HTMLInputElement | null>(null);
 
   // Check if item has ended (use initialItem for initial polling config)
   const initialIsEnded =
@@ -796,6 +798,17 @@ interface AuctionCurrencyContextResponse {
     }
   };
 
+  const focusBidForm = () => {
+    // Best-effort: focus the amount input (opens the mobile keyboard)
+    // and bring the form into view. In denomination mode there is no
+    // single amount input, so we only scroll.
+    bidInputRef.current?.focus({ preventScroll: true });
+    bidFormRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-base-100 relative overflow-x-hidden selection:bg-primary/20">
       {/* Background decorations */}
@@ -820,7 +833,7 @@ interface AuctionCurrencyContextResponse {
 
           {/* Main Content Area */}
           <main className="flex-1 overflow-y-auto bg-base-200/30">
-            <div className="container mx-auto px-4 py-8 pb-20 max-w-6xl">
+            <div className="container mx-auto px-4 py-8 pb-36 xl:pb-20 max-w-6xl">
               <div className="mb-6 flex items-center justify-between ">
                 <Link
                   href={`/auctions/${auction.id}`}
@@ -1303,6 +1316,7 @@ interface AuctionCurrencyContextResponse {
 
                       {canBid && !isEnded ? (
                         <form
+                          ref={bidFormRef}
                           onSubmit={handleBid}
                           data-tour="bid-form"
                           className="space-y-4"
@@ -1374,6 +1388,7 @@ interface AuctionCurrencyContextResponse {
                                     item.currency.symbol}
                                 </span>
                                 <input
+                                  ref={bidInputRef}
                                   type="number"
                                   value={bidAmount}
                                   onChange={(e) => setBidAmount(e.target.value)}
@@ -1672,6 +1687,35 @@ interface AuctionCurrencyContextResponse {
           </main>
         </div>
       </div>
+
+      {/* Sticky mobile bid bar: keeps the current bid + CTA always visible */}
+      {canBid && !isEnded && (
+        <div className="xl:hidden fixed inset-x-0 bottom-20 z-40 px-3 pointer-events-none">
+          <div className="mx-auto max-w-6xl pointer-events-auto flex items-center gap-3 rounded-2xl border border-base-content/10 bg-base-100/95 p-2 shadow-2xl backdrop-blur-lg">
+            <div className="min-w-0 flex-1 px-2">
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-base-content/50">
+                {t("bid.currentBid")}
+              </p>
+              <p className="font-mono text-lg font-extrabold leading-tight text-primary truncate">
+                {formatCurrency(
+                  item.currentBid || item.startingBid,
+                  item.currency.symbol,
+                  decimalsForCurrency(item.currency.code),
+                  item.currency.code,
+                )}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={focusBidForm}
+              className="btn btn-primary shrink-0 gap-2 shadow-lg shadow-primary/20"
+            >
+              <span className="icon-[tabler--gavel] size-5"></span>
+              {t("bid.placeBid")}
+            </button>
+          </div>
+        </div>
+      )}
 
       <MobileBottomNav />
 
