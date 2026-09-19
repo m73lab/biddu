@@ -116,6 +116,10 @@ interface AuctionDetailProps {
       fallbackData: fallback ?? undefined,
       refreshInterval,
       revalidateOnFocus: true,
+      // Seed the SWR cache on mount: fallbackData is not written to the cache,
+      // so without this the realtime mutate() below no-ops after a client-side
+      // navigation (when the socket is already connected).
+      revalidateOnMount: true,
       keepPreviousData: true,
     },
   );
@@ -130,9 +134,10 @@ interface AuctionDetailProps {
       if (event.auctionId !== auctionId) return;
       mutate(
         (current) => {
-          if (!current) return current;
+          const base = current ?? fallback;
+          if (!base) return current;
           let changed = false;
-          const items = current.items.map((it) => {
+          const items = base.items.map((it) => {
             if (it.id !== event.itemId) return it;
             changed = true;
             return {
@@ -143,8 +148,8 @@ interface AuctionDetailProps {
               _count: { bids: it._count.bids + 1 },
             };
           });
-          if (!changed) return current;
-          return { ...current, items };
+          if (!changed) return base;
+          return { ...base, items };
         },
         { revalidate: false },
       );
@@ -162,15 +167,16 @@ interface AuctionDetailProps {
       if (event.auctionId !== auctionId) return;
       mutate(
         (current) => {
-          if (!current) return current;
+          const base = current ?? fallback;
+          if (!base) return current;
           let changed = false;
-          const items = current.items.map((it) => {
+          const items = base.items.map((it) => {
             if (it.id !== event.itemId) return it;
             changed = true;
             return { ...it, endDate: new Date().toISOString() };
           });
-          if (!changed) return current;
-          return { ...current, items };
+          if (!changed) return base;
+          return { ...base, items };
         },
         { revalidate: false },
       );
@@ -186,10 +192,11 @@ interface AuctionDetailProps {
     (event: AuctionClosedEvent) => {
       if (event.auctionId !== auctionId) return;
       mutate((current) => {
-        if (!current) return current;
+        const base = current ?? fallback;
+        if (!base) return current;
         return {
-          ...current,
-          auction: { ...current.auction, endDate: new Date().toISOString() },
+          ...base,
+          auction: { ...base.auction, endDate: new Date().toISOString() },
         };
       });
     },

@@ -3,9 +3,39 @@ import * as notificationService from "./notification.service";
 import { processUnconfirmedWinners } from "./bid.service";
 import { revealDueRatings } from "./rating.service";
 import { queueItemWonEmail } from "@/lib/email/service";
+import { publish, Channels, Events } from "@/lib/realtime";
+import type { ItemEndedEvent, AuctionClosedEvent } from "@/lib/realtime/events";
 import { createLogger } from "@/lib/logger";
 
 const auctionEndLogger = createLogger("auction-end");
+
+/**
+ * Broadcast the item:ended event to the per-item channel and the auction
+ * channel so open bidder/buyer views flip to the ended state live. Time-based
+ * endings (scheduler) used to skip this entirely, leaving clients stale until
+ * a manual refresh.
+ */
+function publishItemEnded(item: {
+  id: string;
+  name: string;
+  auctionId: string;
+  highestBidderId: string | null;
+  winnerName?: string | null;
+  currentBid: number | null;
+  currencyCode: string;
+}) {
+  const event: ItemEndedEvent = {
+    itemId: item.id,
+    auctionId: item.auctionId,
+    itemName: item.name,
+    winnerId: item.highestBidderId,
+    winnerName: item.winnerName ?? null,
+    winningBid: item.currentBid,
+    currencyCode: item.currencyCode,
+  };
+  publish(Channels.item(item.id), Events.ITEM_ENDED, event);
+  publish(Channels.privateAuction(item.auctionId), Events.ITEM_ENDED, event);
+}
 
 /**
  * Process items that have ended but winner hasn't been notified yet.
@@ -79,6 +109,16 @@ export async function processEndedItems(): Promise<number> {
               data: { winnerNotified: true },
             });
 
+            publishItemEnded({
+              id: item.id,
+              name: item.name,
+              auctionId: item.auction.id,
+              highestBidderId: item.highestBidderId,
+              winnerName: winner?.name ?? null,
+              currentBid: item.currentBid,
+              currencyCode: item.currency.code,
+            });
+
             auctionEndLogger.debug(
               { itemId: item.id, winnerId: item.highestBidderId },
               "Processed ended item",
@@ -108,6 +148,7 @@ export async function processEndedItems(): Promise<number> {
       },
       include: {
         auction: { select: { id: true, name: true } },
+        currency: { select: { code: true } },
       },
       take: 50,
     });
@@ -125,6 +166,15 @@ export async function processEndedItems(): Promise<number> {
           await prisma.auctionItem.update({
             where: { id: item.id },
             data: { winnerNotified: true },
+          });
+          publishItemEnded({
+            id: item.id,
+            name: item.name,
+            auctionId: item.auction.id,
+            highestBidderId: null,
+            winnerName: null,
+            currentBid: null,
+            currencyCode: item.currency.code,
           });
           auctionEndLogger.debug(
             { itemId: item.id },
@@ -208,7 +258,7 @@ export async function closeItemsOfEndedAuctions(): Promise<number> {
           some: { OR: [{ endDate: null }, { endDate: { gt: now } }] },
         },
       },
-      select: { id: true, endDate: true },
+      select: { id: true, name: true, endDate: true },
     });
 
     if (endedAuctions.length === 0) {
@@ -218,6 +268,27 @@ export async function closeItemsOfEndedAuctions(): Promise<number> {
     let closed = 0;
     await Promise.all(
       endedAuctions.map(async (a) => {
+        // Fetch the lots before closing so we can broadcast item:ended with
+        // their winner info (the fetch must stay ahead of the updateMany).
+        const itemsToClose = await prisma.auctionItem.findMany({
+          where: {
+            auctionId: a.id,
+            OR: [{ endDate: null }, { endDate: { gt: a.endDate! } }],
+          },
+          select: {
+            id: true,
+            name: true,
+            highestBidderId: true,
+            currentBid: true,
+            currencyCode: true,
+            bids: {
+              orderBy: { amount: "desc" },
+              take: 1,
+              select: { user: { select: { name: true } } },
+            },
+          },
+        });
+
         const r = await prisma.auctionItem.updateMany({
           where: {
             auctionId: a.id,
@@ -226,6 +297,30 @@ export async function closeItemsOfEndedAuctions(): Promise<number> {
           data: { endDate: a.endDate! },
         });
         closed += r.count;
+
+        for (const item of itemsToClose) {
+          publishItemEnded({
+            id: item.id,
+            name: item.name,
+            auctionId: a.id,
+            highestBidderId: item.highestBidderId,
+            winnerName: item.bids[0]?.user.name ?? null,
+            currentBid: item.currentBid,
+            currencyCode: item.currencyCode,
+          });
+        }
+
+        if (r.count > 0) {
+          const auctionClosedEvent: AuctionClosedEvent = {
+            auctionId: a.id,
+            name: a.name,
+          };
+          publish(
+            Channels.privateAuction(a.id),
+            Events.AUCTION_CLOSED,
+            auctionClosedEvent,
+          );
+        }
       }),
     );
 

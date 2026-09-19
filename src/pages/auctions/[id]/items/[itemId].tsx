@@ -324,11 +324,19 @@ interface AuctionCurrencyContextResponse {
         }
         mutate(
           (current) => {
-            if (!current) return current;
+            // `fallbackData` (SSR props) is not stored in the SWR cache, so on
+            // a client-side navigation `current` can be undefined while the
+            // UI renders the SSR props. Seed the update from those props so
+            // the event isn't silently dropped.
+            const base = current ?? {
+              item: initialItem,
+              bids: initialBids,
+              pagination: initialPagination,
+            };
 
             // Skip if this bid already exists (dedup for own bids)
-            if (current.bids.some((b) => b.id === event.bidId)) {
-              return current;
+            if ((base.bids ?? []).some((b) => b.id === event.bidId)) {
+              return base;
             }
 
             // Create new bid entry from event data
@@ -346,21 +354,21 @@ interface AuctionCurrencyContextResponse {
             };
 
             return {
-              ...current,
+              ...base,
               item: {
-                ...current.item,
+                ...base.item,
                 currentBid: event.highestBid,
                 highestBidderId: event.bidderId,
                 // Update endDate if anti-snipe extended it
                 ...(event.newEndDate ? { endDate: event.newEndDate } : {}),
               },
-              bids: [newBid, ...current.bids],
-              pagination: current.pagination
+              bids: [newBid, ...(base.bids ?? [])],
+              pagination: base.pagination
                 ? {
-                    ...current.pagination,
-                    total: current.pagination.total + 1,
+                    ...base.pagination,
+                    total: base.pagination.total + 1,
                   }
-                : current.pagination,
+                : base.pagination,
             };
           },
           { revalidate: false }, // Don't refetch - we have all the data
@@ -579,22 +587,46 @@ interface AuctionCurrencyContextResponse {
 
         mutate(
           (current) => {
-            if (!current) return current;
+            // Seed from SSR props when the SWR cache is empty (fallbackData is
+            // not stored in the cache), otherwise the update is dropped.
+            const base = current ?? {
+              item: initialItem,
+              bids: initialBids,
+              pagination: initialPagination,
+            };
+
+            // Skip if this bid is already in the list (realtime event
+            // may have arrived before the POST response).
+            if ((base.bids ?? []).some((b) => b.id === result.id)) {
+              return base;
+            }
 
             return {
-              ...current,
+              ...base,
               item: {
-                ...current.item,
+                ...base.item,
                 currentBid: effectiveBidAmount,
                 highestBidderId: user.id,
               },
-              bids: [newBid, ...current.bids],
+              bids: [newBid, ...(base.bids ?? [])],
+              // Keep the total in sync so the history section flips from
+              // the empty state to the list immediately (same as the
+              // realtime handler below does).
+              pagination: base.pagination
+                ? {
+                    ...base.pagination,
+                    total: base.pagination.total + 1,
+                  }
+                : base.pagination,
             };
           },
           { revalidate: false },
         );
         setBidAmount("");
         setDenominationBid({});
+        // Reconcile with the server so the bidder always sees their bid and
+        // the new minimum, even if the realtime event is slow or missed.
+        mutate();
       }
     } catch {
       setError(tErrors("generic"));
