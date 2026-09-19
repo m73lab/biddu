@@ -179,6 +179,7 @@ export const placeBid: ApiHandler = async (req, res, ctx) => {
         minBid,
         item.currency.symbol,
         decimalsForCurrency(item.currency.code),
+        item.currency.code,
       )}`,
     );
   }
@@ -194,6 +195,7 @@ export const placeBid: ApiHandler = async (req, res, ctx) => {
         absurdCap,
         item.currency.symbol,
         decimalsForCurrency(item.currency.code),
+        item.currency.code,
       )})`,
     );
   }
@@ -205,6 +207,7 @@ export const placeBid: ApiHandler = async (req, res, ctx) => {
         item.maxBid,
         item.currency.symbol,
         decimalsForCurrency(item.currency.code),
+        item.currency.code,
       )})`,
     );
   }

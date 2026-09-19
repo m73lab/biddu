@@ -10,8 +10,10 @@
     "dashboard": {
       "welcomeTitle": "Welcome to Biddu",
       "welcome": "A quick walkthrough of the essentials. You can skip anytime.",
-      "createTitle": "Create your auction",
-      "create": "Create an auction in under a minute from here: name, description and end date.",
+        "createTitle": "Create your auction",
+        "create": "Create an auction in under a minute from here: name, description and end date.",
+        "joinCodeTitle": "Join with a code",
+        "joinCode": "If someone shared a code with you, add it here to join a private auction.",
       "quotaTitle": "Usage and limits",
       "quota": "Each auction shows its used lots, people and photos. The red badge marks finished ones.",
       "myAuctionsTitle": "My auctions",

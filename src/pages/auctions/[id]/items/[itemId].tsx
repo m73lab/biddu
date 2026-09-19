@@ -31,6 +31,7 @@ import {
   formatDate as formatDateInZone,
   decimalsForCurrency,
   inputStepForCurrency,
+  localeForCurrency,
 } from "@/utils/formatters";
 import { FulfillmentCard } from "@/components/item/FulfillmentCard";
 import { ScoreBadge } from "@/components/common/ScoreBadge";
@@ -89,6 +90,7 @@ interface ItemDetailProps {
     id: string;
     name: string | null;
     email: string;
+    avatarSeed: string | null;
   };
   auction: {
     id: string;
@@ -351,7 +353,11 @@ interface AuctionCurrencyContextResponse {
               isAnonymous: event.isAnonymous,
               user: event.isAnonymous
                 ? null
-                : { id: event.bidderId, name: event.bidderName },
+                : {
+                    id: event.bidderId,
+                    name: event.bidderName,
+                    avatarSeed: event.bidderAvatarSeed ?? null,
+                  },
             };
 
             return {
@@ -375,7 +381,7 @@ interface AuctionCurrencyContextResponse {
           { revalidate: false }, // Don't refetch - we have all the data
         );
       },
-      [mutate, bidPage],
+      [mutate, bidPage, initialItem, initialBids, initialPagination],
     );
 
   useEvent(itemChannel, Events.BID_NEW, handleNewBid);
@@ -404,7 +410,7 @@ interface AuctionCurrencyContextResponse {
         };
       },
     );
-  }, [mutate]);
+  }, [mutate, initialItem, initialBids, initialPagination]);
   useEvent(itemChannel, Events.ITEM_ENDED, handleItemEnded);
 
   const item = data?.item ?? initialItem;
@@ -590,7 +596,9 @@ interface AuctionCurrencyContextResponse {
           currencyProfile: null,
           createdAt: new Date().toISOString(),
           isAnonymous: isAnon,
-          user: isAnon ? null : { id: user.id, name: user.name },
+          user: isAnon
+            ? null
+            : { id: user.id, name: user.name, avatarSeed: user.avatarSeed ?? null },
         };
 
         mutate(
@@ -1369,10 +1377,13 @@ interface AuctionCurrencyContextResponse {
                                   type="number"
                                   value={bidAmount}
                                   onChange={(e) => setBidAmount(e.target.value)}
-                                  placeholder={minBid.toLocaleString("es-CL", {
-                                    maximumFractionDigits:
-                                      decimalsForCurrency(item.currency.code),
-                                  })}
+                                  placeholder={minBid.toLocaleString(
+                                    localeForCurrency(item.currency.code),
+                                    {
+                                      maximumFractionDigits:
+                                        decimalsForCurrency(item.currency.code),
+                                    },
+                                  )}
                                   min={minBid}
                                   step={
                                     selectedCurrencyProfile
@@ -1842,6 +1853,7 @@ export const getServerSideProps = withAuth(async (context) => {
         id: context.session.user.id,
         name: context.session.user.name || null,
         email: context.session.user.email || "",
+        avatarSeed: context.session.user.avatarSeed ?? null,
       },
       auction: {
         id: membership.auction.id,

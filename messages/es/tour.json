@@ -12,6 +12,8 @@
       "welcome": "Te mostramos lo esencial en pocos pasos. Puedes omitir el tour cuando quieras.",
       "createTitle": "Crea tu subasta",
       "create": "Desde aquí creas una subasta en menos de un minuto: nombre, descripción y fecha de cierre.",
+      "joinCodeTitle": "Únete con código",
+      "joinCode": "Si te compartieron un código, agrégalo aquí para entrar a una subasta privada.",
       "quotaTitle": "Uso y límites",
       "quota": "Cada subasta muestra sus lotes, personas y fotos usadas. El badge rojo marca las finalizadas.",
       "myAuctionsTitle": "Mis subastas",

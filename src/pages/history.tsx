@@ -1,7 +1,8 @@
 import Link from "next/link";
+import { useState } from "react";
 import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
-import { PageLayout, EmptyState } from "@/components/common";
+import { PageLayout, EmptyState, Pagination } from "@/components/common";
 import { StatsCard, CurrencyStatsCard } from "@/components/ui/stats-card";
 import { SkeletonHistoryPage } from "@/components/ui/skeleton";
 import {
@@ -67,7 +68,7 @@ export default function HistoryPage({ user }: HistoryPageProps) {
   const tItem = useTranslations("item");
 
   // Client-side data fetching
-  const { data, isLoading } = useSWR<HistoryData>("/api/user/history", fetcher, {
+  const { data } = useSWR<HistoryData>("/api/user/history", fetcher, {
     dedupingInterval: 30000,
     keepPreviousData: true,
   });
@@ -78,6 +79,16 @@ export default function HistoryPage({ user }: HistoryPageProps) {
     winningBids: 0,
     winningTotals: [],
   };
+
+  // Paginación client-side del historial de pujas.
+  const [bidPage, setBidPage] = useState(1);
+  const [bidPageSize, setBidPageSize] = useState(10);
+  const bidTotalPages = Math.max(1, Math.ceil(bids.length / bidPageSize));
+  const safeBidPage = Math.min(bidPage, bidTotalPages);
+  const paginatedBids = bids.slice(
+    (safeBidPage - 1) * bidPageSize,
+    safeBidPage * bidPageSize,
+  );
 
   const formatBidDate = (dateStr: string) => {
     return formatDate(dateStr, {
@@ -178,7 +189,7 @@ export default function HistoryPage({ user }: HistoryPageProps) {
             <>
               {/* Mobile Card View */}
               <div className="space-y-3 md:hidden px-4 pb-4">
-                {bids.map((bid) => {
+                {paginatedBids.map((bid) => {
                   const isEnded =
                     bid.item.endDate && new Date(bid.item.endDate) < new Date();
                   return (
@@ -228,7 +239,6 @@ export default function HistoryPage({ user }: HistoryPageProps) {
                             {tItem("bid.currentBid")}
                           </span>
                           <span className="font-mono font-medium">
-                            {bid.item.currency.symbol}
                             {formatCurrency(
                               bid.item.currentBid || 0,
                               bid.item.currency.symbol,
@@ -270,7 +280,7 @@ export default function HistoryPage({ user }: HistoryPageProps) {
                     </tr>
                   </thead>
                   <tbody>
-                    {bids.map((bid) => {
+                    {paginatedBids.map((bid) => {
                       const isEnded =
                         bid.item.endDate &&
                         new Date(bid.item.endDate) < new Date();
@@ -304,7 +314,6 @@ export default function HistoryPage({ user }: HistoryPageProps) {
                               decimalsForCurrency(bid.item.currency.code), bid.item.currency.code)}
                           </td>
                           <td className="text-right font-mono text-base-content/70">
-                            {bid.item.currency.symbol}
                             {formatCurrency(
                               bid.item.currentBid || 0,
                               bid.item.currency.symbol,
@@ -338,6 +347,19 @@ export default function HistoryPage({ user }: HistoryPageProps) {
                   </tbody>
                 </table>
               </div>
+
+              {bids.length > bidPageSize && (
+                <Pagination
+                  page={safeBidPage}
+                  pageSize={bidPageSize}
+                  total={bids.length}
+                  onPageChange={setBidPage}
+                  onPageSizeChange={(size) => {
+                    setBidPageSize(size);
+                    setBidPage(1);
+                  }}
+                />
+              )}
             </>
           )}
         </div>
