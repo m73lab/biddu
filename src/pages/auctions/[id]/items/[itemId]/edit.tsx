@@ -221,7 +221,7 @@ export default function EditItemPage({
       const res = await fetch(`/api/auctions/${auction.id}/items/${item.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ endDate: new Date().toISOString() }),
+        body: JSON.stringify({ endNow: true }),
       });
 
       if (!res.ok) {
