@@ -17,7 +17,7 @@ export default function TermsPage() {
         description={t("description")}
       />
 
-      <div className="min-h-screen bg-base-100">
+      <div className="min-h-dvh bg-base-100">
         {/* Navigation */}
         <nav className="navbar bg-base-100/80 backdrop-blur-lg sticky top-0 z-50 border-b border-base-200">
           <div className="container mx-auto px-4">

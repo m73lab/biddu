@@ -58,17 +58,17 @@ interface Bid {
   isAnonymous: boolean;
   ipHash?: string | null;
   userAgent?: string | null;
-      user: {
-        id: string;
-        name: string | null;
-      createdAt?: string | null;
-      avatarSeed?: string | null;
-      avgSellerRating?: number | null;
-      sellerRatingCount?: number;
-      avgBuyerRating?: number | null;
-      buyerRatingCount?: number;
-    } | null; // null if anonymous to viewer
-  }
+  user: {
+    id: string;
+    name: string | null;
+    createdAt?: string | null;
+    avatarSeed?: string | null;
+    avgSellerRating?: number | null;
+    sellerRatingCount?: number;
+    avgBuyerRating?: number | null;
+    buyerRatingCount?: number;
+  } | null; // null if anonymous to viewer
+}
 
 interface Discussion {
   id: string;
@@ -116,10 +116,10 @@ interface ItemDetailProps {
     minBidIncrement: number;
     currentBid: number | null;
     highestBidderId: string | null;
-      fulfillmentStatus: string | null;
-      winnerConfirmed: boolean;
-      winnerConfirmDeadline: string | null;
-      bidderAnonymous: boolean;
+    fulfillmentStatus: string | null;
+    winnerConfirmed: boolean;
+    winnerConfirmDeadline: string | null;
+    bidderAnonymous: boolean;
     endDate: string | null;
     createdAt: string;
     isPublished: boolean;
@@ -128,15 +128,15 @@ interface ItemDetailProps {
     antiSnipeThresholdSeconds: number;
     antiSnipeExtensionSeconds: number;
     creator: {
-        id: string;
-        name: string | null;
-        email: string;
-        avatarSeed?: string | null;
-        avgSellerRating?: number | null;
-        sellerRatingCount?: number;
-        avgBuyerRating?: number | null;
-        buyerRatingCount?: number;
-      };
+      id: string;
+      name: string | null;
+      email: string;
+      avatarSeed?: string | null;
+      avgSellerRating?: number | null;
+      sellerRatingCount?: number;
+      avgBuyerRating?: number | null;
+      buyerRatingCount?: number;
+    };
   };
   bids: Bid[];
   initialPagination: { page: number; pageSize: number; total: number };
@@ -156,11 +156,11 @@ interface ItemDetailProps {
   }>;
 }
 
-  interface ItemResponse {
-    item: ItemDetailProps["item"];
-    bids: Bid[];
-    pagination: { page: number; pageSize: number; total: number };
-  }
+interface ItemResponse {
+  item: ItemDetailProps["item"];
+  bids: Bid[];
+  pagination: { page: number; pageSize: number; total: number };
+}
 
 interface AuctionCurrencyProfile {
   id: string;
@@ -180,15 +180,15 @@ interface AuctionCurrencyContextResponse {
   baseCurrency: AuctionCurrencyProfile | null;
 }
 
-  export default function ItemDetailPage({
-    user,
-    auction,
-    auctionItems,
-    itemSidebarCollapsed: initialSidebarCollapsed,
-    item: initialItem,
-    bids: initialBids,
-    initialPagination,
-    discussions: initialDiscussions,
+export default function ItemDetailPage({
+  user,
+  auction,
+  auctionItems,
+  itemSidebarCollapsed: initialSidebarCollapsed,
+  item: initialItem,
+  bids: initialBids,
+  initialPagination,
+  discussions: initialDiscussions,
   canBid,
   canEdit,
   isItemOwner,
@@ -311,8 +311,7 @@ interface AuctionCurrencyContextResponse {
   }>(showRelistModal ? "/api/user/dashboard" : null, fetcher);
   const relistTargets = (relistTargetsData?.auctions ?? []).filter(
     (a) =>
-      a.role === "OWNER" &&
-      (!a.endDate || new Date(a.endDate) > new Date()),
+      a.role === "OWNER" && (!a.endDate || new Date(a.endDate) > new Date()),
   );
 
   // Subscribe to item channel for realtime bid updates
@@ -320,71 +319,71 @@ interface AuctionCurrencyContextResponse {
 
   // Handle realtime bid events - optimistically update UI with event data
   const handleNewBid = useCallback(
-      (event: BidNewEvent) => {
-        // Optimistically update SWR cache with the new bid data.
-        // Off page 1 just revalidate the visible page instead.
-        if (bidPage !== 1) {
-          mutate();
-          return;
-        }
-        mutate(
-          (current) => {
-            // `fallbackData` (SSR props) is not stored in the SWR cache, so on
-            // a client-side navigation `current` can be undefined while the
-            // UI renders the SSR props. Seed the update from those props so
-            // the event isn't silently dropped.
-            const base = current ?? {
-              item: initialItem,
-              bids: initialBids,
-              pagination: initialPagination,
-            };
+    (event: BidNewEvent) => {
+      // Optimistically update SWR cache with the new bid data.
+      // Off page 1 just revalidate the visible page instead.
+      if (bidPage !== 1) {
+        mutate();
+        return;
+      }
+      mutate(
+        (current) => {
+          // `fallbackData` (SSR props) is not stored in the SWR cache, so on
+          // a client-side navigation `current` can be undefined while the
+          // UI renders the SSR props. Seed the update from those props so
+          // the event isn't silently dropped.
+          const base = current ?? {
+            item: initialItem,
+            bids: initialBids,
+            pagination: initialPagination,
+          };
 
-            // Skip if this bid already exists (dedup for own bids)
-            if ((base.bids ?? []).some((b) => b.id === event.bidId)) {
-              return base;
-            }
+          // Skip if this bid already exists (dedup for own bids)
+          if ((base.bids ?? []).some((b) => b.id === event.bidId)) {
+            return base;
+          }
 
-            // Create new bid entry from event data
-            const newBid: Bid = {
-              id: event.bidId,
-              amount: event.amount,
-              normalizedAmount: event.normalizedAmount ?? null,
-              enteredRepresentation: event.enteredRepresentation,
-              currencyProfile: null,
-              createdAt: event.timestamp,
-              isAnonymous: event.isAnonymous,
-              user: event.isAnonymous
-                ? null
-                : {
-                    id: event.bidderId,
-                    name: event.bidderName,
-                    avatarSeed: event.bidderAvatarSeed ?? null,
-                  },
-            };
+          // Create new bid entry from event data
+          const newBid: Bid = {
+            id: event.bidId,
+            amount: event.amount,
+            normalizedAmount: event.normalizedAmount ?? null,
+            enteredRepresentation: event.enteredRepresentation,
+            currencyProfile: null,
+            createdAt: event.timestamp,
+            isAnonymous: event.isAnonymous,
+            user: event.isAnonymous
+              ? null
+              : {
+                  id: event.bidderId,
+                  name: event.bidderName,
+                  avatarSeed: event.bidderAvatarSeed ?? null,
+                },
+          };
 
-            return {
-              ...base,
-              item: {
-                ...base.item,
-                currentBid: event.highestBid,
-                highestBidderId: event.bidderId,
-                // Update endDate if anti-snipe extended it
-                ...(event.newEndDate ? { endDate: event.newEndDate } : {}),
-              },
-              bids: [newBid, ...(base.bids ?? [])],
-              pagination: base.pagination
-                ? {
-                    ...base.pagination,
-                    total: base.pagination.total + 1,
-                  }
-                : base.pagination,
-            };
-          },
-          { revalidate: false }, // Don't refetch - we have all the data
-        );
-      },
-      [mutate, bidPage, initialItem, initialBids, initialPagination],
-    );
+          return {
+            ...base,
+            item: {
+              ...base.item,
+              currentBid: event.highestBid,
+              highestBidderId: event.bidderId,
+              // Update endDate if anti-snipe extended it
+              ...(event.newEndDate ? { endDate: event.newEndDate } : {}),
+            },
+            bids: [newBid, ...(base.bids ?? [])],
+            pagination: base.pagination
+              ? {
+                  ...base.pagination,
+                  total: base.pagination.total + 1,
+                }
+              : base.pagination,
+          };
+        },
+        { revalidate: false }, // Don't refetch - we have all the data
+      );
+    },
+    [mutate, bidPage, initialItem, initialBids, initialPagination],
+  );
 
   useEvent(itemChannel, Events.BID_NEW, handleNewBid);
 
@@ -393,25 +392,23 @@ interface AuctionCurrencyContextResponse {
   // state instantly, then revalidate so the server truth replaces it
   // (winner card, contact access, etc.).
   const handleItemEnded = useCallback(() => {
-    mutate(
-      (current) => {
-        // Seed from SSR props when the SWR cache is empty (fallbackData is
-        // not stored in the cache), so an end event right after mount still
-        // flips the view instead of being dropped.
-        const base = current ?? {
-          item: initialItem,
-          bids: initialBids,
-          pagination: initialPagination,
-        };
-        return {
-          ...base,
-          item: {
-            ...base.item,
-            endDate: new Date().toISOString(),
-          },
-        };
-      },
-    );
+    mutate((current) => {
+      // Seed from SSR props when the SWR cache is empty (fallbackData is
+      // not stored in the cache), so an end event right after mount still
+      // flips the view instead of being dropped.
+      const base = current ?? {
+        item: initialItem,
+        bids: initialBids,
+        pagination: initialPagination,
+      };
+      return {
+        ...base,
+        item: {
+          ...base.item,
+          endDate: new Date().toISOString(),
+        },
+      };
+    });
   }, [mutate, initialItem, initialBids, initialPagination]);
   useEvent(itemChannel, Events.ITEM_ENDED, handleItemEnded);
 
@@ -485,11 +482,7 @@ interface AuctionCurrencyContextResponse {
 
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return "Sin fecha de cierre";
-    return formatDateInZone(
-      dateStr,
-      undefined,
-      auction.timeZone ?? undefined,
-    );
+    return formatDateInZone(dateStr, undefined, auction.timeZone ?? undefined);
   };
 
   const handleBid = async (e: React.FormEvent) => {
@@ -533,7 +526,9 @@ interface AuctionCurrencyContextResponse {
           amount: formatCurrency(
             minBid,
             "",
-            decimalsForCurrency(item.currency.code), item.currency.code),
+            decimalsForCurrency(item.currency.code),
+            item.currency.code,
+          ),
         }),
       );
       setIsLoading(false);
@@ -600,7 +595,11 @@ interface AuctionCurrencyContextResponse {
           isAnonymous: isAnon,
           user: isAnon
             ? null
-            : { id: user.id, name: user.name, avatarSeed: user.avatarSeed ?? null },
+            : {
+                id: user.id,
+                name: user.name,
+                avatarSeed: user.avatarSeed ?? null,
+              },
         };
 
         mutate(
@@ -695,10 +694,9 @@ interface AuctionCurrencyContextResponse {
   const handleDeleteItem = async () => {
     setIsDeletingItem(true);
     try {
-      const res = await fetch(
-        `/api/auctions/${auction.id}/items/${item.id}`,
-        { method: "DELETE" },
-      );
+      const res = await fetch(`/api/auctions/${auction.id}/items/${item.id}`, {
+        method: "DELETE",
+      });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         showToast(data.message || tErrors("generic"), "error");
@@ -810,11 +808,11 @@ interface AuctionCurrencyContextResponse {
   };
 
   return (
-    <div className="min-h-screen bg-base-100 relative overflow-x-hidden selection:bg-primary/20">
+    <div className="min-h-dvh bg-base-100 relative overflow-x-hidden selection:bg-primary/20">
       {/* Background decorations */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[128px] translate-x-1/3 -translate-y-1/3"></div>
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[128px] -translate-x-1/3 translate-y-1/3"></div>
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-[radial-gradient(closest-side,var(--color-primary),transparent)] opacity-5 translate-x-1/3 -translate-y-1/3"></div>
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-[radial-gradient(closest-side,var(--color-secondary),transparent)] opacity-5 -translate-x-1/3 translate-y-1/3"></div>
       </div>
 
       <div className="relative z-10 mb-5 sm:mb-0">
@@ -874,25 +872,19 @@ interface AuctionCurrencyContextResponse {
                           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">
                             {item.name}
                           </h1>
-                            <div className="flex items-center gap-2 text-sm text-base-content/60 ">
-                              <span className="icon-[tabler--user] size-4"></span>
-                              <span>{t("listedBy")}</span>
-                              <span className="font-medium text-base-content/80">
-                                {item.creator.name || item.creator.email}
-                              </span>
-                              <ScoreBadge
-                                avgSeller={
-                                  item.creator.avgSellerRating ?? null
-                                }
-                                sellerCount={
-                                  item.creator.sellerRatingCount ?? 0
-                                }
-                                avgBuyer={item.creator.avgBuyerRating ?? null}
-                                buyerCount={
-                                  item.creator.buyerRatingCount ?? 0
-                                }
-                              />
-                            </div>
+                          <div className="flex items-center gap-2 text-sm text-base-content/60 ">
+                            <span className="icon-[tabler--user] size-4"></span>
+                            <span>{t("listedBy")}</span>
+                            <span className="font-medium text-base-content/80">
+                              {item.creator.name || item.creator.email}
+                            </span>
+                            <ScoreBadge
+                              avgSeller={item.creator.avgSellerRating ?? null}
+                              sellerCount={item.creator.sellerRatingCount ?? 0}
+                              avgBuyer={item.creator.avgBuyerRating ?? null}
+                              buyerCount={item.creator.buyerRatingCount ?? 0}
+                            />
+                          </div>
                         </div>
 
                         <div className="flex gap-2 self-start w-full sm:w-auto flex-col items-end">
@@ -903,21 +895,21 @@ interface AuctionCurrencyContextResponse {
                             </span>
                           )}
                           {isEnded && (
-                              <div className="badge badge-error gap-1 font-bold w-auto sm:w-full">
-                                <span className="icon-[tabler--flag-filled] size-3"></span>
-                                {tStatus("ended")}
-                              </div>
-                            )}
-                            <button
-                              type="button"
-                              onClick={restartTour}
-                              title={tTour("help")}
-                              aria-label={tTour("help")}
-                              className="btn btn-ghost btn-sm gap-2 w-auto"
-                            >
-                              <span className="icon-[tabler--help] size-4"></span>
-                              {tTour("help")}
-                            </button>
+                            <div className="badge badge-error gap-1 font-bold w-auto sm:w-full">
+                              <span className="icon-[tabler--flag-filled] size-3"></span>
+                              {tStatus("ended")}
+                            </div>
+                          )}
+                          <button
+                            type="button"
+                            onClick={restartTour}
+                            title={tTour("help")}
+                            aria-label={tTour("help")}
+                            className="btn btn-ghost btn-sm gap-2 w-auto"
+                          >
+                            <span className="icon-[tabler--help] size-4"></span>
+                            {tTour("help")}
+                          </button>
                           {canEdit && (
                             <Link
                               href={`/auctions/${auction.id}/items/${item.id}/edit`}
@@ -1019,14 +1011,14 @@ interface AuctionCurrencyContextResponse {
                   <div className="card bg-base-100/80 backdrop-blur-sm border border-base-content/5 shadow-xl">
                     <div className="card-body p-6 sm:p-8">
                       {/* Bid History */}
-                        <div data-tour="bid-history">
+                      <div data-tour="bid-history">
                         <div className="flex items-center justify-between mb-6">
                           <h2 className="font-bold text-lg flex items-center gap-2">
                             <span className="icon-[tabler--history] size-5 text-secondary"></span>
                             {t("history.title")}
-                              <span className="badge badge-sm badge-ghost">
-                                {bidsTotal}
-                              </span>
+                            <span className="badge badge-sm badge-ghost">
+                              {bidsTotal}
+                            </span>
                           </h2>
                         </div>
 
@@ -1035,11 +1027,11 @@ interface AuctionCurrencyContextResponse {
                             <div className="bg-base-200 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
                               <span className="icon-[tabler--gavel] size-6 text-base-content/30"></span>
                             </div>
-                              <p className="text-base-content/60 font-medium">
-                                {isEnded
-                                  ? t("history.noBidsEnded")
-                                  : t("history.noBids")}
-                              </p>
+                            <p className="text-base-content/60 font-medium">
+                              {isEnded
+                                ? t("history.noBidsEnded")
+                                : t("history.noBids")}
+                            </p>
                           </div>
                         ) : (
                           <div className="space-y-3">
@@ -1052,29 +1044,29 @@ interface AuctionCurrencyContextResponse {
                                     : "bg-base-100 border-base-content/5 hover:bg-base-200/50"
                                 }`}
                               >
-                                  <div className="flex items-center gap-3">
-                                    {bid.user && !bid.isAnonymous ? (
-                                      <UserAvatar
-                                        name={bid.user.name}
-                                        seed={bid.user.id}
-                                        avatarSeed={bid.user.avatarSeed}
-                                        size="sm"
-                                      />
-                                    ) : (
-                                      <div
-                                        className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                                          index === 0
-                                            ? "bg-primary text-primary-content"
-                                            : "bg-base-300 text-base-content/60"
-                                        }`}
-                                      >
-                                        {index === 0 ? (
-                                          <span className="icon-[tabler--trophy] size-4"></span>
-                                        ) : (
-                                          <span className="icon-[tabler--user] size-4"></span>
-                                        )}
-                                      </div>
-                                    )}
+                                <div className="flex items-center gap-3">
+                                  {bid.user && !bid.isAnonymous ? (
+                                    <UserAvatar
+                                      name={bid.user.name}
+                                      seed={bid.user.id}
+                                      avatarSeed={bid.user.avatarSeed}
+                                      size="sm"
+                                    />
+                                  ) : (
+                                    <div
+                                      className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                                        index === 0
+                                          ? "bg-primary text-primary-content"
+                                          : "bg-base-300 text-base-content/60"
+                                      }`}
+                                    >
+                                      {index === 0 ? (
+                                        <span className="icon-[tabler--trophy] size-4"></span>
+                                      ) : (
+                                        <span className="icon-[tabler--user] size-4"></span>
+                                      )}
+                                    </div>
+                                  )}
                                   <div>
                                     <div className="flex items-center gap-2">
                                       <span
@@ -1082,92 +1074,92 @@ interface AuctionCurrencyContextResponse {
                                           index === 0 ? "text-primary" : ""
                                         }`}
                                       >
-                                          {bid.user && !bid.isAnonymous
-                                            ? bid.user.id === user.id
-                                              ? t("history.you")
-                                              : bid.user.name ||
-                                                t("history.anonymous")
-                                            : t("history.anonymous")}
+                                        {bid.user && !bid.isAnonymous
+                                          ? bid.user.id === user.id
+                                            ? t("history.you")
+                                            : bid.user.name ||
+                                              t("history.anonymous")
+                                          : t("history.anonymous")}
                                       </span>
-                                        {index === 0 && (
-                                          <span className="badge badge-primary badge-xs">
-                                            {t("history.highest")}
+                                      {index === 0 && (
+                                        <span className="badge badge-primary badge-xs">
+                                          {t("history.highest")}
+                                        </span>
+                                      )}
+                                      {bid.user &&
+                                        bid.user.createdAt &&
+                                        Date.now() -
+                                          new Date(
+                                            bid.user.createdAt,
+                                          ).getTime() <
+                                          7 * 24 * 60 * 60 * 1000 && (
+                                          <span
+                                            className="badge badge-warning badge-xs"
+                                            title={t("history.newAccount")}
+                                          >
+                                            {t("history.newAccount")}
                                           </span>
                                         )}
-                                        {bid.user &&
-                                          bid.user.createdAt &&
-                                          Date.now() -
-                                            new Date(
-                                              bid.user.createdAt,
-                                            ).getTime() <
-                                            7 * 24 * 60 * 60 * 1000 && (
-                                            <span
-                                              className="badge badge-warning badge-xs"
-                                              title={t("history.newAccount")}
-                                            >
-                                              {t("history.newAccount")}
-                                            </span>
-                                          )}
-                                        {bid.user && (
-                                          <ScoreBadge
-                                            avgSeller={
-                                              bid.user.avgSellerRating ?? null
-                                            }
-                                            sellerCount={
-                                              bid.user.sellerRatingCount ?? 0
-                                            }
-                                            avgBuyer={
-                                              bid.user.avgBuyerRating ?? null
-                                            }
-                                            buyerCount={
-                                              bid.user.buyerRatingCount ?? 0
-                                            }
-                                          />
-                                        )}
-                                      </div>
-                                      <div className="text-xs text-base-content/50">
-                                        {formatDate(bid.createdAt)}
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="text-right">
-                                    <div className="font-bold font-mono text-lg">
-                                      {formatAuctionBidDisplay({
-                                        amount: bid.amount,
-                                        enteredRepresentation:
-                                          bid.enteredRepresentation,
-                                        profile: bid.currencyProfile,
-                                        fallbackSymbol: item.currency.symbol,
-                                        fallbackCode: item.currency.code,
-                                      })}
-                                    </div>
-                                    {(isItemOwner || isOwnerOrAdmin) &&
-                                      bid.ipHash && (
-                                        <div
-                                          className="text-[10px] font-mono text-base-content/40"
-                                          title={bid.userAgent || undefined}
-                                        >
-                                          ip {bid.ipHash.slice(0, 8)}
-                                        </div>
+                                      {bid.user && (
+                                        <ScoreBadge
+                                          avgSeller={
+                                            bid.user.avgSellerRating ?? null
+                                          }
+                                          sellerCount={
+                                            bid.user.sellerRatingCount ?? 0
+                                          }
+                                          avgBuyer={
+                                            bid.user.avgBuyerRating ?? null
+                                          }
+                                          buyerCount={
+                                            bid.user.buyerRatingCount ?? 0
+                                          }
+                                        />
                                       )}
                                     </div>
+                                    <div className="text-xs text-base-content/50">
+                                      {formatDate(bid.createdAt)}
+                                    </div>
+                                  </div>
                                 </div>
-                              ))}
-                            </div>
-                          )}
-                          {bidsTotal > 0 && (
-                            <Pagination
-                              page={bidPage}
-                              pageSize={bidPageSize}
-                              total={bidsTotal}
-                              onPageChange={setBidPage}
-                              onPageSizeChange={(s) => {
-                                setBidPageSize(s);
-                                setBidPage(1);
-                              }}
-                            />
-                          )}
-                        </div>
+                                <div className="text-right">
+                                  <div className="font-bold font-mono text-lg">
+                                    {formatAuctionBidDisplay({
+                                      amount: bid.amount,
+                                      enteredRepresentation:
+                                        bid.enteredRepresentation,
+                                      profile: bid.currencyProfile,
+                                      fallbackSymbol: item.currency.symbol,
+                                      fallbackCode: item.currency.code,
+                                    })}
+                                  </div>
+                                  {(isItemOwner || isOwnerOrAdmin) &&
+                                    bid.ipHash && (
+                                      <div
+                                        className="text-[10px] font-mono text-base-content/40"
+                                        title={bid.userAgent || undefined}
+                                      >
+                                        ip {bid.ipHash.slice(0, 8)}
+                                      </div>
+                                    )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {bidsTotal > 0 && (
+                          <Pagination
+                            page={bidPage}
+                            pageSize={bidPageSize}
+                            total={bidsTotal}
+                            onPageChange={setBidPage}
+                            onPageSizeChange={(s) => {
+                              setBidPageSize(s);
+                              setBidPage(1);
+                            }}
+                          />
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1196,18 +1188,18 @@ interface AuctionCurrencyContextResponse {
                       )}
 
                       {/* Discussions Section */}
-                        <div data-tour="discussions">
-                          <DiscussionSection
-                            auctionId={auction.id}
-                            itemId={initialItem.id}
-                            currentUserId={user.id}
-                            itemCreatorId={initialItem.creator.id}
-                            isOwnerOrAdmin={isOwnerOrAdmin}
-                            initialDiscussions={initialDiscussions}
-                            discussionsEnabled={initialItem.discussionsEnabled}
-                            locked={!!isEnded}
-                          />
-                        </div>
+                      <div data-tour="discussions">
+                        <DiscussionSection
+                          auctionId={auction.id}
+                          itemId={initialItem.id}
+                          currentUserId={user.id}
+                          itemCreatorId={initialItem.creator.id}
+                          isOwnerOrAdmin={isOwnerOrAdmin}
+                          initialDiscussions={initialDiscussions}
+                          discussionsEnabled={initialItem.discussionsEnabled}
+                          locked={!!isEnded}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1226,8 +1218,8 @@ interface AuctionCurrencyContextResponse {
                           <span className="text-sm font-medium text-base-content/60 uppercase tracking-wide">
                             {t("bid.currentBid")}
                           </span>
-                          {!isEnded && (
-                            liveOk ? (
+                          {!isEnded &&
+                            (liveOk ? (
                               <span
                                 className="badge badge-sm badge-success gap-1 animate-pulse"
                                 title={wsReportText}
@@ -1243,14 +1235,15 @@ interface AuctionCurrencyContextResponse {
                                 <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
                                 {tStatus("polling")}
                               </span>
-                            )
-                          )}
+                            ))}
                         </div>
                         <div className="text-4xl font-extrabold text-primary tracking-tight mb-2">
                           {formatCurrency(
                             item.currentBid || item.startingBid,
                             item.currency.symbol,
-                            decimalsForCurrency(item.currency.code), item.currency.code)}
+                            decimalsForCurrency(item.currency.code),
+                            item.currency.code,
+                          )}
                         </div>
                         <div className="flex items-center gap-2 text-xs text-base-content/50">
                           <span className="icon-[tabler--arrow-up] size-3"></span>
@@ -1258,7 +1251,9 @@ interface AuctionCurrencyContextResponse {
                           {formatCurrency(
                             item.startingBid,
                             item.currency.symbol,
-                            decimalsForCurrency(item.currency.code), item.currency.code)}
+                            decimalsForCurrency(item.currency.code),
+                            item.currency.code,
+                          )}
                         </div>
                       </div>
 
@@ -1291,11 +1286,11 @@ interface AuctionCurrencyContextResponse {
                                 : tTime("endsAt")}
                               :
                             </span>
-                              <span className="font-mono">
-                                <Countdown target={item.endDate}>
-                                  {formatDate(item.endDate)}
-                                </Countdown>
-                              </span>
+                            <span className="font-mono">
+                              <Countdown target={item.endDate}>
+                                {formatDate(item.endDate)}
+                              </Countdown>
+                            </span>
                           </div>
                           {item.antiSnipeEnabled && !isEnded && (
                             <div className="flex items-center gap-1.5 text-xs text-warning">
@@ -1345,7 +1340,9 @@ interface AuctionCurrencyContextResponse {
                                 {formatCurrency(
                                   minBid,
                                   item.currency.symbol,
-                                  decimalsForCurrency(item.currency.code), item.currency.code)}
+                                  decimalsForCurrency(item.currency.code),
+                                  item.currency.code,
+                                )}
                               </span>
                             </label>
 
@@ -1420,9 +1417,7 @@ interface AuctionCurrencyContextResponse {
                                         "INTEGER_ONLY"
                                         ? "1"
                                         : "0.01"
-                                      : inputStepForCurrency(
-                                          item.currency.code,
-                                        )
+                                      : inputStepForCurrency(item.currency.code)
                                   }
                                   required
                                   className="join-item input input-bordered w-full focus:outline-none"
@@ -1471,8 +1466,8 @@ interface AuctionCurrencyContextResponse {
                             {t("bid.placeBid")}
                           </Button>
                         </form>
-                        ) : isEnded ? (
-                          bidsTotal === 0 ? (
+                      ) : isEnded ? (
+                        bidsTotal === 0 ? (
                           <div className="space-y-4">
                             <div className="text-center py-6 bg-base-200/30 rounded-xl border border-dashed border-base-content/10">
                               <span className="icon-[tabler--hammer-off] size-8 text-base-content/20 mb-2"></span>
@@ -1529,14 +1524,14 @@ interface AuctionCurrencyContextResponse {
                               </div>
                             </div>
                             {winnerEmail && (
-                            <Link
-                              href={`/auctions/${auction.id}/items/${item.id}/contact`}
-                              className="btn btn-info btn-block gap-2 shadow-sm"
-                            >
-                              <span className="icon-[tabler--mail] size-5"></span>
-                              {t("detail.contactWinner")}
-                            </Link>
-                          )}
+                              <Link
+                                href={`/auctions/${auction.id}/items/${item.id}/contact`}
+                                className="btn btn-info btn-block gap-2 shadow-sm"
+                              >
+                                <span className="icon-[tabler--mail] size-5"></span>
+                                {t("detail.contactWinner")}
+                              </Link>
+                            )}
                             {(isItemOwner || isOwnerOrAdmin) && (
                               <button
                                 type="button"
@@ -1581,15 +1576,15 @@ interface AuctionCurrencyContextResponse {
                             <div className="text-sm">
                               {t("detail.contact.noPhoneText")}
                             </div>
-                              <Link
-                                href="/settings"
-                                className="btn btn-sm btn-warning mt-2"
-                              >
-                                {t("detail.contact.goSettings")}
-                              </Link>
-                            </div>
+                            <Link
+                              href="/settings"
+                              className="btn btn-sm btn-warning mt-2"
+                            >
+                              {t("detail.contact.goSettings")}
+                            </Link>
                           </div>
-                        )}
+                        </div>
+                      )}
 
                       {isEnded &&
                         isHighestBidder &&
@@ -1627,34 +1622,32 @@ interface AuctionCurrencyContextResponse {
                           </div>
                         )}
 
-                      {isEnded &&
-                        isHighestBidder &&
-                        item.winnerConfirmed && (
-                          <div className="alert alert-success shadow-sm mt-6">
-                            <span className="icon-[tabler--check] size-5"></span>
-                            <span className="text-sm font-medium">
-                              {t("detail.confirmedMsg")}
-                            </span>
-                          </div>
-                        )}
+                      {isEnded && isHighestBidder && item.winnerConfirmed && (
+                        <div className="alert alert-success shadow-sm mt-6">
+                          <span className="icon-[tabler--check] size-5"></span>
+                          <span className="text-sm font-medium">
+                            {t("detail.confirmedMsg")}
+                          </span>
+                        </div>
+                      )}
 
                       {isEnded &&
                         item.highestBidderId &&
-                        (isItemOwner ||
-                          isOwnerOrAdmin ||
-                            isHighestBidder) && (
-                            <div className="mt-6" data-tour="fulfillment">
-                              <FulfillmentCard
-                                auctionId={auction.id}
-                                itemId={item.id}
-                                initialStatus={item.fulfillmentStatus}
-                                canManage={isItemOwner || isOwnerOrAdmin}
-                                isWinnerView={isHighestBidder}
-                                canRate={isItemOwner || isHighestBidder}
+                        (isItemOwner || isOwnerOrAdmin || isHighestBidder) && (
+                          <div className="mt-6" data-tour="fulfillment">
+                            <FulfillmentCard
+                              auctionId={auction.id}
+                              itemId={item.id}
+                              initialStatus={item.fulfillmentStatus}
+                              canManage={isItemOwner || isOwnerOrAdmin}
+                              isWinnerView={isHighestBidder}
+                              canRate={isItemOwner || isHighestBidder}
                               amount={formatCurrency(
                                 item.currentBid ?? 0,
                                 item.currency.symbol,
-                                decimalsForCurrency(item.currency.code), item.currency.code)}
+                                decimalsForCurrency(item.currency.code),
+                                item.currency.code,
+                              )}
                             />
                           </div>
                         )}
@@ -1680,7 +1673,9 @@ interface AuctionCurrencyContextResponse {
                             {formatCurrency(
                               item.minBidIncrement,
                               item.currency.symbol,
-                              decimalsForCurrency(item.currency.code), item.currency.code)}
+                              decimalsForCurrency(item.currency.code),
+                              item.currency.code,
+                            )}
                           </span>
                         </div>
                         <div className="flex justify-between items-center">
@@ -1688,9 +1683,9 @@ interface AuctionCurrencyContextResponse {
                             <span className="icon-[tabler--users] size-4"></span>
                             {t("detail.totalBids")}
                           </span>
-                            <span className="badge badge-ghost font-medium">
-                              {bidsTotal}
-                            </span>
+                          <span className="badge badge-ghost font-medium">
+                            {bidsTotal}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -1896,10 +1891,7 @@ export const getServerSideProps = withAuth(async (context) => {
   // Get sidebar items (lightweight: no descriptions), user settings and
   // viewer phone in parallel (were sequential awaits)
   const [auctionItems, userSettings, viewer] = await Promise.all([
-    itemService.getAuctionItemsForSidebar(
-      auctionId,
-      context.session.user.id,
-    ),
+    itemService.getAuctionItemsForSidebar(auctionId, context.session.user.id),
     userService.getUserSettings(context.session.user.id),
     // Viewer phone for the winner WhatsApp banner
     userService.getUserById(context.session.user.id),
@@ -1924,10 +1916,10 @@ export const getServerSideProps = withAuth(async (context) => {
         winnerConfirmEnabled: membership.auction.winnerConfirmEnabled,
       },
       auctionItems,
-        itemSidebarCollapsed: userSettings?.itemSidebarCollapsed ?? false,
-        item: itemData.item,
-        bids: itemData.bids,
-        initialPagination: { page: 1, pageSize: 10, total: itemData.bidsTotal },
+      itemSidebarCollapsed: userSettings?.itemSidebarCollapsed ?? false,
+      item: itemData.item,
+      bids: itemData.bids,
+      initialPagination: { page: 1, pageSize: 10, total: itemData.bidsTotal },
       discussions: itemData.discussions,
       isHighestBidder: itemData.isHighestBidder,
       canBid: itemData.canBid,

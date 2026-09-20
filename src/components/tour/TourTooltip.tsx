@@ -22,7 +22,7 @@ export function TourTooltip({
   return (
     <div
       {...tooltipProps}
-      className="card bg-base-100 shadow-2xl border border-base-content/10 max-w-xs w-72"
+      className="card bg-base-100 shadow-2xl border border-base-content/10 w-[min(18rem,calc(100vw-2rem))]"
     >
       <div className="card-body p-5">
         <div className="flex items-start justify-between gap-2">

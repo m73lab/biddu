@@ -1,6 +1,58 @@
 import { useLocale } from "next-intl";
 import { localeForCurrency } from "@/utils/formatters";
 
+/**
+ * Memoized Intl constructors. Safari is notoriously slow at creating
+ * Intl.DateTimeFormat/NumberFormat, and these run on every render (SWR +
+ * realtime re-renders). Combos are static per call site, so the cache stays
+ * tiny; key includes every option that affects output.
+ */
+const formatterCache = new Map<
+  string,
+  Intl.DateTimeFormat | Intl.NumberFormat | Intl.RelativeTimeFormat
+>();
+
+function cachedDateTimeFormat(
+  locale: string,
+  options: Intl.DateTimeFormatOptions,
+): Intl.DateTimeFormat {
+  const key = `dt:${locale}:${JSON.stringify(options)}`;
+  let formatter = formatterCache.get(key) as Intl.DateTimeFormat | undefined;
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat(locale, options);
+    formatterCache.set(key, formatter);
+  }
+  return formatter;
+}
+
+function cachedNumberFormat(
+  locale: string,
+  options?: Intl.NumberFormatOptions,
+): Intl.NumberFormat {
+  const key = `nf:${locale}:${JSON.stringify(options ?? null)}`;
+  let formatter = formatterCache.get(key) as Intl.NumberFormat | undefined;
+  if (!formatter) {
+    formatter = new Intl.NumberFormat(locale, options);
+    formatterCache.set(key, formatter);
+  }
+  return formatter;
+}
+
+function cachedRelativeTimeFormat(
+  locale: string,
+  options: Intl.RelativeTimeFormatOptions,
+): Intl.RelativeTimeFormat {
+  const key = `rt:${locale}:${JSON.stringify(options)}`;
+  let formatter = formatterCache.get(key) as
+    | Intl.RelativeTimeFormat
+    | undefined;
+  if (!formatter) {
+    formatter = new Intl.RelativeTimeFormat(locale, options);
+    formatterCache.set(key, formatter);
+  }
+  return formatter;
+}
+
 export function useFormatters(timeZone?: string) {
   const locale = useLocale();
   const zone = timeZone ?? "America/Santiago";
@@ -10,7 +62,7 @@ export function useFormatters(timeZone?: string) {
     options?: Intl.DateTimeFormatOptions,
   ) => {
     const dateObj = typeof date === "string" ? new Date(date) : date;
-    return new Intl.DateTimeFormat(locale, {
+    return cachedDateTimeFormat(locale, {
       dateStyle: "medium",
       timeStyle: "short",
       ...options,
@@ -20,7 +72,7 @@ export function useFormatters(timeZone?: string) {
 
   const formatShortDate = (date: Date | string) => {
     const dateObj = typeof date === "string" ? new Date(date) : date;
-    return new Intl.DateTimeFormat(locale, {
+    return cachedDateTimeFormat(locale, {
       month: "short",
       day: "numeric",
       timeZone: zone,
@@ -29,7 +81,7 @@ export function useFormatters(timeZone?: string) {
 
   const formatLongDate = (date: Date | string) => {
     const dateObj = typeof date === "string" ? new Date(date) : date;
-    return new Intl.DateTimeFormat(locale, {
+    return cachedDateTimeFormat(locale, {
       dateStyle: "full",
       timeZone: zone,
     }).format(dateObj);
@@ -42,7 +94,7 @@ export function useFormatters(timeZone?: string) {
       (dateObj.getTime() - now.getTime()) / 1000,
     );
 
-    const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+    const rtf = cachedRelativeTimeFormat(locale, { numeric: "auto" });
 
     const intervals: { unit: Intl.RelativeTimeFormatUnit; seconds: number }[] =
       [
@@ -66,25 +118,25 @@ export function useFormatters(timeZone?: string) {
   };
 
   const formatNumber = (num: number, options?: Intl.NumberFormatOptions) => {
-    return new Intl.NumberFormat(locale, options).format(num);
+    return cachedNumberFormat(locale, options).format(num);
   };
 
   const formatCurrency = (amount: number, currency: string = "CLP") => {
-    return new Intl.NumberFormat(localeForCurrency(currency) ?? locale, {
+    return cachedNumberFormat(localeForCurrency(currency) ?? locale, {
       style: "currency",
       currency,
     }).format(amount);
   };
 
   const formatCompactNumber = (num: number) => {
-    return new Intl.NumberFormat(locale, {
+    return cachedNumberFormat(locale, {
       notation: "compact",
       compactDisplay: "short",
     }).format(num);
   };
 
   const formatPercent = (num: number, decimals: number = 0) => {
-    return new Intl.NumberFormat(locale, {
+    return cachedNumberFormat(locale, {
       style: "percent",
       minimumFractionDigits: decimals,
       maximumFractionDigits: decimals,
@@ -110,7 +162,7 @@ export function formatDateServer(
   options?: Intl.DateTimeFormatOptions,
 ) {
   const dateObj = typeof date === "string" ? new Date(date) : date;
-  return new Intl.DateTimeFormat(locale, {
+  return cachedDateTimeFormat(locale, {
     dateStyle: "medium",
     timeStyle: "short",
     ...options,
@@ -122,7 +174,7 @@ export function formatCurrencyServer(
   locale: string,
   currency: string = "CLP",
 ) {
-  return new Intl.NumberFormat(locale, {
+  return cachedNumberFormat(locale, {
     style: "currency",
     currency,
   }).format(amount);
@@ -133,5 +185,5 @@ export function formatNumberServer(
   locale: string,
   options?: Intl.NumberFormatOptions,
 ) {
-  return new Intl.NumberFormat(locale, options).format(num);
+  return cachedNumberFormat(locale, options).format(num);
 }

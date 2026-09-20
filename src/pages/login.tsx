@@ -99,20 +99,24 @@ export default function LoginPage({
         title={t("seo.loginTitle")}
         description={t("seo.loginDescription")}
       />
-      <div className="min-h-screen flex flex-col lg:flex-row bg-base-100">
+      <div className="min-h-dvh flex flex-col lg:flex-row bg-base-100">
         {/* Left side - Branding (hidden on mobile) */}
         <div className="hidden lg:flex lg:w-1/2 relative bg-base-200 overflow-hidden items-center justify-center">
           {/* Background effects */}
           <div className="absolute inset-0 z-0">
-            <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px] animate-pulse"></div>
-            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-[128px] animate-pulse delay-1000"></div>
+            <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full bg-[radial-gradient(closest-side,var(--color-primary),transparent)] opacity-20 animate-pulse"></div>
+            <div className="absolute bottom-0 right-1/4 w-96 h-96 rounded-full bg-[radial-gradient(closest-side,var(--color-secondary),transparent)] opacity-20 animate-pulse delay-1000"></div>
             <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]"></div>
           </div>
 
           <div className="relative z-10 flex flex-col items-center justify-center p-12 text-center max-w-lg">
             <Link href="/" className="mb-8 group">
               <div className="relative inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-base-100 shadow-2xl shadow-primary/10 border border-base-content/5 mb-6 group-hover:scale-105 transition-transform duration-300">
-                <img src="/logo.svg" alt="Biddu" className="h-12 w-12 transition-transform group-hover:-rotate-6 duration-300" />
+                <img
+                  src="/logo.svg"
+                  alt="Biddu"
+                  className="h-12 w-12 transition-transform group-hover:-rotate-6 duration-300"
+                />
               </div>
               <h1 className="text-4xl font-extrabold tracking-tight bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
                 {tCommon("appName")}
@@ -198,9 +202,7 @@ export default function LoginPage({
                             if (res.ok) {
                               setResendStatus("sent");
                             } else {
-                              const data = await res
-                                .json()
-                                .catch(() => null);
+                              const data = await res.json().catch(() => null);
                               setResendStatus(
                                 data?.code === "CONFLICT"
                                   ? "disabled"
@@ -276,7 +278,9 @@ export default function LoginPage({
                       type="button"
                       onClick={() => setShowPassword((v) => !v)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content transition-colors"
-                      aria-label={showPassword ? t("hidePassword") : t("showPassword")}
+                      aria-label={
+                        showPassword ? t("hidePassword") : t("showPassword")
+                      }
                     >
                       <span
                         className={`${showPassword ? "icon-[tabler--eye-off]" : "icon-[tabler--eye]"} size-5 block`}
@@ -325,11 +329,19 @@ export default function LoginPage({
                 </div>
                 <p className="text-xs text-base-content/50 text-center mt-4">
                   {t("oauthTermsAgreement")}{" "}
-                  <Link href="/terms" prefetch={false} className="link link-primary">
+                  <Link
+                    href="/terms"
+                    prefetch={false}
+                    className="link link-primary"
+                  >
                     {t("termsOfService")}
                   </Link>{" "}
                   {t("and")}{" "}
-                  <Link href="/privacy" prefetch={false} className="link link-primary">
+                  <Link
+                    href="/privacy"
+                    prefetch={false}
+                    className="link link-primary"
+                  >
                     {t("privacyPolicy")}
                   </Link>
                 </p>

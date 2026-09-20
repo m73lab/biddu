@@ -6,12 +6,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import {
-  Joyride,
-  EVENTS,
-  type EventData,
-  type Step,
-} from "react-joyride";
+import { Joyride, EVENTS, type EventData, type Step } from "react-joyride";
 import { useTranslations } from "next-intl";
 import { TOURS, tourSeenKey, type TourId } from "./tours";
 import { TourTooltip } from "./TourTooltip";
@@ -49,6 +44,9 @@ export function TourProvider({ children }: { children: ReactNode }) {
   const [steps, setSteps] = useState<Step[]>([]);
   const [tourId, setTourId] = useState<TourId | null>(null);
   const [welcome, setWelcome] = useState<WelcomeState | null>(null);
+  // Mobile mode: auto placement (Floating UI picks a fitting side),
+  // larger scroll offset to clear sticky bars, overlay above sheets.
+  const [mobileMode, setMobileMode] = useState(false);
 
   const markSeen = useCallback((id: TourId) => {
     try {
@@ -58,20 +56,25 @@ export function TourProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const beginAnchored = useCallback((id: TourId, anchored: Step[]) => {
-    setWelcome(null);
-    if (anchored.length === 0) {
-      markSeen(id);
-      return;
-    }
-    setSteps(anchored);
-    setTourId(id);
-    setRun(true);
-  }, [markSeen]);
+  const beginAnchored = useCallback(
+    (id: TourId, anchored: Step[]) => {
+      setWelcome(null);
+      if (anchored.length === 0) {
+        markSeen(id);
+        return;
+      }
+      setSteps(anchored);
+      setTourId(id);
+      setRun(true);
+    },
+    [markSeen],
+  );
 
   const startTour = useCallback(
     (id: TourId) => {
       const defs = TOURS[id];
+      const mobile = typeof window !== "undefined" && window.innerWidth < 768;
+      setMobileMode(mobile);
       const first = defs[0];
       const rest = first && first.target === "body" ? defs.slice(1) : defs;
       const anchored: Step[] = [];
@@ -86,7 +89,7 @@ export function TourProvider({ children }: { children: ReactNode }) {
           target: d.target,
           title: t(d.titleKey),
           content: t(d.contentKey),
-          placement: d.placement ?? "bottom",
+          placement: mobile ? "auto" : (d.placement ?? "bottom"),
           skipBeacon: true,
         });
       }
@@ -122,7 +125,7 @@ export function TourProvider({ children }: { children: ReactNode }) {
       {children}
       {welcome && (
         <div className="modal modal-open">
-          <div className="modal-box max-w-sm">
+          <div className="modal-box w-[calc(100vw-2rem)] max-w-sm">
             <h3 className="font-bold text-lg flex items-center gap-2">
               <span className="icon-[tabler--sparkles] size-5 text-primary"></span>
               {welcome.title}
@@ -165,6 +168,11 @@ export function TourProvider({ children }: { children: ReactNode }) {
         continuous
         tooltipComponent={TourTooltip}
         onEvent={handleEvent}
+        options={{
+          // Above bottom sheets/nav (z-60) and room for sticky bars.
+          zIndex: 200,
+          scrollOffset: mobileMode ? 120 : 20,
+        }}
         floatingOptions={{
           // Fixed strategy + autoUpdate: the tooltip tracks its target
           // while the page scrolls (without this it stays pinned where

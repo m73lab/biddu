@@ -4,10 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
-import {
-  formatCurrency,
-  decimalsForCurrency,
-} from "@/utils/formatters";
+import { formatCurrency, decimalsForCurrency } from "@/utils/formatters";
 import {
   SortDropdown,
   sidebarItemSortOptions,
@@ -60,7 +57,7 @@ export function ItemsSidebar({
     <>
       {/* Sidebar */}
       <aside
-        className={`hidden lg:flex flex-col bg-base-100/80 backdrop-blur-xl border-r border-base-content/10 transition-all duration-300 ${
+        className={`hidden lg:flex flex-col bg-base-100 border-r border-base-content/10 transition-[width] duration-300 ${
           collapsed ? "w-0 overflow-hidden" : "w-80"
         }`}
       >
@@ -73,7 +70,7 @@ export function ItemsSidebar({
               </h2>
               <span className="badge badge-sm badge-ghost">{items.length}</span>
             </div>
-            <div className="sticky top-0 bg-base-100/95 backdrop-blur z-10 pb-4">
+            <div className="sticky top-0 bg-base-100 z-10 pb-4">
               <SortDropdown
                 options={sidebarItemSortOptions}
                 currentSort={sidebarSort}
@@ -128,15 +125,15 @@ function SidebarItemCard({
   const isOutbid = item.userHasBid && !isWinning;
   const isOwnItem = item.creatorId === userId;
 
-    return (
-      <Link
-        href={`/auctions/${auctionId}/items/${item.id}`}
-        onMouseEnter={() =>
-          router.prefetch(`/auctions/${auctionId}/items/${item.id}`)
-        }
-        onTouchStart={() =>
-          router.prefetch(`/auctions/${auctionId}/items/${item.id}`)
-        }
+  return (
+    <Link
+      href={`/auctions/${auctionId}/items/${item.id}`}
+      onMouseEnter={() =>
+        router.prefetch(`/auctions/${auctionId}/items/${item.id}`)
+      }
+      onTouchStart={() =>
+        router.prefetch(`/auctions/${auctionId}/items/${item.id}`)
+      }
       className={`block p-3 rounded-xl transition-all border ${
         isActive
           ? "bg-primary/5 border-primary/20 shadow-sm"
@@ -191,7 +188,9 @@ function SidebarItemCard({
             {formatCurrency(
               item.currentBid || item.startingBid,
               item.currency.symbol,
-              decimalsForCurrency(item.currency.code), item.currency.code)}
+              decimalsForCurrency(item.currency.code),
+              item.currency.code,
+            )}
           </div>
         </div>
       </div>
