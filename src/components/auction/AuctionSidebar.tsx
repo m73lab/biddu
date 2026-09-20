@@ -7,6 +7,7 @@ import { RichTextRenderer } from "@/components/ui/rich-text-editor";
 import { useToast } from "@/components/ui/toast";
 import { Countdown } from "@/components/common/Countdown";
 import { QuitAuctionModal } from "@/components/auction/QuitAuctionModal";
+import { ImageLightbox } from "@/components/ui/image-lightbox";
 
 interface AuctionSidebarProps {
   auction: {
@@ -35,8 +36,10 @@ interface AuctionSidebarProps {
 export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
   const [copied, setCopied] = useState(false);
   const [showQuitModal, setShowQuitModal] = useState(false);
+  const [zoomOpen, setZoomOpen] = useState(false);
   const { showToast } = useToast();
   const t = useTranslations("auction");
+  const tGallery = useTranslations("item.gallery");
   const tRoles = useTranslations("auction.roles");
   const tJoinModes = useTranslations("auction.joinModes");
   const tVisibilities = useTranslations("auction.create"); // Reusing from create form translations
@@ -107,19 +110,33 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
       {/* Auction Info */}
       <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-lg overflow-hidden">
         {auction.thumbnailUrl ? (
-          <figure className="h-40 bg-base-200 relative group">
+          <figure
+            className="h-40 bg-base-200 relative group cursor-zoom-in"
+            onClick={() => setZoomOpen(true)}
+            title={tGallery("zoom")}
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={auction.thumbnailUrl}
               alt={auction.name}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-base-100 to-transparent opacity-60"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-base-100 to-transparent opacity-60 pointer-events-none"></div>
+            <span className="absolute top-2 right-2 badge badge-sm bg-black/50 text-white border-none gap-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+              <span className="icon-[tabler--zoom-in] size-3.5"></span>
+            </span>
           </figure>
         ) : (
           <div className="h-24 bg-gradient-to-br from-primary/5 to-secondary/5 border-b border-base-content/5 flex items-center justify-center">
             <span className="icon-[tabler--gavel] size-8 text-primary/20"></span>
           </div>
+        )}
+
+        {zoomOpen && auction.thumbnailUrl && (
+          <ImageLightbox
+            images={[{ src: auction.thumbnailUrl, alt: auction.name }]}
+            onClose={() => setZoomOpen(false)}
+          />
         )}
 
         <div className="card-body p-5">
@@ -169,15 +186,15 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
                   <span className="icon-[tabler--clock] size-4"></span>
                   {t("card.ends")}
                 </span>
-                  <span
-                    className={`font-medium ${
-                      ended ? "text-error" : "text-primary"
-                    }`}
-                  >
-                    <Countdown target={auction.endDate}>
-                      {formatShortDate(auction.endDate)}
-                    </Countdown>
-                  </span>
+                <span
+                  className={`font-medium ${
+                    ended ? "text-error" : "text-primary"
+                  }`}
+                >
+                  <Countdown target={auction.endDate}>
+                    {formatShortDate(auction.endDate)}
+                  </Countdown>
+                </span>
               </div>
             )}
           </div>
