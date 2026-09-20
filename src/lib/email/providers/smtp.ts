@@ -12,7 +12,7 @@ import type { EmailProvider, EmailMessage, EmailSendResult } from "./types";
 const logger = createLogger("email:smtp");
 
 const MAIL_FROM = process.env.MAIL_FROM || "noreply@biddu.cl";
-const MAIL_FROM_NAME = process.env.MAIL_FROM_NAME || "Biddu";
+const MAIL_FROM_NAME = process.env.MAIL_FROM_NAME || "Biddú";
 
 export class SmtpProvider implements EmailProvider {
   private transporter: Transporter;

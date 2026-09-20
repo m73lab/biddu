@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Biddu",
+    "appName": "Biddú",
     "loading": "Loading...",
     "save": "Save",
     "cancel": "Cancel",
@@ -209,7 +209,7 @@
   },
   "changelog": {
     "title": "Changelog & Releases",
-    "description": "See what's new in Biddu and track our development progress",
+    "description": "See what's new in Biddú and track our development progress",
     "currentVersion": "Current Version",
     "latest": "Latest",
     "installed": "Installed",

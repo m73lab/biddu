@@ -8,7 +8,7 @@
   prefixes: tabler;
 }
 
-/* ====== Biddu brand palette ====== */
+/* ====== Biddú brand palette ====== */
 @theme {
   --color-ink-950: #0b1220;
   --color-ink-900: #0f1830;
@@ -23,7 +23,7 @@
   --color-cream-100: #f3ecde;
 }
 
-/* ====== Biddu light theme ====== */
+/* ====== Biddú light theme ====== */
 @plugin "daisyui/theme" {
   name: "light";
   default: true;
@@ -59,7 +59,7 @@
   --noise: 0;
 }
 
-/* ====== Biddu dark theme ====== */
+/* ====== Biddú dark theme ====== */
 @plugin "daisyui/theme" {
   name: "dark";
   default: false;
