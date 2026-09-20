@@ -46,11 +46,18 @@ export function Navbar({
     return () => router.events.off("routeChangeComplete", close);
   }, [router]);
 
+  // Passive + rAF-throttled: no setState per scroll event (iOS jank).
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        setScrolled(window.scrollY > 20);
+        ticking = false;
+      });
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -64,7 +71,7 @@ export function Navbar({
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 bg-ink-950/90 backdrop-blur-lg border-b border-cream-50/10 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 bg-ink-950 border-b border-cream-50/10 transition-[padding,box-shadow] duration-300 ${
         scrolled ? "shadow-2xl shadow-ink-950/40 py-2.5" : "py-3.5"
       }`}
     >
@@ -74,7 +81,12 @@ export function Navbar({
           className="text-xl sm:text-2xl font-bold text-cream-50 flex items-center gap-2 group shrink-0"
         >
           <div className="relative">
-            <img src="/logo.svg" alt="" aria-hidden="true" className="h-7 w-7 sm:h-8 sm:w-8 transition-transform group-hover:-rotate-6 duration-300" />
+            <img
+              src="/logo.svg"
+              alt=""
+              aria-hidden="true"
+              className="h-7 w-7 sm:h-8 sm:w-8 transition-transform group-hover:-rotate-6 duration-300"
+            />
             <div className="absolute inset-0 bg-gold-500/30 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
           <span className="bg-linear-to-r from-cream-50 via-gold-300 to-gold-400 bg-clip-text text-transparent font-extrabold tracking-tight">
@@ -159,7 +171,7 @@ export function Navbar({
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden absolute top-full left-0 right-0 bg-ink-950/95 backdrop-blur-lg border-b border-cream-50/10 shadow-2xl">
+        <div className="lg:hidden absolute top-full left-0 right-0 bg-ink-950 border-b border-cream-50/10 shadow-2xl">
           <div className="container mx-auto px-4 py-4 flex flex-col gap-1">
             {links.map((link) => (
               <Link

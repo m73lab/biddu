@@ -201,7 +201,7 @@ export default function LandingPage() {
         }}
       />
 
-      <div className="min-h-screen bg-base-100 text-base-content selection:bg-gold-500/30">
+      <div className="min-h-dvh bg-base-100 text-base-content selection:bg-gold-500/30">
         <Navbar links={SECTION_LINKS} />
 
         <main>

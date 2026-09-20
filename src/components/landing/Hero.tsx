@@ -12,8 +12,8 @@ export function Hero() {
       {/* Background */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.04]"></div>
-        <div className="absolute -top-24 -left-16 w-80 h-80 bg-gold-500/20 rounded-full blur-[120px]"></div>
-        <div className="absolute bottom-0 -right-16 w-96 h-96 bg-live/15 rounded-full blur-[130px]"></div>
+        <div className="absolute -top-24 -left-16 w-80 h-80 rounded-full bg-[radial-gradient(closest-side,var(--color-gold-500),transparent)] opacity-20"></div>
+        <div className="absolute bottom-0 -right-16 w-96 h-96 rounded-full bg-[radial-gradient(closest-side,var(--color-live),transparent)] opacity-15"></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-px bg-cream-50/5"></div>
       </div>
 
@@ -27,8 +27,7 @@ export function Hero() {
             </p>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.08]">
-              {t("title")}{" "}
-              <br className="hidden sm:block" />
+              {t("title")} <br className="hidden sm:block" />
               <span className="bg-linear-to-r from-gold-300 via-gold-400 to-gold-600 bg-clip-text text-transparent">
                 {t("titleHighlight")}
               </span>
@@ -76,7 +75,7 @@ export function Hero() {
           {/* Live mock card */}
           <div className="relative animate-fade-in-up">
             <div
-              className="absolute inset-0 bg-linear-to-tr from-gold-500/20 to-live/10 rounded-[2.5rem] blur-2xl"
+              className="absolute inset-0 bg-linear-to-tr from-gold-500/20 to-live/10 rounded-[2.5rem]"
               aria-hidden="true"
             ></div>
 

@@ -463,7 +463,7 @@ export function SkeletonAuctionPage() {
 
         {/* Sidebar - hidden on mobile, shown on lg+ */}
         <div className="hidden lg:block w-80 shrink-0">
-          <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl sticky top-24">
+          <div className="card bg-base-100 border border-base-content/5 shadow-xl sticky top-24">
             <div className="card-body p-5">
               {/* Auction Info */}
               <div className="space-y-4">
