@@ -874,10 +874,7 @@ export default function SettingsPage({
                       )}
                     </div>
                     <div className="flex items-center gap-2 mt-4">
-                      <a
-                        href="/changelog"
-                        className="btn btn-ghost btn-sm"
-                      >
+                      <a href="/changelog" className="btn btn-ghost btn-sm">
                         <span className="icon-[tabler--file-text] size-4" />
                         {t("deploymentAdmin.viewChangelog")}
                       </a>
@@ -989,9 +986,7 @@ export default function SettingsPage({
               className="flex items-center gap-3 p-3 rounded-xl bg-base-200/50 hover:bg-base-200 transition-colors"
             >
               <span className="icon-[tabler--lifebuoy] size-5 text-primary"></span>
-              <span className="font-medium">
-                {t("quickLinks.helpTitle")}
-              </span>
+              <span className="font-medium">{t("quickLinks.helpTitle")}</span>
               <span className="icon-[tabler--arrow-right] size-4 ml-auto text-base-content/40"></span>
             </a>
             <p className="text-xs text-base-content/50 px-1">
@@ -1265,7 +1260,7 @@ export const getServerSideProps = withAuth(async (context) => {
         "Current version from package.json",
       );
 
-      // Biddu fork: no upstream version check (Auktiva releases don't apply here)
+      // Biddú fork: no upstream version check (Auktiva releases don't apply here)
       versionInfo = {
         currentVersion,
         latestVersion: null,

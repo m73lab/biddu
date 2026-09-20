@@ -2,8 +2,8 @@ import Head from "next/head";
 import { useLocale } from "next-intl";
 
 export const SITE_URL = "https://biddu.cl";
-export const SITE_NAME = "Biddu";
-export const SITE_AUTHOR = "Biddu";
+export const SITE_NAME = "Biddú";
+export const SITE_AUTHOR = "Biddú";
 export const SITE_AUTHOR_URL = "https://biddu.cl";
 export const SITE_TWITTER = "@biddu";
 
@@ -35,7 +35,7 @@ export const SITE_KEYWORDS = [
 ].join(", ");
 
 export const SITE_DESCRIPTION =
-  "Biddu es una plataforma de subastas 100% gratuita y de código abierto para Chile. Ideal para eventos benéficos, clubes, bomberos, pymes y uso personal. Crea subastas ilimitadas con pujas en tiempo real, gestión de miembros y soporte multi-moneda. Sin comisiones, sin límites.";
+  "Biddú es una plataforma de subastas 100% gratuita y de código abierto para Chile. Ideal para eventos benéficos, clubes, bomberos, pymes y uso personal. Crea subastas ilimitadas con pujas en tiempo real, gestión de miembros y soporte multi-moneda. Sin comisiones, sin límites.";
 
 export const SITE_DESCRIPTION_SHORT =
   "Plataforma de subastas gratuita y de código abierto para Chile. Subastas privadas con pujas en tiempo real — completamente gratis, sin comisiones.";
@@ -67,7 +67,7 @@ export function SEO({
   noindex = false,
   ogType = "website",
   ogImage = `${SITE_URL}/pictures/og-image.png`,
-  ogImageAlt = "Biddu - Plataforma de Subastas",
+  ogImageAlt = "Biddú - Plataforma de Subastas",
   article,
   structuredData,
 }: SEOProps) {
@@ -196,10 +196,16 @@ export function SEO({
       {article && (
         <>
           {article.publishedTime && (
-            <meta property="article:published_time" content={article.publishedTime} />
+            <meta
+              property="article:published_time"
+              content={article.publishedTime}
+            />
           )}
           {article.modifiedTime && (
-            <meta property="article:modified_time" content={article.modifiedTime} />
+            <meta
+              property="article:modified_time"
+              content={article.modifiedTime}
+            />
           )}
           {article.author && (
             <meta property="article:author" content={article.author} />
@@ -234,9 +240,23 @@ export function SEO({
       <meta name="msapplication-navbutton-color" content="#6366f1" />
 
       <link rel="icon" href="/favicon.ico" />
-      <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-      <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-      <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+      <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/favicon-32x32.png"
+      />
+      <link
+        rel="icon"
+        type="image/png"
+        sizes="16x16"
+        href="/favicon-16x16.png"
+      />
+      <link
+        rel="apple-touch-icon"
+        sizes="180x180"
+        href="/apple-touch-icon.png"
+      />
       <link rel="manifest" href="/site.webmanifest" />
 
       <script
@@ -270,15 +290,14 @@ export const pageSEO = {
   login: {
     title: "Iniciar Sesión",
     description:
-      "Inicia sesión en Biddu para gestionar tus subastas, pujar y seguir tus eventos. Plataforma gratuita de subastas para Chile.",
-    keywords:
-      "login subastas, iniciar sesion subasta, subasta chile acceso",
+      "Inicia sesión en Biddú para gestionar tus subastas, pujar y seguir tus eventos. Plataforma gratuita de subastas para Chile.",
+    keywords: "login subastas, iniciar sesion subasta, subasta chile acceso",
     noindex: true,
   },
   register: {
     title: "Crear Cuenta Gratis",
     description:
-      "Crea una cuenta gratis en Biddu para comenzar a subastar. Sin tarjeta de crédito — completamente gratis y de código abierto.",
+      "Crea una cuenta gratis en Biddú para comenzar a subastar. Sin tarjeta de crédito — completamente gratis y de código abierto.",
     keywords:
       "crear cuenta subasta, registro subasta gratis, subasta chile registro",
     noindex: true,
@@ -298,7 +317,7 @@ export const pageSEO = {
   privacy: {
     title: "Política de Privacidad",
     description:
-      "Política de Privacidad de Biddu — Cómo protegemos tus datos. Plataforma de código abierto comprometida con la seguridad.",
+      "Política de Privacidad de Biddú — Cómo protegemos tus datos. Plataforma de código abierto comprometida con la seguridad.",
     keywords:
       "privacidad subasta, proteccion datos, subasta plataforma privacidad",
     noindex: true,
@@ -306,9 +325,8 @@ export const pageSEO = {
   terms: {
     title: "Términos de Servicio",
     description:
-      "Términos de Servicio de Biddu — Conoce los términos y condiciones para usar nuestra plataforma de subastas gratuita.",
-    keywords:
-      "terminos subasta, condiciones uso, plataforma subastas terminos",
+      "Términos de Servicio de Biddú — Conoce los términos y condiciones para usar nuestra plataforma de subastas gratuita.",
+    keywords: "terminos subasta, condiciones uso, plataforma subastas terminos",
     noindex: true,
   },
 };
