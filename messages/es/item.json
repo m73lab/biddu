@@ -141,6 +141,7 @@
       "previousImage": "Imagen anterior",
       "nextImage": "Imagen siguiente",
       "thumbnail": "Miniatura {index}",
+      "zoom": "Ampliar imagen",
       "noImages": "Sin imágenes"
     },
     "sidebar": {
@@ -224,18 +225,18 @@
         "markDelivered": "Marcar como entregado",
         "markPending": "Volver a pendiente",
         "updating": "Guardando...",
-          "updateFailed": "No se pudo actualizar el estado",
-          "amountToPay": "Monto a pagar",
-          "rateTitle": "Califica tu experiencia",
-          "rateButton": "Calificar",
-          "rateEdit": "Editar",
-          "rateThanks": "¡Gracias por calificar! Se revelará cuando tu contraparte también califique.",
-          "ratePlaceholder": "Cuéntanos cómo fue el trato (opcional)",
-          "rateSubmit": "Enviar calificación",
-          "rateCancel": "Cancelar",
-          "rateFailed": "No se pudo enviar la calificación",
-          "myRating": "Tu calificación: {score}/5",
-          "blindNote": "A ciegas hasta que ambos califiquen"
+        "updateFailed": "No se pudo actualizar el estado",
+        "amountToPay": "Monto a pagar",
+        "rateTitle": "Califica tu experiencia",
+        "rateButton": "Calificar",
+        "rateEdit": "Editar",
+        "rateThanks": "¡Gracias por calificar! Se revelará cuando tu contraparte también califique.",
+        "ratePlaceholder": "Cuéntanos cómo fue el trato (opcional)",
+        "rateSubmit": "Enviar calificación",
+        "rateCancel": "Cancelar",
+        "rateFailed": "No se pudo enviar la calificación",
+        "myRating": "Tu calificación: {score}/5",
+        "blindNote": "A ciegas hasta que ambos califiquen"
       },
       "contact": {
         "title": "Contactar al ganador",

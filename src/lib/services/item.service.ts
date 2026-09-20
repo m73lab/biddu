@@ -57,9 +57,9 @@ export interface CreateItemInput {
   minBidIncrement?: number;
   minBidConstraint?: Record<string, unknown>;
   minBidNormalized?: number;
-    minIncrementNormalized?: number;
-    maxBid?: number;
-    bidderAnonymous?: boolean;
+  minIncrementNormalized?: number;
+  maxBid?: number;
+  bidderAnonymous?: boolean;
   endDate?: string | null;
   isPublished?: boolean;
   discussionsEnabled?: boolean;
@@ -77,9 +77,9 @@ export interface UpdateItemInput {
   minBidIncrement?: number;
   minBidConstraint?: Record<string, unknown> | null;
   minBidNormalized?: number | null;
-    minIncrementNormalized?: number | null;
-    maxBid?: number | null;
-    bidderAnonymous?: boolean;
+  minIncrementNormalized?: number | null;
+  maxBid?: number | null;
+  bidderAnonymous?: boolean;
   endDate?: string | null;
   isPublished?: boolean;
   discussionsEnabled?: boolean;
@@ -118,31 +118,31 @@ export interface ItemDetailForPage {
   };
   startingBid: number;
   minBidIncrement: number;
-    currentBid: number | null;
-    highestBidderId: string | null;
-    fulfillmentStatus: string | null;
-    winnerConfirmed: boolean;
-    winnerConfirmDeadline: string | null;
-    bidderAnonymous: boolean;
+  currentBid: number | null;
+  highestBidderId: string | null;
+  fulfillmentStatus: string | null;
+  winnerConfirmed: boolean;
+  winnerConfirmDeadline: string | null;
+  bidderAnonymous: boolean;
   endDate: string | null;
   createdAt: string;
   isPublished: boolean;
   antiSnipeEnabled: boolean;
   antiSnipeThresholdSeconds: number;
   antiSnipeExtensionSeconds: number;
-    creator: {
-      id: string;
-      name: string | null;
-      email: string;
-      avatarSeed?: string | null;
-      avgSellerRating?: number | null;
-      sellerRatingCount?: number;
-      avgBuyerRating?: number | null;
-      buyerRatingCount?: number;
-    };
-  }
+  creator: {
+    id: string;
+    name: string | null;
+    email: string;
+    avatarSeed?: string | null;
+    avgSellerRating?: number | null;
+    sellerRatingCount?: number;
+    avgBuyerRating?: number | null;
+    buyerRatingCount?: number;
+  };
+}
 
-  export interface BidForDisplay {
+export interface BidForDisplay {
   id: string;
   amount: number;
   normalizedAmount: number | null;
@@ -155,21 +155,21 @@ export interface ItemDetailForPage {
     precision: number;
     denominationConfig: unknown;
   } | null;
-    createdAt: string;
-    isAnonymous: boolean;
-    ipHash?: string | null;
-    userAgent?: string | null;
-    user: {
-        id: string;
-        name: string | null;
-      createdAt?: string | null;
-      avatarSeed?: string | null;
-      avgSellerRating?: number | null;
-      sellerRatingCount?: number;
-      avgBuyerRating?: number | null;
-      buyerRatingCount?: number;
-    } | null;
-  }
+  createdAt: string;
+  isAnonymous: boolean;
+  ipHash?: string | null;
+  userAgent?: string | null;
+  user: {
+    id: string;
+    name: string | null;
+    createdAt?: string | null;
+    avatarSeed?: string | null;
+    avgSellerRating?: number | null;
+    sellerRatingCount?: number;
+    avgBuyerRating?: number | null;
+    buyerRatingCount?: number;
+  } | null;
+}
 
 export interface DiscussionForDisplay {
   id: string;
@@ -182,8 +182,17 @@ export interface DiscussionForDisplay {
     id: string;
     name: string | null;
     image: string | null;
+    avatarSeed?: string | null;
   };
   replies: DiscussionForDisplay[];
+}
+
+export interface DiscussionsPagination {
+  page: number;
+  pageSize: number;
+  totalTopLevel: number;
+  totalAll: number;
+  hasMore: boolean;
 }
 
 export interface ItemDetailPageData {
@@ -192,10 +201,11 @@ export interface ItemDetailPageData {
     creatorId: string;
     discussionsEnabled: boolean;
   };
-    bids: BidForDisplay[];
-    bidsTotal: number;
-    images: { id: string; url: string; publicUrl: string; order: number }[];
+  bids: BidForDisplay[];
+  bidsTotal: number;
+  images: { id: string; url: string; publicUrl: string; order: number }[];
   discussions: DiscussionForDisplay[];
+  discussionsPagination: DiscussionsPagination;
   isHighestBidder: boolean;
   canBid: boolean;
   canEdit: boolean;
@@ -252,14 +262,13 @@ export async function getItemForDetailPage(
     minBidIncrement: item.minBidIncrement,
     currentBid: item.currentBid,
     highestBidderId: item.highestBidderId,
-      fulfillmentStatus: item.fulfillmentStatus,
-      winnerConfirmed: item.winnerConfirmed,
-      winnerConfirmDeadline:
-        item.winnerConfirmDeadline?.toISOString() || null,
-      bidderAnonymous: item.bidderAnonymous,
-      endDate: item.endDate?.toISOString() || null,
-      createdAt: item.createdAt.toISOString(),
-      isPublished: item.isPublished,
+    fulfillmentStatus: item.fulfillmentStatus,
+    winnerConfirmed: item.winnerConfirmed,
+    winnerConfirmDeadline: item.winnerConfirmDeadline?.toISOString() || null,
+    bidderAnonymous: item.bidderAnonymous,
+    endDate: item.endDate?.toISOString() || null,
+    createdAt: item.createdAt.toISOString(),
+    isPublished: item.isPublished,
     antiSnipeEnabled: item.antiSnipeEnabled,
     antiSnipeThresholdSeconds: item.antiSnipeThresholdSeconds,
     antiSnipeExtensionSeconds: item.antiSnipeExtensionSeconds,
@@ -316,24 +325,24 @@ export async function getItemDetailPageData(
   isViewerAdmin: boolean,
   opts?: { skip?: number; take?: number },
 ): Promise<ItemDetailPageData | null> {
-    const item = await prisma.auctionItem.findUnique({
-      where: { id: itemId },
-      include: {
-        currency: true,
-        creator: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              avatarSeed: true,
-              avgSellerRating: true,
-              sellerRatingCount: true,
-              avgBuyerRating: true,
-              buyerRatingCount: true,
-          },
+  const item = await prisma.auctionItem.findUnique({
+    where: { id: itemId },
+    include: {
+      currency: true,
+      creator: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          avatarSeed: true,
+          avgSellerRating: true,
+          sellerRatingCount: true,
+          avgBuyerRating: true,
+          buyerRatingCount: true,
         },
       },
-    });
+    },
+  });
 
   if (!item || item.auctionId !== auctionId) return null;
 
@@ -367,7 +376,16 @@ export async function getItemDetailPageData(
               },
             },
             user: {
-              select: { id: true, name: true, createdAt: true, avatarSeed: true, avgSellerRating: true, sellerRatingCount: true, avgBuyerRating: true, buyerRatingCount: true },
+              select: {
+                id: true,
+                name: true,
+                createdAt: true,
+                avatarSeed: true,
+                avgSellerRating: true,
+                sellerRatingCount: true,
+                avgBuyerRating: true,
+                buyerRatingCount: true,
+              },
             },
           },
           orderBy: { amount: "desc" },
@@ -390,7 +408,7 @@ export async function getItemDetailPageData(
       orderBy: { createdAt: "asc" },
       include: {
         user: {
-          select: { id: true, name: true, image: true },
+          select: { id: true, name: true, image: true, avatarSeed: true },
         },
       },
       take: 200,
@@ -402,8 +420,7 @@ export async function getItemDetailPageData(
 
   // Check if item has ended
   const isItemEnded =
-    !!(item.endDate && new Date(item.endDate) < new Date()) ||
-    isAuctionEnded;
+    !!(item.endDate && new Date(item.endDate) < new Date()) || isAuctionEnded;
   const isItemOwner = item.creatorId === viewerId;
   const highestBid = bidsRaw[0] || null;
 
@@ -515,6 +532,10 @@ export async function getItemDetailPageData(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 
+  // SSR ships the first page only (5 top-level); the client loads more.
+  const discussionsPageSize = 5;
+  const totalTopLevel = topLevelDiscussions.length;
+
   const isHighestBidder = item.highestBidderId === viewerId;
   const canEdit = isItemOwner || (isViewerAdmin && item.isEditableByAdmin);
   const canBid = !isItemOwner && !isItemEnded;
@@ -532,8 +553,7 @@ export async function getItemDetailPageData(
       highestBidderId: item.highestBidderId,
       fulfillmentStatus: item.fulfillmentStatus,
       winnerConfirmed: item.winnerConfirmed,
-      winnerConfirmDeadline:
-        item.winnerConfirmDeadline?.toISOString() || null,
+      winnerConfirmDeadline: item.winnerConfirmDeadline?.toISOString() || null,
       bidderAnonymous: item.bidderAnonymous,
       endDate: item.endDate?.toISOString() || null,
       createdAt: item.createdAt.toISOString(),
@@ -554,7 +574,14 @@ export async function getItemDetailPageData(
       publicUrl: getPublicUrl(img.url),
       order: img.order,
     })),
-    discussions: topLevelDiscussions,
+    discussions: topLevelDiscussions.slice(0, discussionsPageSize),
+    discussionsPagination: {
+      page: 1,
+      pageSize: discussionsPageSize,
+      totalTopLevel,
+      totalAll: allDiscussions.length,
+      hasMore: totalTopLevel > discussionsPageSize,
+    },
     isHighestBidder,
     canBid,
     canEdit,
@@ -593,15 +620,15 @@ export async function getItemForEditPage(
   });
 
   return {
-      item: {
-        id: item.id,
-        name: item.name,
-        description: item.description,
-        currencyCode: item.currencyCode,
-        startingBid: item.startingBid,
-        minBidIncrement: item.minBidIncrement,
-        maxBid: item.maxBid,
-        bidderAnonymous: item.bidderAnonymous,
+    item: {
+      id: item.id,
+      name: item.name,
+      description: item.description,
+      currencyCode: item.currencyCode,
+      startingBid: item.startingBid,
+      minBidIncrement: item.minBidIncrement,
+      maxBid: item.maxBid,
+      bidderAnonymous: item.bidderAnonymous,
       endDate: item.endDate?.toISOString() || null,
       currentBid: item.currentBid,
       isPublished: item.isPublished,
@@ -796,14 +823,23 @@ export async function getItemBidsForDisplay(
           },
         },
         user: {
-            select: { id: true, name: true, createdAt: true, avatarSeed: true, avgSellerRating: true, sellerRatingCount: true, avgBuyerRating: true, buyerRatingCount: true },
+          select: {
+            id: true,
+            name: true,
+            createdAt: true,
+            avatarSeed: true,
+            avgSellerRating: true,
+            sellerRatingCount: true,
+            avgBuyerRating: true,
+            buyerRatingCount: true,
+          },
         },
       },
-        orderBy: { amount: "desc" },
-        skip,
-        take,
-      }),
-    ]);
+      orderBy: { amount: "desc" },
+      skip,
+      take,
+    }),
+  ]);
 
   const isItemOwner = itemCreatorId === viewerId;
 
@@ -1094,12 +1130,12 @@ export async function updateItem(
   if (input.minBidNormalized !== undefined) {
     updateData.minBidNormalized = input.minBidNormalized;
   }
-    if (input.minIncrementNormalized !== undefined) {
-      updateData.minIncrementNormalized = input.minIncrementNormalized;
-    }
-    if (input.maxBid !== undefined) {
-      updateData.maxBid = input.maxBid;
-    }
+  if (input.minIncrementNormalized !== undefined) {
+    updateData.minIncrementNormalized = input.minIncrementNormalized;
+  }
+  if (input.maxBid !== undefined) {
+    updateData.maxBid = input.maxBid;
+  }
   if (input.bidderAnonymous !== undefined)
     updateData.bidderAnonymous = input.bidderAnonymous;
   if (input.endDate !== undefined) {
@@ -1640,13 +1676,13 @@ export async function getUserCreatedItems(userId: string) {
     orderBy: { createdAt: "desc" },
   });
 
-    return items.map((item) => ({
-      id: item.id,
-      name: item.name,
-      auctionId: item.auction.id,
-      auctionName: item.auction.name,
-      auctionEndDate: item.auction.endDate?.toISOString() ?? null,
-      currencySymbol: item.currency.symbol,
+  return items.map((item) => ({
+    id: item.id,
+    name: item.name,
+    auctionId: item.auction.id,
+    auctionName: item.auction.name,
+    auctionEndDate: item.auction.endDate?.toISOString() ?? null,
+    currencySymbol: item.currency.symbol,
     currencyCode: item.currency.code,
     startingBid: item.startingBid,
     currentBid: item.bids[0]?.amount ?? null,

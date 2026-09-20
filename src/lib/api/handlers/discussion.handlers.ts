@@ -116,13 +116,26 @@ export const listDiscussions: ApiHandler = async (req, res, ctx) => {
     }
   }
 
-  // Get order from query params
+  // Get order + pagination from query params (5 top-level per page)
   const order = req.query.order === "oldest" ? "oldest" : "newest";
+  const rawPage = Array.isArray(req.query.page)
+    ? req.query.page[0]
+    : req.query.page;
+  const rawSize = Array.isArray(req.query.pageSize)
+    ? req.query.pageSize[0]
+    : req.query.pageSize;
+  const page = Math.max(1, parseInt(rawPage || "", 10) || 1);
+  const pageSize = Math.min(50, Math.max(1, parseInt(rawSize || "", 10) || 5));
 
-  const discussions = await discussionService.getItemDiscussions(itemId, order);
+  const result = await discussionService.getItemDiscussions(
+    itemId,
+    order,
+    page,
+    pageSize,
+  );
 
   res.status(200).json({
-    discussions,
+    ...result,
     discussionsEnabled: item.discussionsEnabled,
   });
 };

@@ -141,6 +141,7 @@
       "previousImage": "Imagem anterior",
       "nextImage": "Próxima imagem",
       "thumbnail": "Miniatura {index}",
+      "zoom": "Ampliar imagem",
       "noImages": "Sem imagens"
     },
     "sidebar": {

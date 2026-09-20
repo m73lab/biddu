@@ -47,6 +47,7 @@ export function DiscussionItem({
   const { formatDate } = useFormatters();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [repliesExpanded, setRepliesExpanded] = useState(false);
 
   const isItemCreator = discussion.user.id === itemCreatorId;
 
@@ -218,10 +219,13 @@ export function DiscussionItem({
         </div>
       </div>
 
-      {/* Nested Replies */}
+      {/* Nested Replies (first 2 + show more) */}
       {discussion.replies.length > 0 && (
         <div className="mt-3 space-y-3">
-          {discussion.replies.map((reply) => (
+          {(repliesExpanded
+            ? discussion.replies
+            : discussion.replies.slice(0, 2)
+          ).map((reply) => (
             <DiscussionItem
               key={reply.id}
               discussion={reply}
@@ -241,6 +245,24 @@ export function DiscussionItem({
               depth={depth + 1}
             />
           ))}
+          {discussion.replies.length > 2 && (
+            <button
+              type="button"
+              onClick={() => setRepliesExpanded((v) => !v)}
+              className="btn btn-ghost btn-xs gap-1 text-base-content/60"
+            >
+              <span
+                className={`icon-[tabler--chevron-down] size-4 transition-transform ${
+                  repliesExpanded ? "rotate-180" : ""
+                }`}
+              ></span>
+              {repliesExpanded
+                ? t("showLessReplies")
+                : t("showMoreReplies", {
+                    count: discussion.replies.length - 2,
+                  })}
+            </button>
+          )}
         </div>
       )}
     </div>

@@ -145,6 +145,8 @@ export interface DiscussionNewEvent {
   auctionId: string;
   authorId: string;
   authorName: string;
+  /** Custom avatar seed so live comments render the author's profile face. */
+  authorAvatarSeed?: string | null;
   content: string;
   createdAt: string;
   parentId: string | null;

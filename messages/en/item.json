@@ -141,6 +141,7 @@
       "previousImage": "Previous image",
       "nextImage": "Next image",
       "thumbnail": "Thumbnail {index}",
+      "zoom": "Enlarge image",
       "noImages": "No images"
     },
     "sidebar": {

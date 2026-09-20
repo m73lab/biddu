@@ -42,27 +42,42 @@ export interface UpdateDiscussionInput {
 // Queries
 // ============================================================================
 
+export interface DiscussionsPage {
+  discussions: DiscussionWithReplies[];
+  totalTopLevel: number;
+  /** All comments including nested replies (for the header counter). */
+  totalAll: number;
+  page: number;
+  pageSize: number;
+  hasMore: boolean;
+}
+
+/** Top-level comments per page; nested replies always come whole. */
+export const DISCUSSIONS_PAGE_SIZE = 5;
+
 /**
- * Get discussions for an item as a threaded tree
- * Returns only top-level discussions with nested replies
+ * Get discussions for an item as a threaded tree.
+ * Paginates top-level discussions only; each carries its full reply tree.
  */
 export async function getItemDiscussions(
   itemId: string,
   order: "newest" | "oldest" = "newest",
-): Promise<DiscussionWithReplies[]> {
+  page: number = 1,
+  pageSize: number = DISCUSSIONS_PAGE_SIZE,
+): Promise<DiscussionsPage> {
   // Fetch all discussions for the item
   const allDiscussions = await prisma.itemDiscussion.findMany({
     where: { auctionItemId: itemId },
     orderBy: { createdAt: "asc" }, // Always asc for building tree, we'll sort top-level later
     include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-            avatarSeed: true,
-          },
+      user: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
+          avatarSeed: true,
         },
+      },
     },
   });
 
@@ -110,7 +125,23 @@ export async function getItemDiscussions(
     );
   }
 
-  return topLevel;
+  const totalTopLevel = topLevel.length;
+  const totalAll = allDiscussions.length;
+  const safePage = Math.max(1, Math.floor(page) || 1);
+  const safeSize = Math.min(
+    50,
+    Math.max(1, Math.floor(pageSize) || DISCUSSIONS_PAGE_SIZE),
+  );
+  const start = (safePage - 1) * safeSize;
+
+  return {
+    discussions: topLevel.slice(start, start + safeSize),
+    totalTopLevel,
+    totalAll,
+    page: safePage,
+    pageSize: safeSize,
+    hasMore: start + safeSize < totalTopLevel,
+  };
 }
 
 /**
@@ -219,14 +250,14 @@ export async function createDiscussion(
       parentId: input.parentId || null,
     },
     include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-            avatarSeed: true,
-          },
+      user: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
+          avatarSeed: true,
         },
+      },
       auctionItem: {
         select: {
           auctionId: true,
@@ -242,6 +273,7 @@ export async function createDiscussion(
     auctionId: discussion.auctionItem.auctionId,
     authorId: userId,
     authorName: discussion.user.name || "Anonymous",
+    authorAvatarSeed: discussion.user.avatarSeed ?? null,
     content: discussion.content,
     createdAt: discussion.createdAt.toISOString(),
     parentId: discussion.parentId,
@@ -282,14 +314,14 @@ export async function updateDiscussion(
       content: input.content,
     },
     include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-            avatarSeed: true,
-          },
+      user: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
+          avatarSeed: true,
         },
+      },
     },
   });
 

@@ -81,6 +81,7 @@ interface Discussion {
     id: string;
     name: string | null;
     image: string | null;
+    avatarSeed?: string | null;
   };
   replies: Discussion[];
 }
@@ -141,6 +142,13 @@ interface ItemDetailProps {
   bids: Bid[];
   initialPagination: { page: number; pageSize: number; total: number };
   discussions: Discussion[];
+  discussionsPagination: {
+    page: number;
+    pageSize: number;
+    totalTopLevel: number;
+    totalAll: number;
+    hasMore: boolean;
+  };
   isHighestBidder: boolean;
   canBid: boolean;
   canEdit: boolean;
@@ -189,6 +197,7 @@ export default function ItemDetailPage({
   bids: initialBids,
   initialPagination,
   discussions: initialDiscussions,
+  discussionsPagination: initialDiscussionsPagination,
   canBid,
   canEdit,
   isItemOwner,
@@ -1196,6 +1205,7 @@ export default function ItemDetailPage({
                           itemCreatorId={initialItem.creator.id}
                           isOwnerOrAdmin={isOwnerOrAdmin}
                           initialDiscussions={initialDiscussions}
+                          initialPagination={initialDiscussionsPagination}
                           discussionsEnabled={initialItem.discussionsEnabled}
                           locked={!!isEnded}
                         />
@@ -1921,6 +1931,7 @@ export const getServerSideProps = withAuth(async (context) => {
       bids: itemData.bids,
       initialPagination: { page: 1, pageSize: 10, total: itemData.bidsTotal },
       discussions: itemData.discussions,
+      discussionsPagination: itemData.discussionsPagination,
       isHighestBidder: itemData.isHighestBidder,
       canBid: itemData.canBid,
       canEdit: itemData.canEdit,
