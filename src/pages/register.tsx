@@ -201,7 +201,11 @@ export default function RegisterPage({
           <div className="relative z-10 flex flex-col items-center justify-center p-12 text-center max-w-lg">
             <Link href="/" className="mb-8 group">
               <div className="relative inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-base-100 shadow-2xl shadow-primary/10 border border-base-content/5 mb-6 group-hover:scale-105 transition-transform duration-300">
-                <img src="/logo.svg" alt="Biddu" className="h-12 w-12 transition-transform group-hover:-rotate-6 duration-300" />
+                <img
+                  src="/logo.svg"
+                  alt="Biddú"
+                  className="h-12 w-12 transition-transform group-hover:-rotate-6 duration-300"
+                />
               </div>
               <h1 className="text-4xl font-extrabold tracking-tight bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
                 {tCommon("appName")}
@@ -221,7 +225,7 @@ export default function RegisterPage({
             href="/"
             className="lg:hidden absolute top-8 left-6 flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
-            <img src="/logo.svg" alt="Biddu" className="h-6 w-6" />
+            <img src="/logo.svg" alt="Biddú" className="h-6 w-6" />
             <span className="text-lg font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
               {tCommon("appName")}
             </span>
@@ -355,7 +359,10 @@ export default function RegisterPage({
                   <div className="form-control">
                     <label className="label pl-0" htmlFor="rut">
                       <span className="label-text font-medium text-base-content/80">
-                        RUT <span className="text-base-content/40 text-xs">(opcional)</span>
+                        RUT{" "}
+                        <span className="text-base-content/40 text-xs">
+                          (opcional)
+                        </span>
                       </span>
                     </label>
                     <div className="relative">
@@ -367,7 +374,9 @@ export default function RegisterPage({
                         placeholder="12.345.678-9"
                         autoComplete="rut"
                         value={rutValue}
-                        onChange={(e) => setRutValue(formatRutOnInput(e.target.value))}
+                        onChange={(e) =>
+                          setRutValue(formatRutOnInput(e.target.value))
+                        }
                         maxLength={12}
                         className={`input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors ${
                           fieldErrors.rut ? "input-error" : ""
@@ -386,7 +395,10 @@ export default function RegisterPage({
                   <div className="form-control">
                     <label className="label pl-0" htmlFor="phone">
                       <span className="label-text font-medium text-base-content/80">
-                        WhatsApp <span className="text-base-content/40 text-xs">(opcional)</span>
+                        WhatsApp{" "}
+                        <span className="text-base-content/40 text-xs">
+                          (opcional)
+                        </span>
                       </span>
                     </label>
                     <div className="relative">
@@ -412,8 +424,7 @@ export default function RegisterPage({
                     )}
                   </div>
 
-
-                                    <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-4">
                     <div className="form-control">
                       <label className="label pl-0" htmlFor="password">
                         <span className="label-text font-medium text-base-content/80">
@@ -516,11 +527,19 @@ export default function RegisterPage({
 
                   <p className="text-xs text-base-content/50 text-center mt-4">
                     {t("termsAgreement")}{" "}
-                    <Link href="/terms" prefetch={false} className="link link-primary">
+                    <Link
+                      href="/terms"
+                      prefetch={false}
+                      className="link link-primary"
+                    >
                       {t("termsOfService")}
                     </Link>{" "}
                     {t("and")}{" "}
-                    <Link href="/privacy" prefetch={false} className="link link-primary">
+                    <Link
+                      href="/privacy"
+                      prefetch={false}
+                      className="link link-primary"
+                    >
                       {t("privacyPolicy")}
                     </Link>
                   </p>

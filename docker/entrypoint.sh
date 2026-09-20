@@ -1,5 +1,5 @@
 #!/bin/sh
-# Biddu Docker entrypoint (starts as root, drops to `nextjs`).
+# Biddú Docker entrypoint (starts as root, drops to `nextjs`).
 #
 # Volume mounts shadow the image's chown-ed directories with root-owned
 # ones, so without this step SQLite/uploads/logs writes fail on fresh

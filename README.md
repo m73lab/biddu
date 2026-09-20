@@ -1,4 +1,4 @@
-# Biddu 🇨🇱
+# Biddú 🇨🇱
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Node >= 20](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](https://nodejs.org/)
@@ -64,11 +64,11 @@ openssl rand -base64 32   # AUTH_SECRET
 openssl rand -base64 32   # CRON_SECRET
 ```
 
-| Servicio | Puerto | Descripción |
-|---|---|---|
-| `biddu` | 3000 | Aplicación Next.js |
+| Servicio      | Puerto   | Descripción                   |
+| ------------- | -------- | ----------------------------- |
+| `biddu`       | 3000     | Aplicación Next.js            |
 | `biddu-caddy` | 80 / 443 | Reverse proxy con HTTPS local |
-| `soketi` | 6001 | WebSocket realtime (opcional) |
+| `soketi`      | 6001     | WebSocket realtime (opcional) |
 
 Datos persistentes en volúmenes Docker: base SQLite (`biddu-data`), uploads (`biddu-uploads`) y logs (`biddu-logs`). Las migraciones Prisma se aplican solas al arrancar (servicio `migrate`, antes de la app), así que un volumen nuevo queda operativo sin pasos manuales. Un entrypoint corrige la propiedad de los volúmenes y luego baja privilegios al usuario `nextjs`.
 
@@ -90,21 +90,21 @@ Sin proveedor de correo (`EMAIL_PROVIDER` vacío) el login sigue funcionando, pe
 
 Toda la configuración vive en `.env` (ver `.env.example`, que documenta cada opción). Lo esencial:
 
-| Variable | Descripción |
-|---|---|
-| `AUTH_SECRET` | **Requerido.** Secreto de sesiones (generar con openssl) |
-| `DATABASE_URL` | SQLite por defecto (`file:./data/biddu.db`); acepta Turso (`libsql://…`) o PostgreSQL |
-| `NEXT_PUBLIC_APP_URL` | URL pública de la app (para enlaces de correos) |
-| `EMAIL_PROVIDER` | `brevo`, `smtp`, `ses` o vacío (sin correos) |
-| `MAIL_FROM` / `MAIL_FROM_NAME` | Remitente de los correos |
-| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | OAuth Google (opcional; sin esto no se muestra el botón) |
-| `MICROSOFT_CLIENT_ID` / `MICROSOFT_CLIENT_SECRET` | OAuth Microsoft (opcional) |
-| `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` / `RECAPTCHA_SECRET_KEY` | reCAPTCHA en registro (opcional) |
-| `NEXT_PUBLIC_REALTIME_DRIVER` | `soketi`, `pusher` o `disabled` |
-| `STORAGE_PROVIDER` | `local` o `s3` (+ credenciales `S3_*`) |
-| `ALLOW_OPEN_AUCTIONS` | `true` permite subastas abiertas; en nube se usa `false` |
-| `CRON_SECRET` | Protege los endpoints de cron/reintentos de correo |
-| `CADDY_DOMAIN` | Dominio/IP para el TLS local (default `192.168.1.16`) |
+| Variable                                                  | Descripción                                                                           |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `AUTH_SECRET`                                             | **Requerido.** Secreto de sesiones (generar con openssl)                              |
+| `DATABASE_URL`                                            | SQLite por defecto (`file:./data/biddu.db`); acepta Turso (`libsql://…`) o PostgreSQL |
+| `NEXT_PUBLIC_APP_URL`                                     | URL pública de la app (para enlaces de correos)                                       |
+| `EMAIL_PROVIDER`                                          | `brevo`, `smtp`, `ses` o vacío (sin correos)                                          |
+| `MAIL_FROM` / `MAIL_FROM_NAME`                            | Remitente de los correos                                                              |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`               | OAuth Google (opcional; sin esto no se muestra el botón)                              |
+| `MICROSOFT_CLIENT_ID` / `MICROSOFT_CLIENT_SECRET`         | OAuth Microsoft (opcional)                                                            |
+| `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` / `RECAPTCHA_SECRET_KEY` | reCAPTCHA en registro (opcional)                                                      |
+| `NEXT_PUBLIC_REALTIME_DRIVER`                             | `soketi`, `pusher` o `disabled`                                                       |
+| `STORAGE_PROVIDER`                                        | `local` o `s3` (+ credenciales `S3_*`)                                                |
+| `ALLOW_OPEN_AUCTIONS`                                     | `true` permite subastas abiertas; en nube se usa `false`                              |
+| `CRON_SECRET`                                             | Protege los endpoints de cron/reintentos de correo                                    |
+| `CADDY_DOMAIN`                                            | Dominio/IP para el TLS local (default `192.168.1.16`)                                 |
 
 ## Desarrollo local
 
@@ -117,27 +117,27 @@ npm run dev        # http://localhost:3000
 
 Comandos útiles:
 
-| Comando | Qué hace |
-|---|---|
-| `npm run dev` | Servidor de desarrollo |
-| `npm run dev:realtime` | Dev + Soketi en Docker |
-| `npm run build` / `npm start` | Build de producción / servirlo |
+| Comando                           | Qué hace                                     |
+| --------------------------------- | -------------------------------------------- |
+| `npm run dev`                     | Servidor de desarrollo                       |
+| `npm run dev:realtime`            | Dev + Soketi en Docker                       |
+| `npm run build` / `npm start`     | Build de producción / servirlo               |
 | `npm run lint` / `npm run format` | ESLint / Prettier (hay pre-commit con husky) |
-| `npm run db:push` | Sincroniza el schema Prisma con la DB |
-| `npm run db:studio` | Prisma Studio (explorar datos) |
-| `npm run db:seed` | Datos de prueba (ver `prisma/seed*.ts`) |
+| `npm run db:push`                 | Sincroniza el schema Prisma con la DB        |
+| `npm run db:studio`               | Prisma Studio (explorar datos)               |
+| `npm run db:seed`                 | Datos de prueba (ver `prisma/seed*.ts`)      |
 
 ## Stack
 
-| Capa | Tecnología |
-|---|---|
+| Capa     | Tecnología                                                      |
+| -------- | --------------------------------------------------------------- |
 | Frontend | Next.js 16 (Pages Router), React 19, Tailwind CSS 4 + DaisyUI 5 |
-| i18n | next-intl (es/en), zona horaria America/Santiago |
-| Auth | NextAuth.js (credenciales, Google, Microsoft) |
-| DB | Prisma 7 + SQLite (Turso/PostgreSQL soportados) |
-| Realtime | Soketi o Pusher (opcional) |
-| Correo | MJML + Brevo / SMTP / SES, con cola y reintentos |
-| Archivos | Local o S3-compatible |
+| i18n     | next-intl (es/en), zona horaria America/Santiago                |
+| Auth     | NextAuth.js (credenciales, Google, Microsoft)                   |
+| DB       | Prisma 7 + SQLite (Turso/PostgreSQL soportados)                 |
+| Realtime | Soketi o Pusher (opcional)                                      |
+| Correo   | MJML + Brevo / SMTP / SES, con cola y reintentos                |
+| Archivos | Local o S3-compatible                                           |
 
 Estructura del repositorio (resumen):
 

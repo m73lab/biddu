@@ -11,7 +11,7 @@ import type { EmailProvider, EmailMessage, EmailSendResult } from "./types";
 const logger = createLogger("email:brevo");
 
 const MAIL_FROM = process.env.MAIL_FROM || "noreply@biddu.cl";
-const MAIL_FROM_NAME = process.env.MAIL_FROM_NAME || "Biddu";
+const MAIL_FROM_NAME = process.env.MAIL_FROM_NAME || "Biddú";
 
 export class BrevoProvider implements EmailProvider {
   private api: brevo.TransactionalEmailsApi;

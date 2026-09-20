@@ -63,7 +63,7 @@
     "useCases": {
       "sectionTitle": "Feita para",
       "sectionTitleHighlight": "a vida real",
-      "sectionDescription": "Onde há uma comunidade juntando grana, a Biddu encaixa perfeito.",
+      "sectionDescription": "Onde há uma comunidade juntando grana, a Biddú encaixa perfeito.",
       "charity": {
         "title": "Bombeiros e causas",
         "description": "Leilões beneficentes da sua companhia ou causa: publique os lotes doados, receba lances de vizinhos e adjudique ao maior lance."
@@ -122,8 +122,8 @@
       "subtitle": "As de sempre, respondidas sem enrolação.",
       "items": [
         {
-          "q": "A Biddu é realmente grátis?",
-          "a": "Sim. A Biddu é 100% grátis e de código aberto sob licença MIT. Sem taxas nem limites: auto-hospede no seu servidor."
+          "q": "A Biddú é realmente grátis?",
+          "a": "Sim. A Biddú é 100% grátis e de código aberto sob licença MIT. Sem taxas nem limites: auto-hospede no seu servidor."
         },
         {
           "q": "Como se cobra se alguém vence um lance?",
@@ -138,7 +138,7 @@
           "a": "Na moeda que você escolher ao criar o leilão: pesos chilenos ($ CLP), dólares ou outras moedas, com formato e horário local correspondentes."
         },
         {
-          "q": "Posso ter a Biddu no meu servidor?",
+          "q": "Posso ter a Biddú no meu servidor?",
           "a": "Sim, é auto-hospedável com Docker e licença MIT. Clone o repositório e suba com docker compose up."
         },
         {
@@ -153,7 +153,7 @@
       "getStarted": "Criar conta grátis",
       "freeForever": "Grátis para sempre · Sem cartão",
       "selfHostTitle": "Prefere hospedar você?",
-      "selfHostDescription": "A Biddu é código aberto e auto-hospedável com Docker. Controle total dos seus dados na sua infraestrutura."
+      "selfHostDescription": "A Biddú é código aberto e auto-hospedável com Docker. Controle total dos seus dados na sua infraestrutura."
     }
   }
 }

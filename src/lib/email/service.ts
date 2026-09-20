@@ -24,8 +24,7 @@ import {
 import { createLogger } from "@/lib/logger";
 
 const emailServiceLogger = createLogger("email-service");
-const APP_URL =
-  process.env.NEXT_PUBLIC_APP_URL || "https://biddu.cl";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://biddu.cl";
 
 /**
  * Environment info:
@@ -63,7 +62,7 @@ export async function queueWelcomeEmail(params: {
     const result = await sendEmail({
       to: email,
       toName: name,
-      subject: "¡Bienvenido a Biddu! 🎉",
+      subject: "¡Bienvenido a Biddú! 🎉",
       mjmlTemplate: templateData.template,
       replacements: templateData.replacements,
       type: "WELCOME",
@@ -114,7 +113,7 @@ export async function queueInviteEmail(params: {
 
     const result = await sendEmail({
       to: email,
-      subject: `Te han invitado a "${auctionName}" en Biddu`,
+      subject: `Te han invitado a "${auctionName}" en Biddú`,
       mjmlTemplate: templateData.template,
       replacements: templateData.replacements,
       type: "INVITE",

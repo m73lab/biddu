@@ -1,5 +1,5 @@
 # =============================================================================
-# Biddu Docker Compose
+# Biddú Docker Compose
 # Self-hosted deployment with Docker Compose
 # =============================================================================
 
@@ -76,7 +76,7 @@ services:
       - SMTP_USER=${SMTP_USER:-}
       - SMTP_PASSWORD=${SMTP_PASSWORD:-}
       - MAIL_FROM=${MAIL_FROM:-noreply@biddu.cl}
-      - MAIL_FROM_NAME=${MAIL_FROM_NAME:-Biddu}
+      - MAIL_FROM_NAME=${MAIL_FROM_NAME:-Biddú}
       - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
       - TZ=America/Santiago
       - CRON_SECRET=${CRON_SECRET:-}
@@ -118,7 +118,15 @@ services:
       migrate:
         condition: service_completed_successfully
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:3000/api/health"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "-q",
+          "-O",
+          "/dev/null",
+          "http://localhost:3000/api/health",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -161,7 +169,6 @@ services:
       - SOKETI_DEFAULT_APP_KEY=${NEXT_PUBLIC_SOKETI_APP_KEY:-}
       - SOKETI_DEFAULT_APP_SECRET=${SOKETI_APP_SECRET:-}
       - SOKETI_DEFAULT_APP_HOST=0.0.0.0
-
 
 # -----------------------------------------------------------------------------
 # Volumes for data persistence

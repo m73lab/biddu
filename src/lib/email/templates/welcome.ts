@@ -2,13 +2,13 @@ import { renderLayout, theme, escapeHtml } from "../layout";
 
 const content = `
     <mj-text font-size="22px" font-weight="600" color="${theme.colors.text.main}">
-      Bienvenido a Biddu, {{NAME}}! 🎉
+      Bienvenido a Biddú, {{NAME}}! 🎉
     </mj-text>
     <mj-text>
-      ¡Gracias por unirte a Biddu, tu plataforma de subastas privadas. Estamos emocionados de tenerte con nosotros!
+      ¡Gracias por unirte a Biddú, tu plataforma de subastas privadas. Estamos emocionados de tenerte con nosotros!
     </mj-text>
     <mj-text>
-      Con Biddu puedes:
+      Con Biddú puedes:
     </mj-text>
     <mj-text padding-left="20px">
       • Crear y gestionar subastas privadas<br/>
@@ -25,8 +25,8 @@ const content = `
 `;
 
 export const welcomeTemplate = renderLayout({
-  title: "Bienvenido a Biddu",
-  previewText: "Bienvenido a Biddu - Tu Plataforma de Subastas Privadas",
+  title: "Bienvenido a Biddú",
+  previewText: "Bienvenido a Biddú - Tu Plataforma de Subastas Privadas",
   content,
 });
 
