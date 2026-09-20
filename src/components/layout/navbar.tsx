@@ -35,11 +35,18 @@ export function Navbar({ user }: NavbarProps) {
     setMounted(true); // eslint-disable-line
   }, []);
 
+  // Passive + rAF-throttled: no setState per scroll event (iOS jank).
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        setScrolled(window.scrollY > 10);
+        ticking = false;
+      });
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -54,168 +61,173 @@ export function Navbar({ user }: NavbarProps) {
 
   return (
     <>
-    <nav
-      className={`sticky top-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-base-100/80 backdrop-blur-lg border-b border-base-content/5 py-2 shadow-sm"
-          : "bg-base-100/0 border-b border-transparent py-4"
-      }`}
-    >
-      <div className="container mx-auto px-4 flex items-center justify-between">
-        <div className="flex items-center gap-8">
-          <Link
-            href="/dashboard"
-            className="group flex items-center gap-2 text-xl font-bold tracking-tight"
-          >
-            <div className="relative">
-              <img src="/logo.svg" alt="" aria-hidden="true" className="h-8 w-8 transition-transform group-hover:-rotate-6 duration-300" />
-              <div className="absolute inset-0 bg-primary/30 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            </div>
-            <span className="bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent font-extrabold tracking-tight">
-              {tCommon("appName")}
-            </span>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1">
+      <nav
+        className={`sticky top-0 z-50 transition-[background-color,border-color,box-shadow,padding] duration-300 ${
+          scrolled
+            ? "bg-base-100 border-b border-base-content/5 py-2 shadow-sm"
+            : "bg-base-100/0 border-b border-transparent py-4"
+        }`}
+      >
+        <div className="container mx-auto px-4 flex items-center justify-between">
+          <div className="flex items-center gap-8">
             <Link
               href="/dashboard"
-              className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10 gap-1.5"
+              className="group flex items-center gap-2 text-xl font-bold tracking-tight"
             >
-              <span className="icon-[tabler--layout-dashboard] size-4"></span>
-              {t("dashboard")}
+              <div className="relative">
+                <img
+                  src="/logo.svg"
+                  alt=""
+                  aria-hidden="true"
+                  className="h-8 w-8 transition-transform group-hover:-rotate-6 duration-300"
+                />
+                <div className="absolute inset-0 bg-primary/30 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </div>
+              <span className="bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent font-extrabold tracking-tight">
+                {tCommon("appName")}
+              </span>
             </Link>
-            <Link
-              href="/listings"
-              className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10 gap-1.5"
-            >
-              <span className="icon-[tabler--tag] size-4"></span>
-              {t("myListings")}
-            </Link>
-            <Link
-              href="/history"
-              className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10 gap-1.5"
-            >
-              <span className="icon-[tabler--gavel] size-4"></span>
-              {t("myBids")}
-            </Link>
-            <Link
-              href="/auctions/mine"
-              className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10 gap-1.5"
-            >
-              <span className="icon-[tabler--crown] size-4"></span>
-              {t("myAuctions")}
-            </Link>
-            {isUserAuctionAdmin && (
-              <Link
-                href="/auctions/admin"
-                className="btn btn-ghost btn-sm font-medium text-warning hover:text-warning hover:bg-warning/10 gap-1.5"
-              >
-                <span className="icon-[tabler--shield-check] size-4"></span>
-                {t("adminPanel")}
-              </Link>
-            )}
-          </div>
-        </div>
 
-        {/* Mobile actions: notifications + sign out */}
-        <div className="flex items-center gap-1 md:hidden">
-          <button
-            onClick={() => setMobileNotificationsOpen(true)}
-            className="btn btn-ghost btn-sm btn-circle"
-            aria-label={t("notifications")}
-          >
-            <div className="indicator">
-              <span className="icon-[tabler--bell] size-6"></span>
-              {unreadCount > 0 && (
-                <span className="indicator-item badge badge-primary badge-xs">
-                  {unreadCount > 9 ? "9+" : unreadCount}
-                </span>
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-1">
+              <Link
+                href="/dashboard"
+                className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10 gap-1.5"
+              >
+                <span className="icon-[tabler--layout-dashboard] size-4"></span>
+                {t("dashboard")}
+              </Link>
+              <Link
+                href="/listings"
+                className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10 gap-1.5"
+              >
+                <span className="icon-[tabler--tag] size-4"></span>
+                {t("myListings")}
+              </Link>
+              <Link
+                href="/history"
+                className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10 gap-1.5"
+              >
+                <span className="icon-[tabler--gavel] size-4"></span>
+                {t("myBids")}
+              </Link>
+              <Link
+                href="/auctions/mine"
+                className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10 gap-1.5"
+              >
+                <span className="icon-[tabler--crown] size-4"></span>
+                {t("myAuctions")}
+              </Link>
+              {isUserAuctionAdmin && (
+                <Link
+                  href="/auctions/admin"
+                  className="btn btn-ghost btn-sm font-medium text-warning hover:text-warning hover:bg-warning/10 gap-1.5"
+                >
+                  <span className="icon-[tabler--shield-check] size-4"></span>
+                  {t("adminPanel")}
+                </Link>
               )}
             </div>
-          </button>
-          <button
-            onClick={() => setMobileSignOutOpen(true)}
-            className="btn btn-ghost btn-sm btn-circle text-error/80 hover:text-error"
-            aria-label={t("signOut")}
-          >
-            <span className="icon-[tabler--logout] size-6"></span>
-          </button>
-        </div>
-
-        <div className="hidden md:flex items-center gap-3">
-          {/* Notifications */}
-          <div className="btn btn-ghost btn-circle btn-sm hover:bg-base-content/5">
-            <NotificationBell />
           </div>
 
-          {/* Theme Toggle */}
-          {mounted && (
+          {/* Mobile actions: notifications + sign out */}
+          <div className="flex items-center gap-1 md:hidden">
             <button
-              className="btn btn-ghost btn-circle btn-sm hover:bg-base-content/5 transition-transform hover:rotate-12"
-              onClick={() =>
-                setTheme(resolvedTheme === "light" ? "dark" : "light")
-              }
-              aria-label="Toggle theme"
+              onClick={() => setMobileNotificationsOpen(true)}
+              className="btn btn-ghost btn-sm btn-circle"
+              aria-label={t("notifications")}
             >
-              {resolvedTheme === "light" ? (
-                <span className="icon-[tabler--moon] size-5"></span>
-              ) : (
-                <span className="icon-[tabler--sun] size-5"></span>
-              )}
+              <div className="indicator">
+                <span className="icon-[tabler--bell] size-6"></span>
+                {unreadCount > 0 && (
+                  <span className="indicator-item badge badge-primary badge-xs">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
+              </div>
             </button>
-          )}
+            <button
+              onClick={() => setMobileSignOutOpen(true)}
+              className="btn btn-ghost btn-sm btn-circle text-error/80 hover:text-error"
+              aria-label={t("signOut")}
+            >
+              <span className="icon-[tabler--logout] size-6"></span>
+            </button>
+          </div>
 
-          {/* User Menu */}
-          <div className="dropdown dropdown-end ml-2">
-            <button
-              tabIndex={0}
-              className="group flex items-center gap-2 pl-1 pr-2 py-1 rounded-full hover:bg-base-content/5 transition-all cursor-pointer ring-offset-2 focus:ring-2 focus:ring-primary/20 outline-none"
-            >
-              <UserAvatar
-                name={user.name}
-                email={user.email}
-                seed={user.id}
-                size="sm"
-                expandable={false}
-              />
-              <span className="icon-[tabler--chevron-down] size-4 text-base-content/40 group-hover:text-base-content/60 transition-colors"></span>
-            </button>
-            <ul
-              tabIndex={0}
-              className="menu menu-sm dropdown-content bg-base-100/90 backdrop-blur-xl rounded-2xl z-50 mt-4 w-60 p-2 shadow-2xl shadow-primary/5 border border-base-content/5 transform origin-top-right transition-all"
-            >
-              <li className="menu-title px-4 py-3 border-b border-base-content/5 mb-2">
-                <span className="text-xs font-semibold text-primary block mb-0.5">
-                  {t("signedInAs")}
-                </span>
-                <span className="text-sm font-normal text-base-content/80 truncate block">
-                  {user.email}
-                </span>
-              </li>
-              <li>
-                <Link
-                  href="/dashboard"
-                  className="active:bg-primary/10 active:text-primary"
-                >
-                  <span className="icon-[tabler--layout-dashboard] size-4 opacity-70"></span>
-                  {t("dashboard")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/history"
-                  className="active:bg-primary/10 active:text-primary"
-                >
-                  <span className="icon-[tabler--history] size-4 opacity-70"></span>
-                  {t("bidHistory")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/auctions/mine"
-                  className="active:bg-primary/10 active:text-primary"
-                >
+          <div className="hidden md:flex items-center gap-3">
+            {/* Notifications */}
+            <div className="btn btn-ghost btn-circle btn-sm hover:bg-base-content/5">
+              <NotificationBell />
+            </div>
+
+            {/* Theme Toggle */}
+            {mounted && (
+              <button
+                className="btn btn-ghost btn-circle btn-sm hover:bg-base-content/5 transition-transform hover:rotate-12"
+                onClick={() =>
+                  setTheme(resolvedTheme === "light" ? "dark" : "light")
+                }
+                aria-label="Toggle theme"
+              >
+                {resolvedTheme === "light" ? (
+                  <span className="icon-[tabler--moon] size-5"></span>
+                ) : (
+                  <span className="icon-[tabler--sun] size-5"></span>
+                )}
+              </button>
+            )}
+
+            {/* User Menu */}
+            <div className="dropdown dropdown-end ml-2">
+              <button
+                tabIndex={0}
+                className="group flex items-center gap-2 pl-1 pr-2 py-1 rounded-full hover:bg-base-content/5 transition-all cursor-pointer ring-offset-2 focus:ring-2 focus:ring-primary/20 outline-none"
+              >
+                <UserAvatar
+                  name={user.name}
+                  email={user.email}
+                  seed={user.id}
+                  size="sm"
+                  expandable={false}
+                />
+                <span className="icon-[tabler--chevron-down] size-4 text-base-content/40 group-hover:text-base-content/60 transition-colors"></span>
+              </button>
+              <ul
+                tabIndex={0}
+                className="menu menu-sm dropdown-content bg-base-100/90 backdrop-blur-xl rounded-2xl z-50 mt-4 w-60 p-2 shadow-2xl shadow-primary/5 border border-base-content/5 transform origin-top-right transition-all"
+              >
+                <li className="menu-title px-4 py-3 border-b border-base-content/5 mb-2">
+                  <span className="text-xs font-semibold text-primary block mb-0.5">
+                    {t("signedInAs")}
+                  </span>
+                  <span className="text-sm font-normal text-base-content/80 truncate block">
+                    {user.email}
+                  </span>
+                </li>
+                <li>
+                  <Link
+                    href="/dashboard"
+                    className="active:bg-primary/10 active:text-primary"
+                  >
+                    <span className="icon-[tabler--layout-dashboard] size-4 opacity-70"></span>
+                    {t("dashboard")}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/history"
+                    className="active:bg-primary/10 active:text-primary"
+                  >
+                    <span className="icon-[tabler--history] size-4 opacity-70"></span>
+                    {t("bidHistory")}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/auctions/mine"
+                    className="active:bg-primary/10 active:text-primary"
+                  >
                     <span className="icon-[tabler--crown] size-4 opacity-70"></span>
                     {t("myAuctions")}
                   </Link>
@@ -232,96 +244,96 @@ export function Navbar({ user }: NavbarProps) {
                 <li>
                   <Link
                     href="/settings"
-                  className="active:bg-primary/10 active:text-primary"
-                >
-                  <span className="icon-[tabler--settings] size-4 opacity-70"></span>
-                  {t("settings")}
-                </Link>
-              </li>
-              {isUserAuctionAdmin && (
-                <li>
-                  <Link
-                    href="/auctions/admin"
-                    className="text-warning active:bg-warning/10 active:text-warning"
+                    className="active:bg-primary/10 active:text-primary"
                   >
-                    <span className="icon-[tabler--shield-check] size-4"></span>
-                    {t("adminPanel")}
+                    <span className="icon-[tabler--settings] size-4 opacity-70"></span>
+                    {t("settings")}
                   </Link>
                 </li>
-              )}
-              <div className="divider my-1 opacity-50"></div>
-              <li>
-                <Link
-                  href="/ayuda"
-                  className="active:bg-primary/10 active:text-primary"
+                {isUserAuctionAdmin && (
+                  <li>
+                    <Link
+                      href="/auctions/admin"
+                      className="text-warning active:bg-warning/10 active:text-warning"
+                    >
+                      <span className="icon-[tabler--shield-check] size-4"></span>
+                      {t("adminPanel")}
+                    </Link>
+                  </li>
+                )}
+                <div className="divider my-1 opacity-50"></div>
+                <li>
+                  <Link
+                    href="/ayuda"
+                    className="active:bg-primary/10 active:text-primary"
+                  >
+                    <span className="icon-[tabler--lifebuoy] size-4 opacity-70"></span>
+                    {t("help")}
+                  </Link>
+                </li>
+                <div className="divider my-1 opacity-50"></div>
+                <li>
+                  <button
+                    onClick={() => signOut({ callbackUrl: "/login" })}
+                    className="text-error hover:bg-error/10 hover:text-error active:bg-error/20"
+                  >
+                    <span className="icon-[tabler--logout] size-4"></span>
+                    {t("signOut")}
+                  </button>
+                </li>
+                <li className="menu-title mt-1 text-center">
+                  <span className="text-[10px] text-base-content/30 font-mono">
+                    v{packageJson.version}
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Notification Sheet */}
+        <MobileNotificationSheet
+          isOpen={mobileNotificationsOpen}
+          onClose={() => setMobileNotificationsOpen(false)}
+        />
+      </nav>
+
+      {mobileSignOutOpen && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/50 z-[60] md:hidden"
+            onClick={() => setMobileSignOutOpen(false)}
+          />
+          <div className="md:hidden fixed inset-x-0 bottom-0 z-[60] animate-in slide-in-from-bottom duration-300">
+            <div className="bg-base-100 rounded-t-3xl shadow-2xl">
+              <div className="flex justify-center pt-3 pb-2">
+                <div className="w-10 h-1 bg-base-content/20 rounded-full" />
+              </div>
+              <div className="px-6 py-4 flex flex-col items-center text-center gap-2">
+                <span className="icon-[tabler--logout] size-10 text-error" />
+                <h2 className="text-lg font-bold">{t("signOut")}</h2>
+                <p className="text-sm text-base-content/60">
+                  {t("signOutConfirm")}
+                </p>
+              </div>
+              <div className="px-4 pb-6 pt-2 grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => setMobileSignOutOpen(false)}
+                  className="btn btn-ghost"
                 >
-                  <span className="icon-[tabler--lifebuoy] size-4 opacity-70"></span>
-                  {t("help")}
-                </Link>
-              </li>
-              <div className="divider my-1 opacity-50"></div>
-              <li>
+                  {tCommon("cancel")}
+                </button>
                 <button
                   onClick={() => signOut({ callbackUrl: "/login" })}
-                  className="text-error hover:bg-error/10 hover:text-error active:bg-error/20"
+                  className="btn btn-error"
                 >
-                  <span className="icon-[tabler--logout] size-4"></span>
                   {t("signOut")}
                 </button>
-              </li>
-              <li className="menu-title mt-1 text-center">
-                <span className="text-[10px] text-base-content/30 font-mono">
-                  v{packageJson.version}
-                </span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Notification Sheet */}
-      <MobileNotificationSheet
-        isOpen={mobileNotificationsOpen}
-        onClose={() => setMobileNotificationsOpen(false)}
-      />
-    </nav>
-
-    {mobileSignOutOpen && (
-      <>
-        <div
-          className="fixed inset-0 bg-black/50 z-[60] md:hidden"
-          onClick={() => setMobileSignOutOpen(false)}
-        />
-        <div className="md:hidden fixed inset-x-0 bottom-0 z-[60] animate-in slide-in-from-bottom duration-300">
-          <div className="bg-base-100 rounded-t-3xl shadow-2xl">
-            <div className="flex justify-center pt-3 pb-2">
-              <div className="w-10 h-1 bg-base-content/20 rounded-full" />
-            </div>
-            <div className="px-6 py-4 flex flex-col items-center text-center gap-2">
-              <span className="icon-[tabler--logout] size-10 text-error" />
-              <h2 className="text-lg font-bold">{t("signOut")}</h2>
-              <p className="text-sm text-base-content/60">
-                {t("signOutConfirm")}
-              </p>
-            </div>
-            <div className="px-4 pb-6 pt-2 grid grid-cols-2 gap-3">
-              <button
-                onClick={() => setMobileSignOutOpen(false)}
-                className="btn btn-ghost"
-              >
-                {tCommon("cancel")}
-              </button>
-              <button
-                onClick={() => signOut({ callbackUrl: "/login" })}
-                className="btn btn-error"
-              >
-                {t("signOut")}
-              </button>
+              </div>
             </div>
           </div>
-        </div>
-      </>
-    )}
+        </>
+      )}
     </>
   );
 }

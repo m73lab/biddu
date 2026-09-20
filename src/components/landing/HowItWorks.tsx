@@ -26,7 +26,9 @@ export function HowItWorks() {
           </p>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-base-content">
             {t("sectionTitle")}{" "}
-            <span className="text-base-content">{t("sectionTitleHighlight")}</span>
+            <span className="text-base-content">
+              {t("sectionTitleHighlight")}
+            </span>
           </h2>
         </div>
 
@@ -60,7 +62,7 @@ export function HowItWorks() {
           <div className="hidden lg:block lg:sticky lg:top-24">
             <div className="relative">
               <div
-                className="absolute inset-0 bg-linear-to-tr from-gold-500/20 to-live/10 rounded-3xl blur-2xl"
+                className="absolute inset-0 bg-linear-to-tr from-gold-500/20 to-live/10 rounded-3xl"
                 aria-hidden="true"
               ></div>
               <div className="relative bg-ink-950 rounded-3xl p-6 border border-ink-800 shadow-2xl">

@@ -30,7 +30,7 @@ export function UseCases() {
       className="py-20 md:py-28 bg-ink-950 text-cream-50 relative overflow-hidden scroll-mt-24"
     >
       <div
-        className="absolute top-0 -right-24 w-96 h-96 bg-gold-500/10 rounded-full blur-[130px] pointer-events-none"
+        className="absolute top-0 -right-24 w-96 h-96 rounded-full bg-[radial-gradient(closest-side,var(--color-gold-500),transparent)] opacity-10 pointer-events-none"
         aria-hidden="true"
       ></div>
 

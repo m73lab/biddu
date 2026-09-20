@@ -136,17 +136,17 @@ export default function InvitePage({
             tErrors("invite.sendFailed"),
         );
       } else {
-          showToast(`Invite sent to ${email}`, "success");
-          setEmail("");
-          // New invites land on page 1: prepend locally if already there,
-          // otherwise navigate so the fresh SSR page shows it
-          if (isAdmin) {
-            if (pagination.page === 1) {
-              setInvites([result, ...invites]);
-            } else {
-              goToPage(1);
-            }
+        showToast(`Invite sent to ${email}`, "success");
+        setEmail("");
+        // New invites land on page 1: prepend locally if already there,
+        // otherwise navigate so the fresh SSR page shows it
+        if (isAdmin) {
+          if (pagination.page === 1) {
+            setInvites([result, ...invites]);
+          } else {
+            goToPage(1);
           }
+        }
       }
     } catch {
       setError(tErrors("generic"));
@@ -259,10 +259,10 @@ export default function InvitePage({
   };
 
   return (
-    <div className="min-h-screen bg-base-100 relative overflow-x-hidden selection:bg-primary/20">
+    <div className="min-h-dvh bg-base-100 relative overflow-x-hidden selection:bg-primary/20">
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[128px] translate-x-1/3 -translate-y-1/3"></div>
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[128px] -translate-x-1/3 translate-y-1/3"></div>
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-[radial-gradient(closest-side,var(--color-primary),transparent)] opacity-5 translate-x-1/3 -translate-y-1/3"></div>
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-[radial-gradient(closest-side,var(--color-secondary),transparent)] opacity-5 -translate-x-1/3 translate-y-1/3"></div>
       </div>
 
       <div className="relative z-10">
@@ -407,11 +407,11 @@ export default function InvitePage({
                   className="btn-lg shadow-lg shadow-primary/20"
                   icon={<span className="icon-[tabler--send] size-5"></span>}
                 >
-                    {t("sendInvite")}
-                  </Button>
-                </form>
-              </div>
+                  {t("sendInvite")}
+                </Button>
+              </form>
             </div>
+          </div>
 
           <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl mt-8">
             <div className="card-body p-8">
@@ -421,9 +421,7 @@ export default function InvitePage({
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold">{t("codes.title")}</h2>
-                  <p className="text-base-content/60">
-                    {t("codes.subtitle")}
-                  </p>
+                  <p className="text-base-content/60">{t("codes.subtitle")}</p>
                 </div>
               </div>
 
@@ -543,7 +541,9 @@ export default function InvitePage({
                           {isAdmin && (
                             <>
                               <span>•</span>
-                              <span>{c.createdBy.name || c.createdBy.email}</span>
+                              <span>
+                                {c.createdBy.name || c.createdBy.email}
+                              </span>
                             </>
                           )}
                         </div>
@@ -600,10 +600,10 @@ export default function InvitePage({
               <div className="card-body p-8">
                 <h2 className="card-title text-lg mb-6 flex items-center gap-2">
                   <span className="icon-[tabler--mail] size-5 text-secondary"></span>
-                    {t("pendingInvites")}
-                    <span className="badge badge-ghost badge-sm">
-                      {pagination.total}
-                    </span>
+                  {t("pendingInvites")}
+                  <span className="badge badge-ghost badge-sm">
+                    {pagination.total}
+                  </span>
                 </h2>
 
                 <div className="space-y-3">
@@ -641,19 +641,19 @@ export default function InvitePage({
                           <span className="icon-[tabler--copy] size-5"></span>
                         </button>
                       )}
-                      </div>
-                    ))}
-                  </div>
-                  <Pagination
-                    page={pagination.page}
-                    pageSize={pagination.pageSize}
-                    total={pagination.total}
-                    onPageChange={(p) => goToPage(p)}
-                    onPageSizeChange={(s) => goToPage(1, s)}
-                  />
+                    </div>
+                  ))}
                 </div>
+                <Pagination
+                  page={pagination.page}
+                  pageSize={pagination.pageSize}
+                  total={pagination.total}
+                  onPageChange={(p) => goToPage(p)}
+                  onPageSizeChange={(s) => goToPage(1, s)}
+                />
               </div>
-            )}
+            </div>
+          )}
         </main>
       </div>
     </div>

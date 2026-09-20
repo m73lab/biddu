@@ -16,11 +16,11 @@ export default function MaintenancePage() {
         <meta name="robots" content="noindex, nofollow" />
       </Head>
 
-      <div className="min-h-screen bg-base-100 text-base-content selection:bg-primary/20 flex items-center justify-center relative overflow-hidden">
+      <div className="min-h-dvh bg-base-100 text-base-content selection:bg-primary/20 flex items-center justify-center relative overflow-hidden">
         {/* Background Elements - matching Hero style */}
         <div className="absolute inset-0 -z-10">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px] animate-pulse"></div>
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-[128px] animate-pulse"></div>
+          <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full bg-[radial-gradient(closest-side,var(--color-primary),transparent)] opacity-20 animate-pulse"></div>
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 rounded-full bg-[radial-gradient(closest-side,var(--color-secondary),transparent)] opacity-20 animate-pulse"></div>
           <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]"></div>
         </div>
 

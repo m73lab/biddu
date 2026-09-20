@@ -69,10 +69,10 @@ export function InvitePortal({
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen bg-base-200 flex items-center justify-center relative overflow-hidden">
+      <div className="min-h-dvh bg-base-200 flex items-center justify-center relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <div className="absolute top-0 right-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px] animate-pulse"></div>
-          <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-[128px] animate-pulse delay-1000"></div>
+          <div className="absolute top-0 right-1/4 w-96 h-96 rounded-full bg-[radial-gradient(closest-side,var(--color-primary),transparent)] opacity-20 animate-pulse"></div>
+          <div className="absolute bottom-0 left-1/4 w-96 h-96 rounded-full bg-[radial-gradient(closest-side,var(--color-secondary),transparent)] opacity-20 animate-pulse delay-1000"></div>
           <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]"></div>
         </div>
 
@@ -88,9 +88,9 @@ export function InvitePortal({
 
   if (status === "invalid" || !auction) {
     return (
-      <div className="min-h-screen bg-base-200 flex items-center justify-center px-4 relative overflow-hidden">
+      <div className="min-h-dvh bg-base-200 flex items-center justify-center px-4 relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-error/10 rounded-full blur-[128px]"></div>
+          <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full bg-[radial-gradient(closest-side,var(--color-error),transparent)] opacity-10"></div>
           <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]"></div>
         </div>
 
@@ -116,11 +116,11 @@ export function InvitePortal({
   }
 
   return (
-    <div className="min-h-screen bg-base-200 flex items-center justify-center px-4 py-10 relative overflow-hidden">
+    <div className="min-h-dvh bg-base-200 flex items-center justify-center px-4 py-10 relative overflow-hidden">
       {/* Background effects */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px] animate-pulse"></div>
-        <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-[128px] animate-pulse delay-1000"></div>
+        <div className="absolute top-0 right-1/4 w-96 h-96 rounded-full bg-[radial-gradient(closest-side,var(--color-primary),transparent)] opacity-20 animate-pulse"></div>
+        <div className="absolute bottom-0 left-1/4 w-96 h-96 rounded-full bg-[radial-gradient(closest-side,var(--color-secondary),transparent)] opacity-20 animate-pulse delay-1000"></div>
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]"></div>
       </div>
 

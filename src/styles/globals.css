@@ -95,9 +95,19 @@
   --noise: 0;
 }
 
-/* Base styles */
+/* Base styles (dvh avoids iOS Safari toolbar relayout; vh fallback first) */
 body {
   min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Decorative float loops force costly repaints during iOS momentum scroll:
+   freeze them on mobile. Functional loops (spin/pulse) are untouched. */
+@media (max-width: 767px) {
+  .animate-float-y,
+  .animate-float-y-delayed {
+    animation: none;
+  }
 }
 
 /* Hero fade-in animation - CSS-based for better LCP */

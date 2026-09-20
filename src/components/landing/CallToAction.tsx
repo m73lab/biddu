@@ -17,7 +17,7 @@ export function CallToAction() {
             aria-hidden="true"
           ></div>
           <div
-            className="absolute -top-24 -right-16 w-80 h-80 bg-gold-500/15 rounded-full blur-[110px] pointer-events-none"
+            className="absolute -top-24 -right-16 w-80 h-80 rounded-full bg-[radial-gradient(closest-side,var(--color-gold-500),transparent)] opacity-15 pointer-events-none"
             aria-hidden="true"
           ></div>
 
@@ -53,7 +53,9 @@ export function CallToAction() {
           <h3 className="text-2xl md:text-3xl font-bold text-base-content mb-4">
             {t("selfHostTitle")}
           </h3>
-          <p className="text-base-content/60 mb-8">{t("selfHostDescription")}</p>
+          <p className="text-base-content/60 mb-8">
+            {t("selfHostDescription")}
+          </p>
 
           {/* Terminal mockup */}
           <div className="mockup-code bg-ink-950 text-cream-50 text-left border border-ink-800 shadow-xl">
