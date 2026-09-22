@@ -982,6 +982,7 @@ export default function ItemDetailPage({
                           photoUrl={images[0]?.publicUrl ?? null}
                           title={item.name}
                           price={sharePriceText}
+                          currency={item.currency.code}
                           endDate={item.endDate}
                           url={shareUrl}
                           fileSlug={item.id}

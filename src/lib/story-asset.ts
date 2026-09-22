@@ -30,6 +30,8 @@ export interface StoryAssetInput {
   title: string;
   /** Item price (item variants). */
   price?: string | null;
+  /** Currency code shown next to the price, e.g. "CLP", "USD". */
+  currency?: string | null;
   /** Auction stats, e.g. "12 lotes · 34 miembros" (auction variants). */
   badge?: string | null;
   endsLabel: string | null;
@@ -238,10 +240,29 @@ export async function generateStoryPng(input: StoryAssetInput): Promise<Blob> {
   const blockText = input.price || input.badge || null;
   if (blockText) {
     const isPrice = !!input.price;
-    const px = fitSingle(ctx, blockText, contentW, isPrice ? 80 : 50, 34);
+    const code = isPrice && input.currency ? input.currency.toUpperCase() : "";
+    // Reserve room for the currency code so price + code never overflow.
+    let codeW = 0;
+    if (code) {
+      ctx.font = `700 40px ${FONT}`;
+      codeW = ctx.measureText(code).width + 20;
+    }
+    const px = fitSingle(
+      ctx,
+      blockText,
+      contentW - codeW,
+      isPrice ? 80 : 50,
+      34,
+    );
     y += Math.round(px * 0.72) + 18;
     ctx.fillStyle = isPrice ? accent : CREAM;
     ctx.fillText(blockText, LEFT, y);
+    if (code) {
+      const priceW = ctx.measureText(blockText).width;
+      const codePx = Math.round(px * 0.5);
+      ctx.font = `700 ${codePx}px ${FONT}`;
+      ctx.fillText(code, LEFT + priceW + 18, y);
+    }
     y += Math.round(px * 0.25) + 16;
   } else {
     y += 18;

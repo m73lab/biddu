@@ -30,6 +30,7 @@
     "enableDiscussions": "Enable discussions",
     "enableDiscussionsDescription": "Allow auction members to discuss this item",
     "anonymous": "Anonymous",
-    "itemOwner": "Item Owner"
+    "itemOwner": "Item Owner",
+    "you": "you"
   }
 }

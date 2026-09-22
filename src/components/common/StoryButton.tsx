@@ -15,6 +15,7 @@ interface StoryButtonProps {
   photoUrl: string | null;
   title: string;
   price?: string | null;
+  currency?: string | null;
   badge?: string | null;
   endDate?: string | null;
   /** Full https URL encoded in the QR. */
@@ -44,6 +45,7 @@ export function StoryButton({
   photoUrl,
   title,
   price,
+  currency,
   badge,
   endDate,
   url,
@@ -72,6 +74,7 @@ export function StoryButton({
         eyebrow: t(`${scope}.${role}.eyebrow`),
         title,
         price: scope === "item" ? price : null,
+        currency: scope === "item" ? currency : null,
         badge: scope === "auction" ? badge : null,
         endsLabel: endsIn ? t("endsIn", { time: endsIn }) : null,
         cta: t(`${scope}.${role}.cta`),
