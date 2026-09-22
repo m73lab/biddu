@@ -259,7 +259,9 @@
         "noPhoneText": "Agrega tu número de WhatsApp en Ajustes para que el dueño del artículo pueda contactarte.",
         "goSettings": "Ir a Ajustes"
       },
-      "contactWinner": "Contactar al ganador"
+      "contactWinner": "Contactar al ganador",
+      "shareText": "🔥 {name} va en {price} · Termina {date}",
+      "shareTextOpen": "🔥 {name} va en {price}"
     }
   }
 }

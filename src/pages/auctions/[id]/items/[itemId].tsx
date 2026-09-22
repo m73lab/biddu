@@ -36,6 +36,8 @@ import {
 import { FulfillmentCard } from "@/components/item/FulfillmentCard";
 import { ScoreBadge } from "@/components/common/ScoreBadge";
 import { UserAvatar } from "@/components/ui/user-avatar";
+import { ShareButtons } from "@/components/common/ShareButtons";
+import { ImageLightbox } from "@/components/ui/image-lightbox";
 import * as auctionService from "@/lib/services/auction.service";
 import * as itemService from "@/lib/services/item.service";
 import * as userService from "@/lib/services/user.service";
@@ -219,6 +221,7 @@ export default function ItemDetailPage({
   const tEdit = useTranslations("item.edit");
   const { showToast } = useToast();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [zoomOpen, setZoomOpen] = useState(false);
   const [bidAmount, setBidAmount] = useState("");
   const [selectedCurrencyProfileId, setSelectedCurrencyProfileId] =
     useState<string>("");
@@ -493,6 +496,25 @@ export default function ItemDetailPage({
     if (!dateStr) return "Sin fecha de cierre";
     return formatDateInZone(dateStr, undefined, auction.timeZone ?? undefined);
   };
+
+  // Shareable short link (public, unfurls richly) + urgent prefilled text.
+  const shareUrl = `${process.env.NEXT_PUBLIC_APP_URL || ""}/a/${auction.id}`;
+  const sharePriceText = formatCurrency(
+    item.currentBid || item.startingBid,
+    item.currency.symbol,
+    decimalsForCurrency(item.currency.code),
+    item.currency.code,
+  );
+  const shareText = item.endDate
+    ? t("detail.shareText", {
+        name: item.name,
+        price: sharePriceText,
+        date: formatDate(item.endDate),
+      })
+    : t("detail.shareTextOpen", {
+        name: item.name,
+        price: sharePriceText,
+      });
 
   const handleBid = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -919,6 +941,12 @@ export default function ItemDetailPage({
                             <span className="icon-[tabler--help] size-4"></span>
                             {tTour("help")}
                           </button>
+                          <ShareButtons
+                            url={shareUrl}
+                            title={item.name}
+                            text={shareText}
+                            className="btn btn-ghost btn-sm gap-2 w-auto"
+                          />
                           {canEdit && (
                             <Link
                               href={`/auctions/${auction.id}/items/${item.id}/edit`}
@@ -935,7 +963,11 @@ export default function ItemDetailPage({
                       {images.length > 0 ? (
                         <div className="mb-8">
                           {/* Main Image with Navigation */}
-                          <div className="relative aspect-video bg-base-200/50 rounded-2xl overflow-hidden mb-4 border border-base-content/5 shadow-inner group">
+                          <div
+                            className="relative aspect-video bg-base-200/50 rounded-2xl overflow-hidden mb-4 border border-base-content/5 shadow-inner group cursor-zoom-in"
+                            onClick={() => setZoomOpen(true)}
+                            title={t("gallery.zoom")}
+                          >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                               src={images[selectedImageIndex]?.publicUrl}
@@ -949,22 +981,24 @@ export default function ItemDetailPage({
                             {images.length > 1 && (
                               <>
                                 <button
-                                  onClick={() =>
+                                  onClick={(e) => {
+                                    e.stopPropagation();
                                     setSelectedImageIndex((prev) =>
                                       prev === 0 ? images.length - 1 : prev - 1,
-                                    )
-                                  }
+                                    );
+                                  }}
                                   className="absolute left-4 top-1/2 -translate-y-1/2 btn btn-circle btn-sm bg-base-100/80 backdrop-blur border-none hover:bg-base-100 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
                                   aria-label={t("gallery.previousImage")}
                                 >
                                   <span className="icon-[tabler--chevron-left] size-5"></span>
                                 </button>
                                 <button
-                                  onClick={() =>
+                                  onClick={(e) => {
+                                    e.stopPropagation();
                                     setSelectedImageIndex((prev) =>
                                       prev === images.length - 1 ? 0 : prev + 1,
-                                    )
-                                  }
+                                    );
+                                  }}
                                   className="absolute right-4 top-1/2 -translate-y-1/2 btn btn-circle btn-sm bg-base-100/80 backdrop-blur border-none hover:bg-base-100 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
                                   aria-label={t("gallery.nextImage")}
                                 >
@@ -1001,6 +1035,21 @@ export default function ItemDetailPage({
                                 </button>
                               ))}
                             </div>
+                          )}
+                          {zoomOpen && images.length > 0 && (
+                            <ImageLightbox
+                              images={images.map((img, index) => ({
+                                src: img.publicUrl,
+                                alt: `${item.name} - Image ${index + 1}`,
+                              }))}
+                              initialIndex={selectedImageIndex}
+                              onClose={() => setZoomOpen(false)}
+                              formatCounter={(current, total) =>
+                                t("gallery.imageOf", { current, total })
+                              }
+                              prevLabel={t("gallery.previousImage")}
+                              nextLabel={t("gallery.nextImage")}
+                            />
                           )}
                         </div>
                       ) : (

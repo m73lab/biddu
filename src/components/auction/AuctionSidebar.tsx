@@ -4,9 +4,10 @@ import { useTranslations } from "next-intl";
 import { isAuctionEnded } from "@/utils/auction-helpers";
 import { useFormatters } from "@/i18n";
 import { RichTextRenderer } from "@/components/ui/rich-text-editor";
-import { useToast } from "@/components/ui/toast";
 import { Countdown } from "@/components/common/Countdown";
 import { QuitAuctionModal } from "@/components/auction/QuitAuctionModal";
+import { ShareButtons } from "@/components/common/ShareButtons";
+import { QRCodeSVG } from "qrcode.react";
 import { ImageLightbox } from "@/components/ui/image-lightbox";
 
 interface AuctionSidebarProps {
@@ -34,10 +35,8 @@ interface AuctionSidebarProps {
 }
 
 export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
-  const [copied, setCopied] = useState(false);
   const [showQuitModal, setShowQuitModal] = useState(false);
   const [zoomOpen, setZoomOpen] = useState(false);
-  const { showToast } = useToast();
   const t = useTranslations("auction");
   const tGallery = useTranslations("item.gallery");
   const tRoles = useTranslations("auction.roles");
@@ -52,26 +51,8 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
   const isShareable =
     auction.joinMode === "FREE" || auction.joinMode === "LINK";
 
-  const handleCopyShareLink = async () => {
-    const shareUrl = `${window.location.origin}/a/${auction.id}`;
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
-      showToast(t("sidebar.linkCopied"), "success");
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Fallback for older browsers
-      const textArea = document.createElement("textarea");
-      textArea.value = shareUrl;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textArea);
-      setCopied(true);
-      showToast(t("sidebar.linkCopied"), "success");
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
+  // Public short link (unfurls richly, no login needed to preview).
+  const shortUrl = `${process.env.NEXT_PUBLIC_APP_URL || ""}/a/${auction.id}`;
 
   const roleKey = membership.role.toLowerCase();
   const roleLabel = ["admin", "creator", "bidder", "owner"].includes(roleKey)
@@ -236,17 +217,25 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
               </Link>
             )}
             {isShareable && (
-              <button
-                onClick={handleCopyShareLink}
+              <ShareButtons
+                url={shortUrl}
+                title={auction.name}
+                text={t("sidebar.shareText", { name: auction.name })}
                 className="btn btn-outline btn-sm btn-block justify-start border-base-content/10 hover:bg-base-200 hover:border-base-content/20 text-base-content"
-              >
-                <span
-                  className={`size-4 ${
-                    copied ? "icon-[tabler--check]" : "icon-[tabler--share]"
-                  }`}
-                ></span>
-                {copied ? t("sidebar.linkCopied") : t("sidebar.shareAuction")}
-              </button>
+              />
+            )}
+            {isShareable && (
+              <div className="flex flex-col items-center gap-2 rounded-xl border border-base-content/10 bg-base-200/50 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wider text-base-content/50">
+                  {t("sidebar.bringToEvent")}
+                </p>
+                <div className="bg-white p-2 rounded-lg">
+                  <QRCodeSVG value={shortUrl} size={120} />
+                </div>
+                <p className="font-mono text-xs text-base-content/60 break-all text-center">
+                  {shortUrl.replace(/^https?:\/\//, "")}
+                </p>
+              </div>
             )}
             <Link
               href={`/auctions/${auction.id}/results`}

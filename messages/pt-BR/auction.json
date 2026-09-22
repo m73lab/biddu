@@ -104,7 +104,9 @@
       "manage": "Gerenciar",
       "manageMembers": "Gerenciar Membros",
       "joinMode": "Modo de Entrada",
-      "visibility": "Visibilidade"
+      "visibility": "Visibilidade",
+      "shareText": "Olha esse leilão: {name}",
+      "bringToEvent": "Leve para seu evento"
     },
     "roles": {
       "admin": "Admin",

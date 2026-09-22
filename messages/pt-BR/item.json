@@ -259,7 +259,9 @@
         "noPhoneText": "Adicione seu WhatsApp em Configurações para o dono poder contatar você.",
         "goSettings": "Ir a Configurações"
       },
-      "contactWinner": "Contatar o vencedor"
+      "contactWinner": "Contatar o vencedor",
+      "shareText": "🔥 {name} por {price} · Termina {date}",
+      "shareTextOpen": "🔥 {name} por {price}"
     }
   }
 }

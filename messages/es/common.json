@@ -16,7 +16,6 @@
     "search": "Buscar",
     "filter": "Filtrar",
     "sort": "Ordenar",
-    "close": "Cerrar",
     "open": "Abrir",
     "yes": "Sí",
     "no": "No",
@@ -224,5 +223,11 @@
     "perPage": "Por página",
     "totalRows": "{count} filas",
     "pageLabel": "Página {current} de {count}"
+  },
+  "share": {
+    "share": "Compartir",
+    "shareVia": "Compartir en",
+    "copyLink": "Copiar enlace",
+    "linkCopied": "¡Enlace copiado!"
   }
 }

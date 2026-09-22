@@ -259,7 +259,9 @@
         "noPhoneText": "Add your WhatsApp number in Settings so the item owner can contact you.",
         "goSettings": "Go to Settings"
       },
-      "contactWinner": "Contact the winner"
+      "contactWinner": "Contact the winner",
+      "shareText": "🔥 {name} at {price} · Ends {date}",
+      "shareTextOpen": "🔥 {name} at {price}"
     }
   }
 }
