@@ -241,7 +241,8 @@
       "noBids": "Sem lances",
       "you": "Você",
       "anonymous": "Anônimo",
-      "yourListing": "Seu lote"
+      "yourListing": "Seu lote",
+      "shareWinText": "Ganhei {item} por {price} no Biddú!"
     },
     "acceptInvite": {
       "title": "Participar de Leilão",

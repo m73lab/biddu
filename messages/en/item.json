@@ -26,7 +26,8 @@
       "noBids": "No bids yet",
       "bids": "bids",
       "bidsCount": "{count, plural, =0 {No bids} =1 {1 bid} other {# bids}}",
-      "startingAt": "Starting at"
+      "startingAt": "Starting at",
+      "endingSoon": "Ending soon!"
     },
     "create": {
       "title": "Add New Item",

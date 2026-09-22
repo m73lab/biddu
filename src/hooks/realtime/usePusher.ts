@@ -5,14 +5,23 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import PusherJS from "pusher-js";
-import type { Channel, Options as PusherOptions } from "pusher-js";
+import type {
+  Channel,
+  Options as PusherOptions,
+  PresenceChannel,
+} from "pusher-js";
 import {
   getClientConfig,
   isClientRealtimeEnabled,
 } from "@/lib/realtime/client";
 import type { ClientRealtimeConfig } from "@/lib/realtime/client";
 import { Events, Channels } from "@/lib/realtime/events";
-import type { EventPayloadMap, ChannelName } from "@/lib/realtime/events";
+import type {
+  EventPayloadMap,
+  ChannelName,
+  PresenceAuctionChannel,
+  PresenceItemChannel,
+} from "@/lib/realtime/events";
 
 // Debug logging - enabled in development or via localStorage
 // Use a function to avoid SSR/hydration issues with localStorage access
@@ -160,7 +169,10 @@ function probeRawWebSocket(
     const url =
       `${scheme}://${config.wsHost}:${port}/app/${config.key}` +
       `?protocol=7&client=js&flash=false`;
-    wslog("sonda: abriendo WebSocket crudo", `${scheme}://${config.wsHost}:${port}/app/<key>`);
+    wslog(
+      "sonda: abriendo WebSocket crudo",
+      `${scheme}://${config.wsHost}:${port}/app/<key>`,
+    );
     const ws = new WebSocket(url);
     let settled = false;
     const done = (msg: string, data?: unknown) => {
@@ -184,14 +196,17 @@ function probeRawWebSocket(
     }, 8000);
     ws.onopen = () => {
       clearTimeout(timer);
-      done("sonda OK 101: el socket crudo SI conecta (revisa auth pusher/canales)");
+      done(
+        "sonda OK 101: el socket crudo SI conecta (revisa auth pusher/canales)",
+      );
     };
     ws.onerror = () => {
       wslog("sonda: evento error (sin detalle, el navegador no da mas)");
     };
     ws.onclose = (ev) => {
       clearTimeout(timer);
-      const reason = typeof ev.reason === "string" && ev.reason ? ` (${ev.reason})` : "";
+      const reason =
+        typeof ev.reason === "string" && ev.reason ? ` (${ev.reason})` : "";
       if (ev.code === 1006) {
         done(
           `sonda close 1006: conexion caida antes del handshake (red, firewall, ` +
@@ -252,14 +267,18 @@ function getPusherClient(): PusherJS | null {
   });
 
   if (!isClientRealtimeEnabled()) {
-    wslog("DESHABILITADO: sin driver o sin key (realtime apagado, solo polling)");
+    wslog(
+      "DESHABILITADO: sin driver o sin key (realtime apagado, solo polling)",
+    );
     log("Realtime is disabled");
     wsReport.lastReturn = "disabled";
     return null;
   }
 
   if (connectionFailed) {
-    wslog("sin iniciar: una conexion anterior FALLO (revisa los errores de arriba)");
+    wslog(
+      "sin iniciar: una conexion anterior FALLO (revisa los errores de arriba)",
+    );
     log("Connection previously failed, returning null");
     wsReport.lastReturn = "prev-failed";
     return null;
@@ -408,7 +427,9 @@ function getPusherClient(): PusherJS | null {
           `colgado en '${s}' >15s sin transiciones: algo bloquea el WebSocket ` +
           `(extension de privacidad/adblock, proxy o red). Prueba en incógnito.`;
         wslog("FALLO: socket colgado en estado", s);
-        wslog("pista: deshabilita extensiones o prueba en ventana de incógnito");
+        wslog(
+          "pista: deshabilita extensiones o prueba en ventana de incógnito",
+        );
         probeRawWebSocket(config);
       }
     }, 15000);
@@ -431,8 +452,7 @@ function getPusherClient(): PusherJS | null {
       ) {
         return;
       }
-      wsReport.lastError =
-        `sin transiciones observadas (estado '${s}'): fallo silencioso al iniciar`;
+      wsReport.lastError = `sin transiciones observadas (estado '${s}'): fallo silencioso al iniciar`;
       wslog("FALLO silencioso al iniciar, estado actual:", s);
       scheduleReconnect();
       probeRawWebSocket(config);
@@ -555,6 +575,57 @@ export function useChannel(channelName: ChannelName | null): Channel | null {
   }, [channelName]);
 
   return channel;
+}
+
+/**
+ * Hook returning the live viewer count of a presence channel.
+ * Works for guests too (presence exposes aggregate counts only).
+ * Returns null while unknown (realtime off, or not yet subscribed).
+ */
+export function usePresenceCount(
+  channelName: PresenceAuctionChannel | PresenceItemChannel | null,
+): number | null {
+  const [count, setCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!channelName) return;
+    const pusher = getPusherClient();
+    if (!pusher) return;
+
+    let cancelled = false;
+    const channel = pusher.subscribe(channelName) as unknown as Pick<
+      PresenceChannel,
+      "bind" | "unbind" | "members"
+    >;
+    const update = () => {
+      if (cancelled) return;
+      try {
+        const members = (channel.members?.members ?? {}) as Record<
+          string,
+          unknown
+        >;
+        setCount(Object.keys(members).length);
+      } catch {
+        setCount(null);
+      }
+    };
+    channel.bind("pusher:subscription_succeeded", update);
+    channel.bind("pusher:member_added", update);
+    channel.bind("pusher:member_removed", update);
+    return () => {
+      cancelled = true;
+      try {
+        channel.unbind("pusher:subscription_succeeded", update);
+        channel.unbind("pusher:member_added", update);
+        channel.unbind("pusher:member_removed", update);
+        pusher.unsubscribe(channelName);
+      } catch {
+        // Unsubscribe is best-effort on unmount.
+      }
+    };
+  }, [channelName]);
+
+  return count;
 }
 
 /**

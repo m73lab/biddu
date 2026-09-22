@@ -229,5 +229,8 @@
     "shareVia": "Share on",
     "copyLink": "Copy link",
     "linkCopied": "Link copied!"
+  },
+  "live": {
+    "viewers": "{count} watching"
   }
 }

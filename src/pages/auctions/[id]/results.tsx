@@ -2,14 +2,12 @@ import Link from "next/link";
 import * as auctionService from "@/lib/services/auction.service";
 import { PageLayout, BackLink, EmptyState } from "@/components/common";
 import { StatsCard } from "@/components/ui/stats-card";
+import { ShareButtons } from "@/components/common/ShareButtons";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 import { withAuth } from "@/lib/auth/withAuth";
 import { formatAuctionBidDisplay } from "@/lib/currency-display";
-import {
-  formatCurrency,
-  decimalsForCurrency,
-} from "@/utils/formatters";
+import { formatCurrency, decimalsForCurrency } from "@/utils/formatters";
 
 interface Winner {
   itemId: string;
@@ -244,6 +242,22 @@ export default function ResultsPage({
                             fallbackCode: win.currencyCode,
                           })}
                         </div>
+                        <ShareButtons
+                          compact
+                          url={`${process.env.NEXT_PUBLIC_APP_URL || ""}/a/${auction.id}`}
+                          title={win.itemName}
+                          text={t("shareWinText", {
+                            item: win.itemName,
+                            price: formatAuctionBidDisplay({
+                              amount: win.winningBid,
+                              enteredRepresentation: win.enteredRepresentation,
+                              profile: win.currencyProfile,
+                              fallbackSymbol: win.currencySymbol,
+                              fallbackCode: win.currencyCode,
+                            }),
+                          })}
+                          className="btn btn-ghost btn-sm btn-circle shrink-0 self-center"
+                        />
                       </div>
                     </div>
                   ))}
@@ -252,10 +266,7 @@ export default function ResultsPage({
                       <span className="text-base-content/60">Total</span>
                       <span className="text-xl font-bold text-primary">
                         {formatCurrency(
-                          userWins.reduce(
-                            (sum, w) => sum + w.winningBid,
-                            0,
-                          ),
+                          userWins.reduce((sum, w) => sum + w.winningBid, 0),
                           userWins[0]?.currencySymbol || "$",
                           decimalsForCurrency(userWins[0]?.currencyCode),
                         )}
@@ -407,7 +418,8 @@ export default function ResultsPage({
                             <span className="font-bold font-mono text-sm sm:text-lg">
                               {formatAuctionBidDisplay({
                                 amount: win.winningBid,
-                                enteredRepresentation: win.enteredRepresentation,
+                                enteredRepresentation:
+                                  win.enteredRepresentation,
                                 profile: win.currencyProfile,
                                 fallbackSymbol: win.currencySymbol,
                                 fallbackCode: win.currencyCode,

@@ -229,5 +229,8 @@
     "shareVia": "Compartilhar em",
     "copyLink": "Copiar link",
     "linkCopied": "Link copiado!"
+  },
+  "live": {
+    "viewers": "{count} assistindo"
   }
 }

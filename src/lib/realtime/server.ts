@@ -177,15 +177,18 @@ export async function publishToMany<E extends keyof EventPayloadMap>(
 }
 
 /**
- * Authenticate a user for a private channel
+ * Authenticate a user for a private or presence channel
  *
  * @param socketId - Socket ID from the client
- * @param channel - Channel name (must start with 'private-')
+ * @param channel - Channel name (must start with 'private-' or 'presence-')
+ * @param presence - Presence identity (required for presence channels).
+ *   Only the user id is shared; no personal data leaves the server.
  * @returns Authentication response or null if not authorized
  */
 export function authenticateChannel(
   socketId: string,
   channel: string,
+  presence?: { userId: string },
 ): Pusher.AuthResponse | null {
   const pusher = getPusherInstance();
 
@@ -194,7 +197,11 @@ export function authenticateChannel(
   }
 
   try {
-    return pusher.authorizeChannel(socketId, channel);
+    return pusher.authorizeChannel(
+      socketId,
+      channel,
+      presence ? { user_id: presence.userId } : undefined,
+    );
   } catch (error) {
     console.error("[Realtime] Channel authentication failed:", error);
     return null;

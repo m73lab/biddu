@@ -36,6 +36,7 @@ import {
 import { FulfillmentCard } from "@/components/item/FulfillmentCard";
 import { ScoreBadge } from "@/components/common/ScoreBadge";
 import { UserAvatar } from "@/components/ui/user-avatar";
+import { LiveViewers } from "@/components/common/LiveViewers";
 import { ShareButtons } from "@/components/common/ShareButtons";
 import { ImageLightbox } from "@/components/ui/image-lightbox";
 import * as auctionService from "@/lib/services/auction.service";
@@ -903,6 +904,9 @@ export default function ItemDetailPage({
                           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">
                             {item.name}
                           </h1>
+                          <div className="mb-2">
+                            <LiveViewers itemId={item.id} />
+                          </div>
                           <div className="flex items-center gap-2 text-sm text-base-content/60 ">
                             <span className="icon-[tabler--user] size-4"></span>
                             <span>{t("listedBy")}</span>

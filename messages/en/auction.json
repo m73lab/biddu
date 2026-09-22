@@ -241,7 +241,8 @@
       "noBids": "No bids",
       "you": "You",
       "anonymous": "Anonymous",
-      "yourListing": "Your Listing"
+      "yourListing": "Your Listing",
+      "shareWinText": "I won {item} for {price} on Biddú!"
     },
     "acceptInvite": {
       "title": "Join Auction",

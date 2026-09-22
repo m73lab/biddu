@@ -241,7 +241,8 @@
       "noBids": "Sin pujas",
       "you": "Tú",
       "anonymous": "Anónimo",
-      "yourListing": "Tu artículo"
+      "yourListing": "Tu artículo",
+      "shareWinText": "¡Gané {item} por {price} en Biddú!"
     },
     "acceptInvite": {
       "title": "Unirse a Subasta",

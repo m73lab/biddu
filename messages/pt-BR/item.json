@@ -26,7 +26,8 @@
       "noBids": "Sem lances ainda",
       "bids": "lances",
       "bidsCount": "{count, plural, =0 {Sem lances} =1 {1 lance} other {# lances}}",
-      "startingAt": "Começa em"
+      "startingAt": "Começa em",
+      "endingSoon": "Termina em breve!"
     },
     "create": {
       "title": "Adicionar Novo Lote",
