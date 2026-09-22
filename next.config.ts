@@ -93,7 +93,7 @@ const nextConfig: NextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com https://www.recaptcha.net https://static.cloudflareinsights.com https://arsoply-widget.m73lab.space https://challenges.cloudflare.com",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com https://www.recaptcha.net https://static.cloudflareinsights.com",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https://www.gstatic.com https:",
               "font-src 'self' data:",
@@ -101,7 +101,7 @@ const nextConfig: NextConfig = {
                 (soketiConnectSources().length > 0
                   ? ` ${soketiConnectSources().join(" ")}`
                   : ""),
-              "frame-src 'self' https://www.google.com https://www.recaptcha.net https://challenges.cloudflare.com",
+              "frame-src 'self' https://www.google.com https://www.recaptcha.net",
               "frame-ancestors 'none'",
               "base-uri 'self'",
               "form-action 'self' https://accounts.google.com https://login.microsoftonline.com",

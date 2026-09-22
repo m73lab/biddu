@@ -60,3 +60,6 @@ next-env.d.ts
 # Caddy self-signed certs (generated per deployment, not committed)
 caddy/self.crt
 caddy/self.key
+
+# @vercel/og harfbuzz wasm (runtime, viene de node_modules en Docker)
+/hb.wasm
