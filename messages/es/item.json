@@ -26,7 +26,8 @@
       "noBids": "Sin pujas aún",
       "bids": "pujas",
       "bidsCount": "{count, plural, =0 {Sin pujas} =1 {1 puja} other {# pujas}}",
-      "startingAt": "Empieza en"
+      "startingAt": "Empieza en",
+      "endingSoon": "¡Última hora!"
     },
     "create": {
       "title": "Añadir Nuevo Artículo",
@@ -259,7 +260,13 @@
         "noPhoneText": "Agrega tu número de WhatsApp en Ajustes para que el dueño del artículo pueda contactarte.",
         "goSettings": "Ir a Ajustes"
       },
-      "contactWinner": "Contactar al ganador"
+      "contactWinner": "Contactar al ganador",
+      "shareText": "🔥 {name} va en {price} · Termina {date}",
+      "shareTextOpen": "🔥 {name} va en {price}",
+      "createStory": "Crear historia",
+      "storySaved": "Imagen descargada. ¡Súbela a tus historias!",
+      "storyFailed": "No se pudo crear la imagen, intenta de nuevo.",
+      "storyEndsIn": "Termina en {time}"
     }
   }
 }

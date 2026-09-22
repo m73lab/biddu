@@ -7,6 +7,7 @@ import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 import * as auctionService from "@/lib/services/auction.service";
 import { RichTextRenderer } from "@/components/ui/rich-text-editor";
+import { LiveViewers } from "@/components/common/LiveViewers";
 
 interface PublicAuctionPageProps {
   auction: {
@@ -37,7 +38,9 @@ export default function PublicAuctionPage({
   const isLoggedIn = status === "authenticated";
   const isLoading = status === "loading";
 
-  const ogImageUrl = auction.thumbnailUrl || `${baseUrl}/pictures/og-image.png`;
+  // Tarjeta generada al vuelo (foto + precio/estado + marca). Si falla,
+  // los scrapers simplemente no muestran imagen; la página sigue igual.
+  const ogImageUrl = `${baseUrl}/api/og/auction/${auction.id}`;
   const ogUrl = `${baseUrl}/a/${auction.id}`;
   const plainDescription = auction.description
     ? auction.description.replace(/<[^>]*>/g, "").slice(0, 200)
@@ -65,6 +68,9 @@ export default function PublicAuctionPage({
         <meta property="og:title" content={auction.name} />
         <meta property="og:description" content={plainDescription} />
         <meta property="og:image" content={ogImageUrl} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content={auction.name} />
         <meta property="og:site_name" content={tCommon("appName")} />
 
         {/* Twitter */}
@@ -111,6 +117,9 @@ export default function PublicAuctionPage({
                   {t("hostedBy", { name: auction.creatorName })}
                 </p>
               )}
+              <div className="mt-3 flex justify-center">
+                <LiveViewers auctionId={auction.id} />
+              </div>
             </div>
 
             {/* Auction Info */}

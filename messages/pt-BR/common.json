@@ -223,5 +223,14 @@
     "perPage": "Por página",
     "totalRows": "{count} linhas",
     "pageLabel": "Página {current} de {count}"
+  },
+  "share": {
+    "share": "Compartilhar",
+    "shareVia": "Compartilhar em",
+    "copyLink": "Copiar link",
+    "linkCopied": "Link copiado!"
+  },
+  "live": {
+    "viewers": "{count} assistindo"
   }
 }

@@ -2,10 +2,14 @@
  * Realtime event type definitions
  *
  * Channel naming conventions:
- * All channels are private (require authentication):
+ * Private channels require session authentication:
  * - private-user-{userId}: Personal notifications
  * - private-auction-{auctionId}: Auction-wide events (new items)
  * - private-item-{itemId}: Item events (bids, discussions)
+ * Presence channels (viewer counts) allow guests: they expose only
+ * aggregate counts, never member identities or event payloads:
+ * - presence-auction-{auctionId}: viewers of an auction page
+ * - presence-item-{itemId}: viewers of an item page
  */
 
 // =============================================================================
@@ -21,8 +25,19 @@ export type UserChannel = `private-user-${string}`;
 /** Branded type for auction channel names */
 export type AuctionChannel = `private-auction-${string}`;
 
+/** Branded type for auction presence (viewer count) channel names */
+export type PresenceAuctionChannel = `presence-auction-${string}`;
+
+/** Branded type for item presence (viewer count) channel names */
+export type PresenceItemChannel = `presence-item-${string}`;
+
 /** Union of all valid channel types */
-export type ChannelName = ItemChannel | UserChannel | AuctionChannel;
+export type ChannelName =
+  | ItemChannel
+  | UserChannel
+  | AuctionChannel
+  | PresenceAuctionChannel
+  | PresenceItemChannel;
 
 // =============================================================================
 // Channel Factories (Create type-safe channel names)
@@ -38,6 +53,14 @@ export const Channels = {
   /** Private auction channel - for auction events (new items, member changes) */
   privateAuction: (auctionId: string): AuctionChannel =>
     `private-auction-${auctionId}`,
+
+  /** Presence channel - viewer count for an auction page (guests allowed) */
+  presenceAuction: (auctionId: string): PresenceAuctionChannel =>
+    `presence-auction-${auctionId}`,
+
+  /** Presence channel - viewer count for an item page (guests allowed) */
+  presenceItem: (itemId: string): PresenceItemChannel =>
+    `presence-item-${itemId}`,
 } as const;
 
 // =============================================================================

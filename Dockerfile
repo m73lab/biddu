@@ -36,6 +36,7 @@ ARG NEXT_PUBLIC_SOKETI_USE_TLS=
 ARG NEXT_PUBLIC_PUSHER_KEY=
 ARG NEXT_PUBLIC_PUSHER_CLUSTER=
 ARG NEXT_PUBLIC_RECAPTCHA_SITE_KEY=
+ARG NEXT_PUBLIC_TIKTOK_PIXEL_ID=
 ARG NEXT_PUBLIC_WHATSAPP_NUMBER=
 ARG NEXT_PUBLIC_CONTACT_EMAIL=
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -61,6 +62,12 @@ COPY --from=builder /app/src/generated ./src/generated
 # Next standalone tracing omits ESM files of @swc/helpers that Next's
 # require-hook loads dynamically at runtime: copy the full package.
 COPY --from=builder /app/node_modules/@swc/helpers/ ./node_modules/@swc/helpers/
+# @vercel/og resolves harfbuzz (hb.wasm) relative to the process working
+# directory (/app at runtime): copy it explicitly, same pattern as above.
+COPY --from=builder /app/node_modules/harfbuzzjs/hb.wasm ./hb.wasm
+# @vercel/og resolves harfbuzz (hb.wasm) relative to the process working
+# directory (/app at runtime): copy it explicitly, same pattern as above.
+COPY --from=builder /app/node_modules/harfbuzzjs/hb.wasm ./hb.wasm
 COPY --from=builder /app/docker/entrypoint.sh ./entrypoint.sh
 # .next must be writable by the runtime user: ISR revalidation rewrites
 # the prerender cache in place (EACCES otherwise).

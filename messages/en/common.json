@@ -16,7 +16,6 @@
     "search": "Search",
     "filter": "Filter",
     "sort": "Sort",
-    "close": "Close",
     "open": "Open",
     "yes": "Yes",
     "no": "No",
@@ -224,5 +223,14 @@
     "perPage": "Per page",
     "totalRows": "{count} rows",
     "pageLabel": "Page {current} of {count}"
+  },
+  "share": {
+    "share": "Share",
+    "shareVia": "Share on",
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied!"
+  },
+  "live": {
+    "viewers": "{count} watching"
   }
 }

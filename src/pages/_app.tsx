@@ -11,6 +11,7 @@ import { SetupGuard } from "@/components/common/SetupGuard";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { AppProvider } from "@/contexts/AppContext";
 import { TourProvider } from "@/components/tour";
+import { TikTokPixel } from "@/components/common/TikTokPixel";
 import { fetcher } from "@/lib/fetcher";
 
 export default function App({
@@ -60,6 +61,7 @@ export default function App({
                     <UpdateBanner />
                     <SetupGuard />
                     <Component {...pageProps} />
+                    <TikTokPixel />
                   </TourProvider>
                 </ToastProvider>
               </ThemeProvider>

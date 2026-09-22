@@ -15,6 +15,7 @@ import { PageLayout, BackLink, EmptyState } from "@/components/common";
 import { AuctionSidebar } from "@/components/auction";
 import { ItemCard, ItemListItem } from "@/components/item";
 import { SkeletonAuctionPage } from "@/components/ui/skeleton";
+import { LiveViewers } from "@/components/common/LiveViewers";
 import {
   SortDropdown,
   itemSortOptions,
@@ -82,18 +83,18 @@ interface AuctionDetailProps {
   membership: {
     role: string;
   } | null;
-    hasLeft: boolean;
-    fallback: AuctionDetailsData | null;
-  }
+  hasLeft: boolean;
+  fallback: AuctionDetailsData | null;
+}
 
-  export default function AuctionDetailPage({
-    user,
-    auctionId,
-    auctionName,
-    membership,
-    hasLeft,
-    fallback,
-  }: AuctionDetailProps) {
+export default function AuctionDetailPage({
+  user,
+  auctionId,
+  auctionName,
+  membership,
+  hasLeft,
+  fallback,
+}: AuctionDetailProps) {
   const router = useRouter();
   const t = useTranslations("auction");
   const tCommon = useTranslations("common");
@@ -317,6 +318,9 @@ interface AuctionDetailProps {
             {auction.name}
           </h1>
         </div>
+        <div className="mt-3">
+          <LiveViewers auctionId={auction.id} />
+        </div>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8">
@@ -443,10 +447,7 @@ export const getServerSideProps = withAuth(async (context) => {
   // paints instantly with no second fetch round-trip.
   const [membership0, details, messages] = await Promise.all([
     auctionService.getUserMembership(auctionId, context.session.user.id),
-    auctionService.getAuctionDetailsData(
-      auctionId,
-      context.session.user.id,
-    ),
+    auctionService.getAuctionDetailsData(auctionId, context.session.user.id),
     getMessages(context.locale as Locale),
   ]);
 
@@ -517,14 +518,14 @@ export const getServerSideProps = withAuth(async (context) => {
         name: context.session.user.name || null,
         email: context.session.user.email || "",
       },
-        auctionId,
-        auctionName: null,
-        membership: {
-          role: membership.role,
-        },
-        hasLeft: false,
-        fallback: details,
-        messages,
+      auctionId,
+      auctionName: null,
+      membership: {
+        role: membership.role,
+      },
+      hasLeft: false,
+      fallback: details,
+      messages,
     },
   };
 });

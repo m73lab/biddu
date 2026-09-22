@@ -12,6 +12,16 @@ export function isItemEnded(endDate: string | null): boolean {
   return new Date(endDate) < new Date();
 }
 
+/**
+ * True when the end is near (default: last hour) but not past.
+ * Drives "ending soon" urgency badges (social urgency without video).
+ */
+export function isEndingSoon(endDate: string | null, hours = 1): boolean {
+  if (!endDate) return false;
+  const ms = new Date(endDate).getTime() - Date.now();
+  return ms > 0 && ms <= hours * 3600 * 1000;
+}
+
 export function canUserBid(
   userId: string,
   itemCreatorId: string,

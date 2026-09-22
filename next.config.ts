@@ -93,14 +93,14 @@ const nextConfig: NextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com https://www.recaptcha.net https://static.cloudflareinsights.com",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com https://www.recaptcha.net https://static.cloudflareinsights.com https://analytics.tiktok.com",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https://www.gstatic.com https:",
               "font-src 'self' data:",
-              "connect-src 'self' https://www.google.com https: ws://127.0.0.1:* ws://192.168.1.16:* wss://192.168.1.16:* wss://127.0.0.1:* ws://localhost:* wss://localhost:* wss://*.pusher.com" +
-              (soketiConnectSources().length > 0
-                ? ` ${soketiConnectSources().join(" ")}`
-                : ""),
+              "connect-src 'self' https://www.google.com https://analytics.tiktok.com https: ws://127.0.0.1:* ws://192.168.1.16:* wss://192.168.1.16:* wss://127.0.0.1:* ws://localhost:* wss://localhost:* wss://*.pusher.com" +
+                (soketiConnectSources().length > 0
+                  ? ` ${soketiConnectSources().join(" ")}`
+                  : ""),
               "frame-src 'self' https://www.google.com https://www.recaptcha.net",
               "frame-ancestors 'none'",
               "base-uri 'self'",
