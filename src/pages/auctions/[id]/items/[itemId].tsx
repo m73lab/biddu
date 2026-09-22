@@ -976,6 +976,7 @@ export default function ItemDetailPage({
                           title={item.name}
                           text={shareText}
                           className="btn btn-ghost btn-sm gap-2 justify-center"
+                          dataTour="share"
                         />
                         <StoryButton
                           variant={isItemOwner ? "item-owner" : "item-bidder"}
@@ -987,6 +988,7 @@ export default function ItemDetailPage({
                           url={shareUrl}
                           fileSlug={item.id}
                           className="btn btn-ghost btn-sm gap-2 justify-center"
+                          dataTour="story"
                         />
                         {canEdit && (
                           <Link

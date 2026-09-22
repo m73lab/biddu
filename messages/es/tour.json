@@ -45,7 +45,11 @@
       "fulfillmentTitle": "Pago y entrega",
       "fulfillment": "Al cerrar con ganador, aquí se coordinan pago y entrega, y ambas partes pueden calificarse.",
       "discussionsTitle": "Discusiones",
-      "discussions": "Pregunta al dueño o conversa con otros miembros. Se cierran cuando el artículo finaliza."
+      "discussions": "Pregunta al dueño o conversa con otros miembros. Se cierran cuando el artículo finaliza.",
+      "shareTitle": "Comparte el artículo",
+      "share": "Difunde el lote por WhatsApp, redes sociales o copiando el enlace. En el celular se abre el menú de compartir del sistema.",
+      "storyTitle": "Crea una historia",
+      "story": "Genera una imagen vertical lista para historias: foto, título, precio con moneda y un QR. Se descarga y la subes a Instagram, TikTok o WhatsApp."
     },
     "itemCreate": {
       "welcomeTitle": "Añadir un artículo",

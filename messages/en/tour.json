@@ -45,7 +45,11 @@
       "fulfillmentTitle": "Payment and delivery",
       "fulfillment": "Once closed with a winner, payment and delivery are coordinated here, and both sides can rate each other.",
       "discussionsTitle": "Discussions",
-      "discussions": "Ask the owner or chat with other members. They lock once the item ends."
+      "discussions": "Ask the owner or chat with other members. They lock once the item ends.",
+      "shareTitle": "Share the item",
+      "share": "Spread the lot on WhatsApp, social media or by copying the link. On mobile the system share sheet opens.",
+      "storyTitle": "Create a story",
+      "story": "Generate a vertical image ready for stories: photo, title, price with currency and a QR. It downloads and you post it to Instagram, TikTok or WhatsApp."
     },
     "itemCreate": {
       "welcomeTitle": "Add an item",

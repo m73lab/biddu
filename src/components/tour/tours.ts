@@ -15,7 +15,7 @@ export interface TourStepDef {
   optional?: boolean;
 }
 
-export const TOUR_VERSION = "v1";
+export const TOUR_VERSION = "v2";
 
 export const tourSeenKey = (id: TourId) => `tour:${id}:${TOUR_VERSION}:seen`;
 
@@ -93,6 +93,16 @@ export const TOURS: Record<TourId, TourStepDef[]> = {
       target: "body",
       titleKey: "item.welcomeTitle",
       contentKey: "item.welcome",
+    },
+    {
+      target: '[data-tour="share"]',
+      titleKey: "item.shareTitle",
+      contentKey: "item.share",
+    },
+    {
+      target: '[data-tour="story"]',
+      titleKey: "item.storyTitle",
+      contentKey: "item.story",
     },
     {
       target: '[data-tour="bid-form"]',
