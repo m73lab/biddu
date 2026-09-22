@@ -12,6 +12,8 @@ interface ShareButtonsProps {
   text: string;
   className?: string;
   compact?: boolean;
+  /** Optional data-tour anchor for guided tours. */
+  dataTour?: string;
 }
 
 interface NetworkDef {
@@ -62,6 +64,7 @@ export function ShareButtons({
   text,
   className = "btn btn-ghost btn-sm gap-2",
   compact = false,
+  dataTour,
 }: ShareButtonsProps) {
   const t = useTranslations("share");
   const { showToast } = useToast();
@@ -144,6 +147,7 @@ export function ShareButtons({
         className={className}
         title={t("share")}
         aria-label={t("share")}
+        data-tour={dataTour}
       >
         {label}
       </button>
@@ -151,7 +155,7 @@ export function ShareButtons({
   }
 
   return (
-    <div className="relative" ref={menuRef}>
+    <div className="relative" ref={menuRef} data-tour={dataTour}>
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}

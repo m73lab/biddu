@@ -22,6 +22,8 @@ interface StoryButtonProps {
   url: string;
   fileSlug: string;
   className?: string;
+  /** Optional data-tour anchor for guided tours. */
+  dataTour?: string;
 }
 
 /** Compact relative deadline, e.g. "26 d", "3 h", "12 min". */
@@ -51,6 +53,7 @@ export function StoryButton({
   url,
   fileSlug,
   className = "btn btn-ghost btn-sm gap-2",
+  dataTour,
 }: StoryButtonProps) {
   const t = useTranslations("story");
   const { showToast } = useToast();
@@ -112,6 +115,7 @@ export function StoryButton({
         disabled={busy}
         className={className}
         title={t("button")}
+        data-tour={dataTour}
       >
         {busy ? (
           <span className="loading loading-spinner loading-xs"></span>
