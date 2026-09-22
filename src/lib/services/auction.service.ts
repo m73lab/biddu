@@ -919,11 +919,10 @@ export async function getPublicAuctionData(
     },
   });
 
-  // Only return data for publicly accessible auctions
-  if (
-    !auction ||
-    (auction.joinMode !== "FREE" && auction.joinMode !== "LINK")
-  ) {
+  // Public share preview: any auction the owner chooses to share can be
+  // previewed (id is a non-enumerable cuid). Privacy-sensitive fields are
+  // not exposed; the CTA still routes through login/membership.
+  if (!auction) {
     return null;
   }
 

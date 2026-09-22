@@ -62,12 +62,10 @@ COPY --from=builder /app/src/generated ./src/generated
 # Next standalone tracing omits ESM files of @swc/helpers that Next's
 # require-hook loads dynamically at runtime: copy the full package.
 COPY --from=builder /app/node_modules/@swc/helpers/ ./node_modules/@swc/helpers/
-# @vercel/og resolves harfbuzz (hb.wasm) relative to the process working
-# directory (/app at runtime): copy it explicitly, same pattern as above.
-COPY --from=builder /app/node_modules/harfbuzzjs/hb.wasm ./hb.wasm
-# @vercel/og resolves harfbuzz (hb.wasm) relative to the process working
-# directory (/app at runtime): copy it explicitly, same pattern as above.
-COPY --from=builder /app/node_modules/harfbuzzjs/hb.wasm ./hb.wasm
+# Next's compiled @vercel/og (used by /api/og) is not traced into the
+# standalone output. index.node.js loads resvg.wasm/yoga.wasm relative to
+# its own directory, so copy the whole package, same pattern as above.
+COPY --from=builder /app/node_modules/next/dist/compiled/@vercel/og/ ./node_modules/next/dist/compiled/@vercel/og/
 COPY --from=builder /app/docker/entrypoint.sh ./entrypoint.sh
 # .next must be writable by the runtime user: ISR revalidation rewrites
 # the prerender cache in place (EACCES otherwise).

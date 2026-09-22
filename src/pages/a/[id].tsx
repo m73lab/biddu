@@ -193,6 +193,13 @@ export default function PublicAuctionPage({
                 )}
               </button>
 
+              {auction.joinMode === "INVITE_ONLY" && (
+                <p className="text-xs text-base-content/50 text-center flex items-center justify-center gap-1.5">
+                  <span className="icon-[tabler--lock] size-3.5 shrink-0"></span>
+                  {t("inviteOnlyNote")}
+                </p>
+              )}
+
               {!isLoggedIn && (
                 <>
                   <div className="text-center">

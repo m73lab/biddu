@@ -303,7 +303,9 @@
       "joinAuction": "Unirse a la Subasta",
       "or": "o",
       "createAccount": "Crear Cuenta",
-      "poweredBy": "Powered by {appName}"
-    }
+      "poweredBy": "Powered by {appName}",
+      "inviteOnlyNote": "Esta subasta es por invitación. Pide acceso al organizador."
+    },
+    "storyStats": "{items} lotes · {members} miembros"
   }
 }

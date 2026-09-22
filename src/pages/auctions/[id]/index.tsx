@@ -16,6 +16,8 @@ import { AuctionSidebar } from "@/components/auction";
 import { ItemCard, ItemListItem } from "@/components/item";
 import { SkeletonAuctionPage } from "@/components/ui/skeleton";
 import { LiveViewers } from "@/components/common/LiveViewers";
+import { ShareButtons } from "@/components/common/ShareButtons";
+import { StoryButton } from "@/components/common/StoryButton";
 import {
   SortDropdown,
   itemSortOptions,
@@ -320,6 +322,29 @@ export default function AuctionDetailPage({
         </div>
         <div className="mt-3">
           <LiveViewers auctionId={auction.id} />
+        </div>
+
+        {/* Share / creator kit */}
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <ShareButtons
+            url={`${process.env.NEXT_PUBLIC_APP_URL || ""}/a/${auction.id}`}
+            title={auction.name}
+            text={t("sidebar.shareText", { name: auction.name })}
+            className="btn btn-ghost btn-sm gap-2 justify-center"
+          />
+          <StoryButton
+            variant={isAdmin ? "auction-owner" : "auction-bidder"}
+            photoUrl={auction.thumbnailUrl}
+            title={auction.name}
+            badge={t("storyStats", {
+              items: auction._count.items,
+              members: auction._count.members,
+            })}
+            endDate={auction.endDate}
+            url={`${process.env.NEXT_PUBLIC_APP_URL || ""}/a/${auction.id}`}
+            fileSlug={auction.id}
+            className="btn btn-ghost btn-sm gap-2 justify-center"
+          />
         </div>
       </div>
 

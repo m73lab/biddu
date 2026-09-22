@@ -28,6 +28,7 @@ export async function getMessages(locale: Locale) {
     ...(await import(`../../messages/${locale}/profile.json`)).default,
     ...(await import(`../../messages/${locale}/setup.json`)).default,
     ...(await import(`../../messages/${locale}/notFound.json`)).default,
+    ...(await import(`../../messages/${locale}/story.json`)).default,
   };
   if (process.env.NODE_ENV === "production") {
     messagesCache.set(locale, messages);

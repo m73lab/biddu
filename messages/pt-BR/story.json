@@ -1,0 +1,32 @@
+{
+  "story": {
+    "button": "Criar story",
+    "saved": "Imagem baixada. Compartilhe nos seus stories!",
+    "failed": "Não foi possível criar a imagem, tente de novo.",
+    "endsIn": "Termina em {time}",
+    "item": {
+      "owner": {
+        "eyebrow": "SEU ITEM NO AR",
+        "cta": "Dê lance no Biddú",
+        "hashtag": "#LanceNoBiddú"
+      },
+      "bidder": {
+        "eyebrow": "VOCÊ ESTÁ DANDO LANCE",
+        "cta": "Dê seu lance",
+        "hashtag": "#LanceNoBiddú"
+      }
+    },
+    "auction": {
+      "owner": {
+        "eyebrow": "LEILÃO AO VIVO",
+        "cta": "Participe do leilão",
+        "hashtag": "#LeilãoNoBiddú"
+      },
+      "bidder": {
+        "eyebrow": "VOCÊ ESTÁ PARTICIPANDO",
+        "cta": "Participe e dê lance",
+        "hashtag": "#LeilãoNoBiddú"
+      }
+    }
+  }
+}
