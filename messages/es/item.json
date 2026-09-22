@@ -262,7 +262,11 @@
       },
       "contactWinner": "Contactar al ganador",
       "shareText": "🔥 {name} va en {price} · Termina {date}",
-      "shareTextOpen": "🔥 {name} va en {price}"
+      "shareTextOpen": "🔥 {name} va en {price}",
+      "createStory": "Crear historia",
+      "storySaved": "Imagen descargada. ¡Súbela a tus historias!",
+      "storyFailed": "No se pudo crear la imagen, intenta de nuevo.",
+      "storyEndsIn": "Termina en {time}"
     }
   }
 }

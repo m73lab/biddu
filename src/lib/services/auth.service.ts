@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { randomBytes, createHash } from "crypto";
 import { hash } from "bcryptjs";
 import { sendEmail } from "@/lib/email";
+import { sendTikTokServerEvent } from "@/lib/tiktok-events";
 import {
   getPasswordResetTemplateData,
   getAccountExistsTemplateData,
@@ -143,6 +144,14 @@ export async function registerUser(input: RegisterInput) {
     user.email,
     user.name || "",
   );
+
+  // TikTok CompleteRegistration (server-side only: reliable + hashed
+  // email, no double counting with the pixel which skips this event).
+  void sendTikTokServerEvent({
+    event: "CompleteRegistration",
+    eventId: `reg-${user.id}`,
+    email: normalizedEmail,
+  });
 
   return { success: true, user, emailSent: verification.success };
 }

@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { getMessages, Locale } from "@/i18n";
@@ -38,6 +38,8 @@ import { ScoreBadge } from "@/components/common/ScoreBadge";
 import { UserAvatar } from "@/components/ui/user-avatar";
 import { LiveViewers } from "@/components/common/LiveViewers";
 import { ShareButtons } from "@/components/common/ShareButtons";
+import { StoryButton } from "@/components/common/StoryButton";
+import { trackTikTokEvent } from "@/lib/tiktok";
 import { ImageLightbox } from "@/components/ui/image-lightbox";
 import * as auctionService from "@/lib/services/auction.service";
 import * as itemService from "@/lib/services/item.service";
@@ -517,6 +519,32 @@ export default function ItemDetailPage({
         price: sharePriceText,
       });
 
+  // Creator kit: short relative deadline for the story asset.
+  const storyEndsIn = (() => {
+    if (!item.endDate) return null;
+    const ms = new Date(item.endDate).getTime() - Date.now();
+    if (ms <= 0) return null;
+    const m = Math.floor(ms / 60000);
+    if (m < 60) return `${m} min`;
+    const h = Math.floor(m / 60);
+    if (h < 48) return `${h} h`;
+    return `${Math.floor(h / 24)} d`;
+  })();
+  const storyEndsLabel = storyEndsIn
+    ? t("detail.storyEndsIn", { time: storyEndsIn })
+    : null;
+
+  // TikTok ViewContent (client pixel; dormant without pixel ID).
+  useEffect(() => {
+    trackTikTokEvent("ViewContent", {
+      content_id: item.id,
+      content_name: item.name,
+      value: item.currentBid || item.startingBid,
+      currency: item.currency.code,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [item.id]);
+
   const handleBid = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -676,6 +704,12 @@ export default function ItemDetailPage({
         // Reconcile with the server so the bidder always sees their bid and
         // the new minimum, even if the realtime event is slow or missed.
         mutate();
+        trackTikTokEvent("InitiateCheckout", {
+          content_id: item.id,
+          content_name: item.name,
+          value: effectiveBidAmount,
+          currency: item.currency.code,
+        });
       }
     } catch {
       setError(tErrors("generic"));
@@ -949,6 +983,15 @@ export default function ItemDetailPage({
                             url={shareUrl}
                             title={item.name}
                             text={shareText}
+                            className="btn btn-ghost btn-sm gap-2 w-auto"
+                          />
+                          <StoryButton
+                            photoUrl={images[0]?.publicUrl ?? null}
+                            title={item.name}
+                            price={sharePriceText}
+                            endsLabel={storyEndsLabel}
+                            url={shareUrl}
+                            fileSlug={item.id}
                             className="btn btn-ghost btn-sm gap-2 w-auto"
                           />
                           {canEdit && (
