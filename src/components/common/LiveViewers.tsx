@@ -35,10 +35,10 @@ export function LiveViewers({
   return (
     <span
       className={`badge badge-ghost gap-1.5 font-medium ${className}`}
-      title={t("live.viewers", { count })}
+      title={t("viewers", { count })}
     >
       <span className="size-2 rounded-full bg-error shrink-0"></span>
-      {t("live.viewers", { count })}
+      {t("viewers", { count })}
     </span>
   );
 }
