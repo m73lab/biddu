@@ -66,7 +66,7 @@ export function SEO({
   canonical,
   noindex = false,
   ogType = "website",
-  ogImage = `${SITE_URL}/pictures/og-image.png`,
+  ogImage = `${SITE_URL}/pictures/og-biddu.png`,
   ogImageAlt = "Biddú - Plataforma de Subastas",
   article,
   structuredData,
