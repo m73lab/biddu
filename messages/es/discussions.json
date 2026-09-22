@@ -30,6 +30,7 @@
     "enableDiscussions": "Habilitar discusiones",
     "enableDiscussionsDescription": "Permitir que los miembros de la subasta discutan este artículo",
     "anonymous": "Anónimo",
-    "itemOwner": "Propietario"
+    "itemOwner": "Propietario",
+    "you": "tú"
   }
 }

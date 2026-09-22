@@ -112,6 +112,11 @@ export function DiscussionItem({
               <span className="font-medium text-sm">
                 {discussion.user.name || t("anonymous")}
               </span>
+              {isAuthor && (
+                <span className="text-xs font-medium text-base-content/60">
+                  ({t("you")})
+                </span>
+              )}
               {isItemCreator && (
                 <span className="badge badge-primary badge-sm">
                   {t("itemOwner")}
