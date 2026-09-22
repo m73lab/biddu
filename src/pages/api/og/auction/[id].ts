@@ -173,6 +173,8 @@ function card(
                     color: ended ? "#faf6ee" : "#0b1220",
                     borderRadius: 999,
                     padding: "10px 28px",
+                    whiteSpace: "nowrap",
+                    flexShrink: 0,
                   },
                 },
                 ends,
@@ -238,6 +240,11 @@ export default async function handler(
     return res.status(200).send(buffer);
   } catch (err) {
     ogLogger.error({ err, id }, "OG render failed");
-    return res.status(404).json({ message: "Not found" });
+    const msg = err instanceof Error ? `${err.name}: ${err.message}` : String(err);
+    const stack =
+      err instanceof Error ? (err.stack || "").split("\n").slice(0, 5) : [];
+    return res
+      .status(500)
+      .json({ message: "og_error", error: msg, stack });
   }
 }

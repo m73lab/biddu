@@ -303,7 +303,9 @@
       "joinAuction": "Participar do Leilão",
       "or": "ou",
       "createAccount": "Criar Conta",
-      "poweredBy": "Powered by {appName}"
-    }
+      "poweredBy": "Powered by {appName}",
+      "inviteOnlyNote": "Este leilão é por convite. Peça acesso ao organizador."
+    },
+    "storyStats": "{items} lotes · {members} membros"
   }
 }

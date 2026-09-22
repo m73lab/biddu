@@ -1,21 +1,40 @@
 /**
  * Creator kit: 9:16 story asset (1080x1920 PNG) rendered client-side on
- * canvas. No server, no dependencies: photo + title + price + QR + brand.
+ * canvas. No server, no dependencies.
+ *
+ * Variants change the copy, accent colour and content block:
+ *   - item-owner / item-bidder  -> shows the item price
+ *   - auction-owner / auction-bidder -> shows auction stats (items/members)
+ * Owner variants use the gold brand accent, bidder variants the rose accent.
  *
  * Layout is a fixed vertical stack so text can never overlap the photo:
  *   1. spotlight background + product image contained (never cropped)
- *   2. info block: eyebrow, title (up to 2 lines), price, ends pill
+ *   2. info block: eyebrow, title (up to 2 lines), price/stats, ends pill
  *   3. QR card, bottom-anchored, with the hashtag underneath
  *
  * Images from other origins taint the canvas (S3 needs CORS); same-origin
  * uploads work. Failures reject so the UI can toast honestly.
  */
 
+export type StoryVariant =
+  | "item-owner"
+  | "item-bidder"
+  | "auction-owner"
+  | "auction-bidder";
+
 export interface StoryAssetInput {
+  variant: StoryVariant;
   photoUrl: string | null;
+  /** Small kicker, e.g. "TU ARTÍCULO EN SUBASTA". */
+  eyebrow: string;
   title: string;
-  price: string;
+  /** Item price (item variants). */
+  price?: string | null;
+  /** Auction stats, e.g. "12 lotes · 34 miembros" (auction variants). */
+  badge?: string | null;
   endsLabel: string | null;
+  /** Call to action shown in the QR card, e.g. "Puja en Biddú". */
+  cta: string;
   /** Full https URL encoded in the QR. */
   url: string;
   /** Pre-serialized QR svg element (from the hidden QRCodeSVG). */
@@ -27,6 +46,7 @@ const W = 1080;
 const H = 1920;
 const INK = "#0b1220";
 const GOLD = "#e89b2d";
+const ROSE = "#ff5577";
 const CREAM = "#faf6ee";
 const MUTED = "#c9c2b4";
 const FONT = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
@@ -34,7 +54,7 @@ const FONT = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
 // Photo zone (top). The product is drawn contained inside this box, so a
 // tall 9:16 product poster is shown whole instead of overflowing the band.
 const PHOTO_BOX = { x: 90, y: 50, w: W - 180, h: 950 };
-const PHOTO_BOTTOM = PHOTO_BOX.y + PHOTO_BOX.h; // 1030
+const PHOTO_BOTTOM = PHOTO_BOX.y + PHOTO_BOX.h; // 1000
 
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -144,20 +164,16 @@ export async function generateStoryPng(input: StoryAssetInput): Promise<Blob> {
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("canvas");
 
+  const isOwner = input.variant.endsWith("owner");
+  const accent = isOwner ? GOLD : ROSE;
+
   // Base background
   ctx.fillStyle = INK;
   ctx.fillRect(0, 0, W, H);
 
   // Spotlight behind the product so the contained image reads as
   // intentional rather than "floating in the void".
-  const spotlight = ctx.createRadialGradient(
-    W / 2,
-    560,
-    80,
-    W / 2,
-    560,
-    760,
-  );
+  const spotlight = ctx.createRadialGradient(W / 2, 560, 80, W / 2, 560, 760);
   spotlight.addColorStop(0, "#1d2947");
   spotlight.addColorStop(0.55, "#111a2f");
   spotlight.addColorStop(1, INK);
@@ -181,7 +197,12 @@ export async function generateStoryPng(input: StoryAssetInput): Promise<Blob> {
   }
 
   // Fade the photo zone into the background
-  const fade = ctx.createLinearGradient(0, PHOTO_BOTTOM - 140, 0, PHOTO_BOTTOM + 130);
+  const fade = ctx.createLinearGradient(
+    0,
+    PHOTO_BOTTOM - 140,
+    0,
+    PHOTO_BOTTOM + 130,
+  );
   fade.addColorStop(0, "rgba(11, 18, 32, 0)");
   fade.addColorStop(1, "rgba(11, 18, 32, 1)");
   ctx.fillStyle = fade;
@@ -197,10 +218,10 @@ export async function generateStoryPng(input: StoryAssetInput): Promise<Blob> {
   let y = 1100;
 
   // Eyebrow
-  ctx.fillStyle = GOLD;
+  ctx.fillStyle = accent;
   ctx.font = `700 32px ${FONT}`;
-  ctx.fillText("REMATE EN VIVO · BIDDÚ", LEFT, y);
-  // Gold underline
+  ctx.fillText(input.eyebrow, LEFT, y);
+  // Accent underline
   ctx.fillRect(LEFT, y + 18, 120, 5);
 
   // Title (auto-fit to at most 2 lines)
@@ -212,13 +233,19 @@ export async function generateStoryPng(input: StoryAssetInput): Promise<Blob> {
     y += title.size + 14;
   }
 
-  // Price (auto-fit single line). The gap is derived from the price size so
-  // a tall price never crowds the title's descenders.
-  const priceSize = fitSingle(ctx, input.price, contentW, 80, 48);
-  y += Math.round(priceSize * 0.72) + 18;
-  ctx.fillStyle = GOLD;
-  ctx.fillText(input.price, LEFT, y);
-  y += Math.round(priceSize * 0.25) + 16;
+  // Price (item) or stats (auction). The gap is derived from the font size
+  // so a tall block never crowds the title's descenders.
+  const blockText = input.price || input.badge || null;
+  if (blockText) {
+    const isPrice = !!input.price;
+    const px = fitSingle(ctx, blockText, contentW, isPrice ? 80 : 50, 34);
+    y += Math.round(px * 0.72) + 18;
+    ctx.fillStyle = isPrice ? accent : CREAM;
+    ctx.fillText(blockText, LEFT, y);
+    y += Math.round(px * 0.25) + 16;
+  } else {
+    y += 18;
+  }
 
   // Ends pill
   if (input.endsLabel) {
@@ -226,7 +253,7 @@ export async function generateStoryPng(input: StoryAssetInput): Promise<Blob> {
     const tw = ctx.measureText(input.endsLabel).width;
     const pw = tw + 76;
     const ph = 76;
-    ctx.fillStyle = GOLD;
+    ctx.fillStyle = accent;
     roundRect(ctx, LEFT, y, pw, ph, 38);
     ctx.fill();
     ctx.fillStyle = INK;
@@ -274,11 +301,14 @@ export async function generateStoryPng(input: StoryAssetInput): Promise<Blob> {
 
   // QR side text (vertically centered against the QR square)
   const midY = cardY + cardPad + qrSize / 2;
+  const textMaxW = cardX + cardW - cardPad - textX;
+  ctx.fillStyle = "#8a93a5";
+  ctx.font = `700 22px ${FONT}`;
+  ctx.fillText("BIDDÚ", textX, midY - 40);
   ctx.fillStyle = INK;
-  ctx.font = `700 40px ${FONT}`;
-  ctx.fillText("Escanea", textX, midY - 22);
-  ctx.fillText("y puja", textX, midY + 26);
-  ctx.font = `400 30px ${FONT}`;
+  fitSingle(ctx, input.cta, textMaxW, 38, 24);
+  ctx.fillText(input.cta, textX, midY + 4);
+  ctx.font = `400 28px ${FONT}`;
   ctx.fillStyle = "#3a4356";
   const host = (() => {
     try {
@@ -287,7 +317,7 @@ export async function generateStoryPng(input: StoryAssetInput): Promise<Blob> {
       return "biddu.online";
     }
   })();
-  ctx.fillText(host, textX, midY + 72);
+  ctx.fillText(host, textX, midY + 48);
 
   // Footer hashtag
   ctx.fillStyle = MUTED;

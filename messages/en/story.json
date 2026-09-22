@@ -1,0 +1,32 @@
+{
+  "story": {
+    "button": "Make story",
+    "saved": "Image downloaded. Share it to your stories!",
+    "failed": "Could not create the image, try again.",
+    "endsIn": "Ends in {time}",
+    "item": {
+      "owner": {
+        "eyebrow": "YOUR ITEM IS LIVE",
+        "cta": "Bid on Biddú",
+        "hashtag": "#BidOnBiddú"
+      },
+      "bidder": {
+        "eyebrow": "YOU'RE BIDDING ON BIDDÚ",
+        "cta": "Bid too",
+        "hashtag": "#BidOnBiddú"
+      }
+    },
+    "auction": {
+      "owner": {
+        "eyebrow": "LIVE AUCTION",
+        "cta": "Join the auction",
+        "hashtag": "#AuctionOnBiddú"
+      },
+      "bidder": {
+        "eyebrow": "YOU'RE IN",
+        "cta": "Join and bid",
+        "hashtag": "#AuctionOnBiddú"
+      }
+    }
+  }
+}

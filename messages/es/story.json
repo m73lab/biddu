@@ -1,0 +1,32 @@
+{
+  "story": {
+    "button": "Crear historia",
+    "saved": "Imagen descargada. ¡Súbela a tus historias!",
+    "failed": "No se pudo crear la imagen, intenta de nuevo.",
+    "endsIn": "Termina en {time}",
+    "item": {
+      "owner": {
+        "eyebrow": "TU ARTÍCULO EN SUBASTA",
+        "cta": "Puja en Biddú",
+        "hashtag": "#RemataEnBiddú"
+      },
+      "bidder": {
+        "eyebrow": "ESTÁS PUJANDO EN BIDDÚ",
+        "cta": "Puja tú también",
+        "hashtag": "#PujaEnBiddú"
+      }
+    },
+    "auction": {
+      "owner": {
+        "eyebrow": "SUBASTA EN VIVO",
+        "cta": "Únete a la subasta",
+        "hashtag": "#SubastaEnBiddú"
+      },
+      "bidder": {
+        "eyebrow": "ESTÁS PARTICIPANDO",
+        "cta": "Únete y puja",
+        "hashtag": "#SubastaEnBiddú"
+      }
+    }
+  }
+}

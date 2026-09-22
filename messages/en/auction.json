@@ -303,7 +303,9 @@
       "joinAuction": "Join Auction",
       "or": "or",
       "createAccount": "Create Account",
-      "poweredBy": "Powered by {appName}"
-    }
+      "poweredBy": "Powered by {appName}",
+      "inviteOnlyNote": "This auction is invite-only. Ask the host for access."
+    },
+    "storyStats": "{items} items · {members} members"
   }
 }

@@ -519,21 +519,6 @@ export default function ItemDetailPage({
         price: sharePriceText,
       });
 
-  // Creator kit: short relative deadline for the story asset.
-  const storyEndsIn = (() => {
-    if (!item.endDate) return null;
-    const ms = new Date(item.endDate).getTime() - Date.now();
-    if (ms <= 0) return null;
-    const m = Math.floor(ms / 60000);
-    if (m < 60) return `${m} min`;
-    const h = Math.floor(m / 60);
-    if (h < 48) return `${h} h`;
-    return `${Math.floor(h / 24)} d`;
-  })();
-  const storyEndsLabel = storyEndsIn
-    ? t("detail.storyEndsIn", { time: storyEndsIn })
-    : null;
-
   // TikTok ViewContent (client pixel; dormant without pixel ID).
   useEffect(() => {
     trackTikTokEvent("ViewContent", {
@@ -932,78 +917,85 @@ export default function ItemDetailPage({
                 {/* Info: title + gallery (mobile first) */}
                 <div className="min-w-0 order-1 xl:col-start-1 xl:row-start-1">
                   <div className="card bg-base-100/80 backdrop-blur-sm border border-base-content/5 shadow-xl">
-                    <div className="card-body p-6 sm:p-8">
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
-                        <div className="w-full">
-                          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">
-                            {item.name}
-                          </h1>
-                          <div className="mb-2">
-                            <LiveViewers itemId={item.id} />
+                    <div className="card-body p-4 sm:p-6 lg:p-8">
+                      {/* Title + status badges */}
+                      <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+                        <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight min-w-0 flex-1">
+                          {item.name}
+                        </h1>
+                        {(isItemOwner || isEnded) && (
+                          <div className="flex flex-wrap items-center gap-2 shrink-0">
+                            {isItemOwner && (
+                              <span className="badge badge-secondary font-bold gap-1 whitespace-nowrap">
+                                <span className="icon-[tabler--tag] size-3"></span>
+                                {t("yourListing")}
+                              </span>
+                            )}
+                            {isEnded && (
+                              <span className="badge badge-error font-bold gap-1 whitespace-nowrap">
+                                <span className="icon-[tabler--flag-filled] size-3"></span>
+                                {tStatus("ended")}
+                              </span>
+                            )}
                           </div>
-                          <div className="flex items-center gap-2 text-sm text-base-content/60 ">
-                            <span className="icon-[tabler--user] size-4"></span>
-                            <span>{t("listedBy")}</span>
-                            <span className="font-medium text-base-content/80">
-                              {item.creator.name || item.creator.email}
-                            </span>
-                            <ScoreBadge
-                              avgSeller={item.creator.avgSellerRating ?? null}
-                              sellerCount={item.creator.sellerRatingCount ?? 0}
-                              avgBuyer={item.creator.avgBuyerRating ?? null}
-                              buyerCount={item.creator.buyerRatingCount ?? 0}
-                            />
-                          </div>
-                        </div>
+                        )}
+                      </div>
 
-                        <div className="flex gap-2 self-start w-full sm:w-auto flex-col items-end">
-                          {isItemOwner && (
-                            <span className="badge badge-secondary font-bold gap-1 w-auto whitespace-nowrap sm:w-full">
-                              <span className="icon-[tabler--tag] size-3"></span>
-                              {t("yourListing")}
-                            </span>
-                          )}
-                          {isEnded && (
-                            <div className="badge badge-error gap-1 font-bold w-auto sm:w-full">
-                              <span className="icon-[tabler--flag-filled] size-3"></span>
-                              {tStatus("ended")}
-                            </div>
-                          )}
-                          <button
-                            type="button"
-                            onClick={restartTour}
-                            title={tTour("help")}
-                            aria-label={tTour("help")}
-                            className="btn btn-ghost btn-sm gap-2 w-auto"
+                      {/* Meta row */}
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-base-content/60 mb-4">
+                        <span className="inline-flex items-center gap-1.5 min-w-0">
+                          <span className="icon-[tabler--user] size-4 shrink-0"></span>
+                          <span>{t("listedBy")}</span>
+                          <span className="font-medium text-base-content/80 truncate">
+                            {item.creator.name || item.creator.email}
+                          </span>
+                        </span>
+                        <ScoreBadge
+                          avgSeller={item.creator.avgSellerRating ?? null}
+                          sellerCount={item.creator.sellerRatingCount ?? 0}
+                          avgBuyer={item.creator.avgBuyerRating ?? null}
+                          buyerCount={item.creator.buyerRatingCount ?? 0}
+                        />
+                        <LiveViewers itemId={item.id} />
+                      </div>
+
+                      {/* Action toolbar: 2 columns on mobile, inline row on desktop */}
+                      <div className="grid grid-cols-2 gap-2 border-t border-base-content/5 pt-4 mb-6 sm:flex sm:flex-wrap sm:items-center">
+                        <button
+                          type="button"
+                          onClick={restartTour}
+                          title={tTour("help")}
+                          aria-label={tTour("help")}
+                          className="btn btn-ghost btn-sm gap-2 justify-center"
+                        >
+                          <span className="icon-[tabler--help] size-4"></span>
+                          {tTour("help")}
+                        </button>
+                        <ShareButtons
+                          url={shareUrl}
+                          title={item.name}
+                          text={shareText}
+                          className="btn btn-ghost btn-sm gap-2 justify-center"
+                        />
+                        <StoryButton
+                          variant={isItemOwner ? "item-owner" : "item-bidder"}
+                          photoUrl={images[0]?.publicUrl ?? null}
+                          title={item.name}
+                          price={sharePriceText}
+                          endDate={item.endDate}
+                          url={shareUrl}
+                          fileSlug={item.id}
+                          className="btn btn-ghost btn-sm gap-2 justify-center"
+                        />
+                        {canEdit && (
+                          <Link
+                            href={`/auctions/${auction.id}/items/${item.id}/edit`}
+                            className="btn btn-outline btn-sm gap-2 justify-center"
                           >
-                            <span className="icon-[tabler--help] size-4"></span>
-                            {tTour("help")}
-                          </button>
-                          <ShareButtons
-                            url={shareUrl}
-                            title={item.name}
-                            text={shareText}
-                            className="btn btn-ghost btn-sm gap-2 w-auto"
-                          />
-                          <StoryButton
-                            photoUrl={images[0]?.publicUrl ?? null}
-                            title={item.name}
-                            price={sharePriceText}
-                            endsLabel={storyEndsLabel}
-                            url={shareUrl}
-                            fileSlug={item.id}
-                            className="btn btn-ghost btn-sm gap-2 w-auto"
-                          />
-                          {canEdit && (
-                            <Link
-                              href={`/auctions/${auction.id}/items/${item.id}/edit`}
-                              className="btn btn-outline btn-sm gap-2 w-full"
-                            >
-                              <span className="icon-[tabler--edit] size-4"></span>
-                              {tCommon("edit")}
-                            </Link>
-                          )}
-                        </div>
+                            <span className="icon-[tabler--edit] size-4"></span>
+                            {tCommon("edit")}
+                          </Link>
+                        )}
                       </div>
 
                       {/* Image Gallery */}
@@ -1011,7 +1003,7 @@ export default function ItemDetailPage({
                         <div className="mb-8">
                           {/* Main Image with Navigation */}
                           <div
-                            className="relative aspect-video bg-base-200/50 rounded-2xl overflow-hidden mb-4 border border-base-content/5 shadow-inner group cursor-zoom-in"
+                            className="relative aspect-square sm:aspect-video bg-base-200/50 rounded-2xl overflow-hidden mb-4 border border-base-content/5 shadow-inner group cursor-zoom-in"
                             onClick={() => setZoomOpen(true)}
                             title={t("gallery.zoom")}
                           >
@@ -1100,7 +1092,7 @@ export default function ItemDetailPage({
                           )}
                         </div>
                       ) : (
-                        <div className="mb-8 aspect-video bg-base-200/50 rounded-2xl flex items-center justify-center border border-base-content/5">
+                        <div className="mb-8 aspect-square sm:aspect-video bg-base-200/50 rounded-2xl flex items-center justify-center border border-base-content/5">
                           <div className="text-center text-base-content/30">
                             <span className="icon-[tabler--photo-off] size-16 mb-2"></span>
                             <p>{t("gallery.noImages")}</p>
