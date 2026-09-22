@@ -22,7 +22,7 @@ export function LiveViewers({
   itemId,
   className = "",
 }: LiveViewersProps) {
-  const t = useTranslations("common");
+  const t = useTranslations("live");
   const channel = itemId
     ? Channels.presenceItem(itemId)
     : auctionId
