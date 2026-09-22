@@ -108,7 +108,7 @@ export default function LandingPage() {
     },
     license: "https://opensource.org/licenses/MIT",
     isAccessibleForFree: true,
-    screenshot: `${SITE_URL}/og-image.png`,
+    screenshot: `${SITE_URL}/pictures/og-biddu.png`,
     softwareVersion: "1.0",
     aggregateRating: {
       "@type": "AggregateRating",
