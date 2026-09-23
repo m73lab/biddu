@@ -215,7 +215,7 @@ export const getServerSideProps = withAuth(async (context) => {
   const [winner, auction] = await Promise.all([
     prisma.user.findUnique({
       where: { id: item.highestBidderId },
-      select: { name: true, email: true, phone: true },
+      select: { name: true, storeName: true, email: true, phone: true },
     }),
     prisma.auction.findUnique({
       where: { id: auctionId },
@@ -249,11 +249,14 @@ export const getServerSideProps = withAuth(async (context) => {
         item.currentBid ?? 0,
         item.currency.symbol,
         decimalsForCurrency(item.currency.code), item.currency.code),
-      winnerName: winner.name || winner.email,
+      winnerName: winner.storeName || winner.name || winner.email,
       winnerEmail: winner.email,
       winnerPhone: winner.phone || null,
       ownerName:
-        context.session.user.name || context.session.user.email || "",
+        item.creator.storeName ||
+        context.session.user.name ||
+        context.session.user.email ||
+        "",
       messages,
     },
   };

@@ -28,29 +28,6 @@ import { withAuth } from "@/lib/auth/withAuth";
 import { isUserAdmin, canUserCreateItems } from "@/utils/auction-helpers";
 import { useTranslations } from "next-intl";
 
-interface Auction {
-  id: string;
-  name: string;
-  description: string | null;
-  joinMode: string;
-  memberCanInvite: boolean;
-  bidderVisibility: string;
-  endDate: string | null;
-  itemEndMode: string;
-  inviteToken: string | null;
-  createdAt: string;
-  thumbnailUrl: string | null;
-  creator: {
-    id: string;
-    name: string | null;
-    email: string;
-  };
-  _count: {
-    items: number;
-    members: number;
-  };
-}
-
 interface Item {
   id: string;
   name: string;
@@ -70,7 +47,7 @@ interface Item {
 }
 
 interface AuctionDetailsData {
-  auction: Auction;
+  auction: auctionService.AuctionDetailForPage;
   items: Item[];
 }
 

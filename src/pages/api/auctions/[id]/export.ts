@@ -32,7 +32,7 @@ const exportAuction: ApiHandler = async (req, res, ctx) => {
                 },
               },
               user: {
-                select: { id: true, name: true, email: true },
+                select: { id: true, name: true, storeName: true, email: true },
               },
             },
           },
@@ -82,7 +82,7 @@ const exportAuction: ApiHandler = async (req, res, ctx) => {
       bidCount: item.bids.length,
       winner: item.bids[0]
         ? {
-            name: item.bids[0].user.name,
+            name: item.bids[0].user.storeName || item.bids[0].user.name,
             email: item.bids[0].user.email,
             amount: item.bids[0].amount,
             normalizedAmount: item.bids[0].normalizedAmount,

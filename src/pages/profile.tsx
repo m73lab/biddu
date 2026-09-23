@@ -18,6 +18,7 @@ import { isValidRut } from "@/utils/rut";
 interface ProfileData {
   id: string;
   name: string | null;
+  storeName: string | null;
   email: string;
   avatarSeed: string | null;
   phone: string | null;
@@ -88,10 +89,13 @@ export default function ProfilePage({ user }: ProfilePageProps) {
   );
   const [isSaving, setIsSaving] = useState(false);
 
-  // Personal data form (name / phone / RUT)
+  // Personal data form (name / store name / phone / RUT)
   const [personalName, setPersonalName] = useState<string | undefined>(
     undefined,
   );
+  const [personalStoreName, setPersonalStoreName] = useState<
+    string | undefined
+  >(undefined);
   const [personalPhone, setPersonalPhone] = useState<string | undefined>(
     undefined,
   );
@@ -101,6 +105,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
   useEffect(() => {
     if (profile && personalName === undefined) {
       setPersonalName(profile.name ?? "");
+      setPersonalStoreName(profile.storeName ?? "");
       setPersonalPhone(profile.phone ?? "");
       setPersonalRut(profile.rut ?? "");
     }
@@ -142,6 +147,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
   const handlePersonalSave = async (e: React.FormEvent) => {
     e.preventDefault();
     const name = (personalName ?? "").trim();
+    const storeName = (personalStoreName ?? "").trim();
     const phone = (personalPhone ?? "").trim();
     const rut = (personalRut ?? "").trim();
 
@@ -163,7 +169,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
       const res = await fetch("/api/user/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone: phone || null, rut: rut || null }),
+        body: JSON.stringify({ name, storeName: storeName || null, phone: phone || null, rut: rut || null }),
       });
       const result = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -296,6 +302,31 @@ export default function ProfilePage({ user }: ProfilePageProps) {
                     placeholder={t("personal.displayNamePlaceholder")}
                     className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                   />
+                </div>
+
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text font-medium">
+                      {t("personal.storeName")}{" "}
+                      <span className="text-base-content/40 text-xs">
+                        ({t("personal.optional")})
+                      </span>
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    value={personalStoreName ?? ""}
+                    onChange={(e) => setPersonalStoreName(e.target.value)}
+                    placeholder={t("personal.storeNamePlaceholder")}
+                    maxLength={100}
+                    className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                  />
+                  <label className="label">
+                    <span className="label-text-alt text-base-content/50 flex items-center gap-1">
+                      <span className="icon-[tabler--building-store] size-3"></span>
+                      {t("personal.storeNameHint")}
+                    </span>
+                  </label>
                 </div>
 
                 <div className="form-control">

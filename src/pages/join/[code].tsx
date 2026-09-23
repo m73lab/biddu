@@ -15,6 +15,7 @@ interface InviteCodeInfo {
   auction: PortalAuctionInfo;
   createdBy: {
     name: string | null;
+    storeName: string | null;
   };
   role: string;
   code: string;
@@ -113,7 +114,7 @@ export default function JoinByCodePage() {
       subtitle={t("codeSubtitle")}
       auction={info.auction}
       inviterRowLabel={t("sharedBy")}
-      inviterName={info.createdBy.name || t("hostNoName")}
+      inviterName={info.createdBy.storeName || info.createdBy.name || t("hostNoName")}
       roleLabel={t("yourRole")}
       role={info.role}
       headerBadge={

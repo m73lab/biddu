@@ -9,6 +9,7 @@ import { useFormatters } from "@/i18n";
 export interface PortalHostInfo {
   id: string;
   name: string | null;
+  storeName: string | null;
   avatarSeed: string | null;
   createdAt: string;
   isNewAccount: boolean;
@@ -217,7 +218,7 @@ export function InvitePortal({
               </p>
               <div className="flex items-center gap-3">
                 <UserAvatar
-                  name={auction.host.name}
+                  name={auction.host.storeName || auction.host.name}
                   seed={auction.host.id}
                   avatarSeed={auction.host.avatarSeed}
                   size="md"
@@ -225,7 +226,7 @@ export function InvitePortal({
                 />
                 <div className="min-w-0">
                   <div className="font-bold text-sm truncate">
-                    {auction.host.name || t("hostNoName")}
+                    {auction.host.storeName || auction.host.name || t("hostNoName")}
                     {auction.host.isNewAccount && (
                       <span className="badge badge-warning badge-xs ml-2">
                         {t("newAccount")}

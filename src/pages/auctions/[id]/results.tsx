@@ -29,6 +29,7 @@ interface Winner {
   winner: {
     id: string;
     name: string | null;
+    storeName: string | null;
     email: string;
   } | null;
   isCurrentUser: boolean;
@@ -351,7 +352,9 @@ export default function ResultsPage({
                                     <div className="flex flex-col gap-0.5">
                                       <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-1.5 py-0.5 rounded font-medium">
                                         <span className="icon-[tabler--trophy] size-3"></span>
-                                        {win.winner.name || win.winner.email}
+                                        {win.winner.storeName ||
+                                          win.winner.name ||
+                                          win.winner.email}
                                         {win.isCurrentUser && (
                                           <span className="badge badge-success badge-xs ml-1 font-bold">
                                             {t("you")}
@@ -387,7 +390,9 @@ export default function ResultsPage({
                                 <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1.5 rounded-lg">
                                   <span className="icon-[tabler--trophy] size-4"></span>
                                   <span className="font-semibold">
-                                    {win.winner.name || win.winner.email}
+                                    {win.winner.storeName ||
+                                      win.winner.name ||
+                                      win.winner.email}
                                   </span>
                                   {win.isCurrentUser && (
                                     <span className="badge badge-success badge-xs font-bold shadow-sm">

@@ -136,6 +136,7 @@ interface ItemDetailProps {
     creator: {
       id: string;
       name: string | null;
+      storeName: string | null;
       email: string;
       avatarSeed?: string | null;
       avgSellerRating?: number | null;
@@ -947,7 +948,9 @@ export default function ItemDetailPage({
                           <span className="icon-[tabler--user] size-4 shrink-0"></span>
                           <span>{t("listedBy")}</span>
                           <span className="font-medium text-base-content/80 truncate">
-                            {item.creator.name || item.creator.email}
+                            {item.creator.storeName ||
+                              item.creator.name ||
+                              item.creator.email}
                           </span>
                         </span>
                         <ScoreBadge

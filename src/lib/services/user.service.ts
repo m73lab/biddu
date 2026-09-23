@@ -10,6 +10,7 @@ import * as systemService from "@/lib/services/system.service";
   export interface UserProfile {
     id: string;
     name: string | null;
+    storeName: string | null;
     email: string;
     avatarSeed: string | null;
     phone: string | null;
@@ -18,6 +19,7 @@ import * as systemService from "@/lib/services/system.service";
 
 export interface UpdateProfileInput {
   name?: string;
+  storeName?: string | null;
   phone?: string | null;
   rut?: string | null;
 }
@@ -104,6 +106,7 @@ export async function userHasPassword(userId: string): Promise<boolean> {
       select: {
         id: true,
         name: true,
+        storeName: true,
         email: true,
         avatarSeed: true,
         phone: true,
@@ -180,6 +183,9 @@ export async function updateUserProfile(
     where: { id: userId },
     data: {
       ...(input.name !== undefined && { name: input.name }),
+      ...(input.storeName !== undefined && {
+        storeName: input.storeName ? input.storeName.trim() : null,
+      }),
       ...(input.phone !== undefined && {
         phone: input.phone ? input.phone.trim() : null,
       }),
@@ -190,6 +196,7 @@ export async function updateUserProfile(
       select: {
         id: true,
         name: true,
+        storeName: true,
         email: true,
         avatarSeed: true,
         phone: true,

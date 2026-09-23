@@ -98,6 +98,7 @@ export interface ItemWithDetails extends AuctionItem {
   creator: {
     id: string;
     name: string | null;
+    storeName: string | null;
     email: string;
     avgSellerRating?: number | null;
     sellerRatingCount?: number;
@@ -133,6 +134,7 @@ export interface ItemDetailForPage {
   creator: {
     id: string;
     name: string | null;
+    storeName: string | null;
     email: string;
     avatarSeed?: string | null;
     avgSellerRating?: number | null;
@@ -228,7 +230,7 @@ export async function getItemById(
     include: {
       currency: true,
       creator: {
-        select: { id: true, name: true, email: true },
+        select: { id: true, name: true, storeName: true, email: true },
       },
     },
   });
@@ -245,7 +247,7 @@ export async function getItemForDetailPage(
     include: {
       currency: true,
       creator: {
-        select: { id: true, name: true, email: true },
+        select: { id: true, name: true, storeName: true, email: true },
       },
     },
   });
@@ -333,6 +335,7 @@ export async function getItemDetailPageData(
         select: {
           id: true,
           name: true,
+          storeName: true,
           email: true,
           avatarSeed: true,
           avgSellerRating: true,
@@ -661,7 +664,7 @@ export async function getAuctionItems(
     include: {
       currency: true,
       creator: {
-        select: { id: true, name: true, email: true },
+        select: { id: true, name: true, storeName: true, email: true },
       },
       _count: {
         select: { bids: true },
@@ -1005,7 +1008,7 @@ export async function createItem(
     include: {
       currency: true,
       creator: {
-        select: { id: true, name: true, email: true },
+        select: { id: true, name: true, storeName: true, email: true },
       },
       images: {
         orderBy: { order: "asc" },
@@ -1054,7 +1057,7 @@ export async function createItem(
     auctionId,
     name: item.name,
     creatorId,
-    creatorName: item.creator.name || "Unknown",
+    creatorName: item.creator.storeName || item.creator.name || "Unknown",
     thumbnailUrl: firstImageUrl,
     startingBid: item.startingBid,
     currencyCode: item.currencyCode,
@@ -1180,7 +1183,7 @@ export async function updateItem(
     include: {
       currency: true,
       creator: {
-        select: { id: true, name: true, email: true },
+        select: { id: true, name: true, storeName: true, email: true },
       },
     },
   });
@@ -1397,6 +1400,7 @@ export async function getUserItemsForBulkEdit(
         select: {
           id: true,
           name: true,
+          storeName: true,
           email: true,
         },
       },
@@ -1438,7 +1442,7 @@ export async function getUserItemsForBulkEdit(
     bidCount: item._count.bids,
     currencySymbol: item.currency.symbol,
     creatorId: item.creator.id,
-    creatorName: item.creator.name,
+    creatorName: item.creator.storeName || item.creator.name,
     creatorEmail: item.creator.email,
   }));
 }
@@ -1580,6 +1584,7 @@ export async function getAdminEditableItems(
         select: {
           id: true,
           name: true,
+          storeName: true,
           email: true,
         },
       },
@@ -1621,7 +1626,7 @@ export async function getAdminEditableItems(
     bidCount: item._count.bids,
     currencySymbol: item.currency.symbol,
     creatorId: item.creator.id,
-    creatorName: item.creator.name,
+    creatorName: item.creator.storeName || item.creator.name,
     creatorEmail: item.creator.email,
   }));
 }
