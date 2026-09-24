@@ -30,9 +30,13 @@ export function Countdown({ target, children, className = "" }: CountdownProps) 
     const targetMs = new Date(target).getTime();
     if (Number.isNaN(targetMs)) return;
     if (targetMs - Date.now() > COUNTDOWN_THRESHOLD_MS) return;
-    setNow(Date.now());
-    const id = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
+    const tick = () => setNow(Date.now());
+    const boot = setTimeout(tick, 0);
+    const id = setInterval(tick, 1000);
+    return () => {
+      clearTimeout(boot);
+      clearInterval(id);
+    };
   }, [target]);
 
   if (target && now !== null) {

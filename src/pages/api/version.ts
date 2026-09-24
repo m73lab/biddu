@@ -21,8 +21,8 @@ interface VersionResponse {
 }
 
 // Cache the GitHub response for 1 hour to avoid rate limiting
-let cachedRelease: GitHubRelease | null = null;
-let cacheTimestamp = 0;
+const cachedRelease: GitHubRelease | null = null;
+const cacheTimestamp = 0;
 const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
 
 async function getLatestRelease(): Promise<GitHubRelease | null> {

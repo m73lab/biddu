@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import {
   formatCurrency,
@@ -41,6 +42,8 @@ export function BidHistory({
 }: BidHistoryProps) {
   const t = useTranslations("item.history");
   const { formatDate } = useFormatters();
+  // Evaluated once on mount (kept out of render for purity).
+  const [now] = useState(() => Date.now());
 
   return (
     <div>
@@ -93,7 +96,7 @@ export function BidHistory({
                   {bid.user &&
                     !bid.isAnonymous &&
                     bid.user.createdAt &&
-                    Date.now() - new Date(bid.user.createdAt).getTime() <
+                    now - new Date(bid.user.createdAt).getTime() <
                       7 * 24 * 60 * 60 * 1000 && (
                       <span
                         className="badge badge-warning badge-xs"

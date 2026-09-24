@@ -6,7 +6,7 @@
  * Clicking expands to a zoomed lightbox (portal to body).
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import { Avatar } from "@avatune/react";
@@ -59,11 +59,11 @@ export function UserAvatar({
   const resolvedSeed = avatarSeed || seed || email || name || "biddu";
   const t = useTranslations("common");
   const [expanded, setExpanded] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   useEffect(() => {
     if (!expanded) return;

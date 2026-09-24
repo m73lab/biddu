@@ -82,7 +82,7 @@ export function ConfettiBidButton({ label }: { label: string }) {
     }
   }, []);
 
-  const step = useCallback(() => {
+  const step = useCallback(function step() {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
@@ -93,36 +93,39 @@ export function ConfettiBidButton({ label }: { label: string }) {
     const alive: Particle[] = [];
 
     for (const p of particlesRef.current) {
-      p.life += 1;
-      p.vy += p.gravity;
-      p.vx *= p.drag;
-      p.vy *= p.drag * 0.999;
-      p.phase += p.flutterSpeed * p.flutterDir;
-      p.x += p.vx + Math.sin(p.phase) * 0.7;
-      p.y += p.vy;
-      p.rotation += p.vRot;
+      const np: Particle = {
+        ...p,
+        life: p.life + 1,
+      };
+      np.vy += np.gravity;
+      np.vx *= np.drag;
+      np.vy *= np.drag * 0.999;
+      np.phase += np.flutterSpeed * np.flutterDir;
+      np.x += np.vx + Math.sin(np.phase) * 0.7;
+      np.y += np.vy;
+      np.rotation += np.vRot;
 
-      const progress = p.life / p.maxLife;
+      const progress = np.life / np.maxLife;
       const alpha = progress > 0.65 ? 1 - (progress - 0.65) / 0.35 : 1;
 
-      if (alpha <= 0 || p.y > h + 30 || p.x < -30 || p.x > w + 30) continue;
+      if (alpha <= 0 || np.y > h + 30 || np.x < -30 || np.x > w + 30) continue;
 
       ctx.save();
       ctx.globalAlpha = Math.max(alpha, 0);
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.rotation);
-      ctx.fillStyle = p.color;
-      if (p.shape === "circle") {
+      ctx.translate(np.x, np.y);
+      ctx.rotate(np.rotation);
+      ctx.fillStyle = np.color;
+      if (np.shape === "circle") {
         ctx.beginPath();
-        ctx.arc(0, 0, p.size / 2.4, 0, Math.PI * 2);
+        ctx.arc(0, 0, np.size / 2.4, 0, Math.PI * 2);
         ctx.fill();
       } else {
-        const w2 = p.size;
-        const h2 = Math.max(3, p.size * 0.45);
+        const w2 = np.size;
+        const h2 = Math.max(3, np.size * 0.45);
         ctx.fillRect(-w2 / 2, -h2 / 2, w2, h2);
       }
       ctx.restore();
-      alive.push(p);
+      alive.push(np);
     }
 
     particlesRef.current = alive;

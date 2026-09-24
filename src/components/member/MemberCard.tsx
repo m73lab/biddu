@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { ROLE_COLORS, ROLE_OPTIONS } from "@/utils/auction-helpers";
 import { useFormatters } from "@/i18n";
@@ -43,10 +44,13 @@ export function MemberCard({
   const { formatShortDate } = useFormatters();
   const isCurrentUser = member.user.id === currentUserId;
   const canModify = isAdmin && !isCurrentUser && member.role !== "OWNER";
-  const isNewAccount =
-    !!member.user.createdAt &&
-    Date.now() - new Date(member.user.createdAt).getTime() <
-      7 * 24 * 60 * 60 * 1000;
+  // Evaluated once on mount (kept out of render for purity).
+  const [isNewAccount] = useState(
+    () =>
+      !!member.user.createdAt &&
+      Date.now() - new Date(member.user.createdAt).getTime() <
+        7 * 24 * 60 * 60 * 1000,
+  );
 
   const getRoleLabel = (role: string) => {
     const roleKey = role.toLowerCase();
