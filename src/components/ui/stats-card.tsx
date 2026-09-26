@@ -37,7 +37,13 @@ export function StatsCard({ icon, iconColor, value, label }: StatsCardProps) {
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-2xl font-bold truncate">{value}</div>
-            <div className="text-xs text-base-content/60 truncate">{label}</div>
+            {/* The label wraps instead of truncating: in a 2-column grid on a
+                phone, `truncate` cut labels like "Artículos vendidos" down to
+                "Artículos vendid...". The parent is min-w-0, so break-words
+                wraps long words rather than overflowing the card. */}
+            <div className="text-xs text-base-content/60 leading-snug break-words">
+              {label}
+            </div>
           </div>
         </div>
       </div>

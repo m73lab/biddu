@@ -281,12 +281,10 @@ export default function ProfilePage({ user }: ProfilePageProps) {
                     className="input input-bordered w-full bg-base-200/50 opacity-70"
                     disabled
                   />
-                  <label className="label">
-                    <span className="label-text-alt text-base-content/50 flex items-center gap-1">
-                      <span className="icon-[tabler--lock] size-3"></span>
-                      {t("personal.emailCannotChange")}
-                    </span>
-                  </label>
+                  <p className="mt-1.5 text-xs text-base-content/50 flex items-start gap-1.5">
+                    <span className="icon-[tabler--lock] size-3 shrink-0 mt-0.5"></span>
+                    <span className="min-w-0">{t("personal.emailCannotChange")}</span>
+                  </p>
                 </div>
 
                 <div className="form-control">
@@ -321,12 +319,10 @@ export default function ProfilePage({ user }: ProfilePageProps) {
                     maxLength={100}
                     className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                   />
-                  <label className="label">
-                    <span className="label-text-alt text-base-content/50 flex items-center gap-1">
-                      <span className="icon-[tabler--building-store] size-3"></span>
-                      {t("personal.storeNameHint")}
-                    </span>
-                  </label>
+                  <p className="mt-1.5 text-xs text-base-content/50 flex items-start gap-1.5">
+                    <span className="icon-[tabler--building-store] size-3 shrink-0 mt-0.5"></span>
+                    <span className="min-w-0">{t("personal.storeNameHint")}</span>
+                  </p>
                 </div>
 
                 <div className="form-control">
@@ -347,12 +343,10 @@ export default function ProfilePage({ user }: ProfilePageProps) {
                     maxLength={20}
                     className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                   />
-                  <label className="label">
-                    <span className="label-text-alt text-base-content/50 flex items-center gap-1">
-                      <span className="icon-[tabler--brand-whatsapp] size-3"></span>
-                      {t("personal.phoneHint")}
-                    </span>
-                  </label>
+                  <p className="mt-1.5 text-xs text-base-content/50 flex items-start gap-1.5">
+                    <span className="icon-[tabler--brand-whatsapp] size-3 shrink-0 mt-0.5"></span>
+                    <span className="min-w-0">{t("personal.phoneHint")}</span>
+                  </p>
                 </div>
 
                 <div className="form-control">
@@ -372,11 +366,9 @@ export default function ProfilePage({ user }: ProfilePageProps) {
                     maxLength={20}
                     className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                   />
-                  <label className="label">
-                    <span className="label-text-alt text-base-content/50">
-                      {t("personal.rutHint")}
-                    </span>
-                  </label>
+                  <p className="mt-1.5 text-xs text-base-content/50">
+                    <span className="min-w-0">{t("personal.rutHint")}</span>
+                  </p>
                 </div>
 
                 <div className="pt-2">
