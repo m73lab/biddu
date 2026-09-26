@@ -22,6 +22,7 @@ model User {
   passwordHash  String?   // Optional for OAuth users
   tokenVersion  Int       @default(0) // Bump to revoke all JWT sessions
   name          String?
+  storeName     String?   // Public seller/store name (shown when hosting/listing)
   image         String?   // Profile image from OAuth provider
   rut           String?   // RUT chileno (opcional)
   phone         String?   // WhatsApp / teléfono (opcional)

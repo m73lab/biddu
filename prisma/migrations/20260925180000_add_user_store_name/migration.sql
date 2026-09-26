@@ -1,0 +1,19 @@
+-- Repair (2026-09-25): `storeName` reached schema.prisma without ever getting a
+-- migration. Local development databases picked it up through `prisma db
+-- push`, so the gap was invisible locally, but every database built by
+-- `migrate deploy` -- what the compose migrate service and the fresh-deploy CI
+-- check run -- came out without the column, and the app then failed at runtime
+-- with P2022 ("table main.users has no column named storeName") as soon as the
+-- store name was read or written.
+--
+-- Same class of problem as 20260917120000_repair_missing_columns, which fixed
+-- tokenVersion/rut/phone/fulfillmentStatus. Those migrations already cover the
+-- other columns that were added to the schema without one; this is the last one.
+--
+-- Nullable TEXT with no DEFAULT matches what `prisma db push` produces for
+-- `storeName String?`, so the drift check between a migrated database and a
+-- pushed one stays clean. A database that only ever saw `db push` has no
+-- _prisma_migrations history at all, so it already could not be migrated and
+-- this statement does not make that worse.
+-- AlterTable
+ALTER TABLE "users" ADD COLUMN "storeName" TEXT;

@@ -15,6 +15,7 @@ interface InviteInfo {
   auction: PortalAuctionInfo;
   sender: {
     name: string | null;
+    storeName: string | null;
     email: string;
   };
   role: string;
@@ -111,7 +112,7 @@ export default function AcceptInvitePage() {
       subtitle={t("subtitle")}
       auction={invite.auction}
       inviterRowLabel={t("invitedBy")}
-      inviterName={invite.sender.name || invite.sender.email}
+      inviterName={invite.sender.storeName || invite.sender.name || invite.sender.email}
       roleLabel={t("yourRole")}
       role={invite.role}
       error={error}

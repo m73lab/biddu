@@ -22,6 +22,7 @@ interface AuctionSidebarProps {
     memberCanInvite: boolean;
     creator: {
       name: string | null;
+      storeName: string | null;
       email: string;
     };
     _count: {
@@ -184,7 +185,9 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
             <span className="icon-[tabler--user] size-3"></span>
             {t("sidebar.hostedBy")}{" "}
             <span className="font-medium text-base-content/60">
-              {auction.creator.name || auction.creator.email}
+              {auction.creator.storeName ||
+                auction.creator.name ||
+                auction.creator.email}
             </span>
           </div>
         </div>

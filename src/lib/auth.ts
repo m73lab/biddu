@@ -1,4 +1,5 @@
 import type { NextAuthOptions } from "next-auth";
+import type { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import AzureADProvider from "next-auth/providers/azure-ad";
@@ -295,7 +296,7 @@ export const authOptions: NextAuthOptions = {
               select: { id: true, tokenVersion: true, avatarSeed: true },
             });
             if (!dbUser) {
-              return null as any;
+              return null as unknown as JWT;
             }
             token.id = dbUser.id;
             token.tokenVersion = dbUser.tokenVersion;
@@ -310,7 +311,7 @@ export const authOptions: NextAuthOptions = {
               token.tokenVersion,
             );
             if (!check.ok) {
-              return null as any;
+              return null as unknown as JWT;
             }
             token.avatarSeed = check.avatarSeed;
           }

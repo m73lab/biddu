@@ -27,10 +27,20 @@ interface DashboardData {
   auctions: Auction[];
 }
 
+interface SlotBalanceItem {
+  id: string;
+  slotType: string;
+  amount: number;
+  auctionId: string | null;
+  auctionName: string | null;
+  expiresAt: string;
+  daysLeft: number;
+}
+
 interface SlotBalance {
   extras: Record<string, number>;
   perAuctionExtras: Record<string, Record<string, number>>;
-  items: any[];
+  items: SlotBalanceItem[];
 }
 
 interface MinePageProps {

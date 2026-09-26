@@ -85,7 +85,7 @@ export async function processEndedItems(): Promise<number> {
             // Fetch winner info for email
             const winner = await prisma.user.findUnique({
               where: { id: item.highestBidderId! },
-              select: { id: true, email: true, name: true },
+              select: { id: true, email: true, name: true, storeName: true },
             });
 
             // Queue item won email (respects user preference)
@@ -114,7 +114,7 @@ export async function processEndedItems(): Promise<number> {
               name: item.name,
               auctionId: item.auction.id,
               highestBidderId: item.highestBidderId,
-              winnerName: winner?.name ?? null,
+              winnerName: winner?.storeName || winner?.name || null,
               currentBid: item.currentBid,
               currencyCode: item.currency.code,
             });
@@ -284,7 +284,7 @@ export async function closeItemsOfEndedAuctions(): Promise<number> {
             bids: {
               orderBy: { amount: "desc" },
               take: 1,
-              select: { user: { select: { name: true } } },
+              select: { user: { select: { name: true, storeName: true } } },
             },
           },
         });
@@ -304,7 +304,8 @@ export async function closeItemsOfEndedAuctions(): Promise<number> {
             name: item.name,
             auctionId: a.id,
             highestBidderId: item.highestBidderId,
-            winnerName: item.bids[0]?.user.name ?? null,
+            winnerName:
+              item.bids[0]?.user.storeName || item.bids[0]?.user.name || null,
             currentBid: item.currentBid,
             currencyCode: item.currencyCode,
           });

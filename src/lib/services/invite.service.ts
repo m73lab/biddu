@@ -16,6 +16,7 @@ export interface InviteWithDetails extends AuctionInvite {
   sender: {
     id: string;
     name: string | null;
+    storeName: string | null;
     email: string;
   };
   auction: {
@@ -27,6 +28,7 @@ export interface InviteForDisplay {
   auction: InviteAuctionForDisplay;
   sender: {
     name: string | null;
+    storeName: string | null;
     email: string;
   };
   role: string;
@@ -37,6 +39,7 @@ export interface InviteForDisplay {
 export interface InviteHostForDisplay {
   id: string;
   name: string | null;
+  storeName: string | null;
   avatarSeed: string | null;
   createdAt: string;
   /** True when the account is less than 30 days old. */
@@ -83,6 +86,7 @@ export interface InviteCodeForList {
   createdAt: string;
   createdBy: {
     name: string | null;
+    storeName: string | null;
     email: string;
   };
 }
@@ -91,6 +95,7 @@ export interface InviteCodeForDisplay {
   auction: InviteAuctionForDisplay;
   createdBy: {
     name: string | null;
+    storeName: string | null;
   };
   role: string;
   code: string;
@@ -108,6 +113,7 @@ export interface InviteForList {
   createdAt: string;
   sender: {
     name: string | null;
+    storeName: string | null;
     email: string;
   };
 }
@@ -132,7 +138,7 @@ export async function getAuctionInvitesForPage(
       where: { auctionId },
       include: {
         sender: {
-          select: { name: true, email: true },
+          select: { name: true, storeName: true, email: true },
         },
       },
       orderBy: { createdAt: "desc" },
@@ -186,6 +192,7 @@ export async function getPortalAuction(
         select: {
           id: true,
           name: true,
+          storeName: true,
           avatarSeed: true,
           createdAt: true,
           avgSellerRating: true,
@@ -215,6 +222,7 @@ export async function getPortalAuction(
       ? {
           id: auction.creator.id,
           name: auction.creator.name,
+          storeName: auction.creator.storeName,
           avatarSeed: auction.creator.avatarSeed,
           createdAt: auction.creator.createdAt.toISOString(),
           isNewAccount:
@@ -238,7 +246,7 @@ export async function getInviteForDisplay(
     where: { token },
     include: {
       sender: {
-        select: { name: true, email: true },
+        select: { name: true, storeName: true, email: true },
       },
     },
   });
@@ -266,7 +274,7 @@ export async function getAuctionInvites(
     where: { auctionId },
     include: {
       sender: {
-        select: { id: true, name: true, email: true },
+        select: { id: true, name: true, storeName: true, email: true },
       },
       auction: {
         select: { name: true },
@@ -316,7 +324,7 @@ export async function createInvite(
     },
     include: {
       sender: {
-        select: { id: true, name: true, email: true },
+        select: { id: true, name: true, storeName: true, email: true },
       },
       auction: {
         select: { name: true },
@@ -330,7 +338,7 @@ export async function createInvite(
     email: invite.email,
     auctionId: invite.auctionId,
     auctionName: invite.auction.name,
-    senderName: invite.sender.name || invite.sender.email,
+    senderName: invite.sender.storeName || invite.sender.name || invite.sender.email,
     token: invite.token,
     role: invite.role,
   });
@@ -605,7 +613,7 @@ export async function createInviteCode(
     },
     include: {
       createdBy: {
-        select: { name: true, email: true },
+        select: { name: true, storeName: true, email: true },
       },
     },
   });
@@ -636,7 +644,7 @@ export async function getAuctionInviteCodes(
     where: isAdmin ? { auctionId } : { auctionId, createdById: requesterId },
     include: {
       createdBy: {
-        select: { name: true, email: true },
+        select: { name: true, storeName: true, email: true },
       },
     },
     orderBy: { createdAt: "desc" },
@@ -706,14 +714,17 @@ export async function getInviteCodeForDisplay(
     getPortalAuction(inviteCode.auctionId),
     prisma.user.findUnique({
       where: { id: inviteCode.createdById },
-      select: { name: true },
+      select: { name: true, storeName: true },
     }),
   ]);
   if (!portalAuction) return null;
 
   return {
     auction: portalAuction,
-    createdBy: { name: createdBy?.name || null },
+    createdBy: {
+      name: createdBy?.name || null,
+      storeName: createdBy?.storeName || null,
+    },
     role: inviteCode.role,
     code: inviteCode.code,
     usesCount: inviteCode.usesCount,

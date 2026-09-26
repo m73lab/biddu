@@ -18,6 +18,7 @@ import { isValidRut } from "@/utils/rut";
 interface ProfileData {
   id: string;
   name: string | null;
+  storeName: string | null;
   email: string;
   avatarSeed: string | null;
   phone: string | null;
@@ -88,10 +89,13 @@ export default function ProfilePage({ user }: ProfilePageProps) {
   );
   const [isSaving, setIsSaving] = useState(false);
 
-  // Personal data form (name / phone / RUT)
+  // Personal data form (name / store name / phone / RUT)
   const [personalName, setPersonalName] = useState<string | undefined>(
     undefined,
   );
+  const [personalStoreName, setPersonalStoreName] = useState<
+    string | undefined
+  >(undefined);
   const [personalPhone, setPersonalPhone] = useState<string | undefined>(
     undefined,
   );
@@ -101,6 +105,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
   useEffect(() => {
     if (profile && personalName === undefined) {
       setPersonalName(profile.name ?? "");
+      setPersonalStoreName(profile.storeName ?? "");
       setPersonalPhone(profile.phone ?? "");
       setPersonalRut(profile.rut ?? "");
     }
@@ -142,6 +147,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
   const handlePersonalSave = async (e: React.FormEvent) => {
     e.preventDefault();
     const name = (personalName ?? "").trim();
+    const storeName = (personalStoreName ?? "").trim();
     const phone = (personalPhone ?? "").trim();
     const rut = (personalRut ?? "").trim();
 
@@ -163,7 +169,7 @@ export default function ProfilePage({ user }: ProfilePageProps) {
       const res = await fetch("/api/user/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone: phone || null, rut: rut || null }),
+        body: JSON.stringify({ name, storeName: storeName || null, phone: phone || null, rut: rut || null }),
       });
       const result = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -275,12 +281,10 @@ export default function ProfilePage({ user }: ProfilePageProps) {
                     className="input input-bordered w-full bg-base-200/50 opacity-70"
                     disabled
                   />
-                  <label className="label">
-                    <span className="label-text-alt text-base-content/50 flex items-center gap-1">
-                      <span className="icon-[tabler--lock] size-3"></span>
-                      {t("personal.emailCannotChange")}
-                    </span>
-                  </label>
+                  <p className="mt-1.5 text-xs text-base-content/50 flex items-start gap-1.5">
+                    <span className="icon-[tabler--lock] size-3 shrink-0 mt-0.5"></span>
+                    <span className="min-w-0">{t("personal.emailCannotChange")}</span>
+                  </p>
                 </div>
 
                 <div className="form-control">
@@ -301,6 +305,29 @@ export default function ProfilePage({ user }: ProfilePageProps) {
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text font-medium">
+                      {t("personal.storeName")}{" "}
+                      <span className="text-base-content/40 text-xs">
+                        ({t("personal.optional")})
+                      </span>
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    value={personalStoreName ?? ""}
+                    onChange={(e) => setPersonalStoreName(e.target.value)}
+                    placeholder={t("personal.storeNamePlaceholder")}
+                    maxLength={100}
+                    className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                  />
+                  <p className="mt-1.5 text-xs text-base-content/50 flex items-start gap-1.5">
+                    <span className="icon-[tabler--building-store] size-3 shrink-0 mt-0.5"></span>
+                    <span className="min-w-0">{t("personal.storeNameHint")}</span>
+                  </p>
+                </div>
+
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text font-medium">
                       {t("personal.phone")}{" "}
                       <span className="text-base-content/40 text-xs">
                         ({t("personal.optional")})
@@ -316,12 +343,10 @@ export default function ProfilePage({ user }: ProfilePageProps) {
                     maxLength={20}
                     className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                   />
-                  <label className="label">
-                    <span className="label-text-alt text-base-content/50 flex items-center gap-1">
-                      <span className="icon-[tabler--brand-whatsapp] size-3"></span>
-                      {t("personal.phoneHint")}
-                    </span>
-                  </label>
+                  <p className="mt-1.5 text-xs text-base-content/50 flex items-start gap-1.5">
+                    <span className="icon-[tabler--brand-whatsapp] size-3 shrink-0 mt-0.5"></span>
+                    <span className="min-w-0">{t("personal.phoneHint")}</span>
+                  </p>
                 </div>
 
                 <div className="form-control">
@@ -341,11 +366,9 @@ export default function ProfilePage({ user }: ProfilePageProps) {
                     maxLength={20}
                     className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                   />
-                  <label className="label">
-                    <span className="label-text-alt text-base-content/50">
-                      {t("personal.rutHint")}
-                    </span>
-                  </label>
+                  <p className="mt-1.5 text-xs text-base-content/50">
+                    <span className="min-w-0">{t("personal.rutHint")}</span>
+                  </p>
                 </div>
 
                 <div className="pt-2">

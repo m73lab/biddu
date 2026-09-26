@@ -18,6 +18,7 @@ export interface AuctionWithCounts extends Auction {
   creator: {
     id: string;
     name: string | null;
+    storeName: string | null;
     email: string;
   };
   _count: {
@@ -97,6 +98,7 @@ export interface UpdateAuctionInput {
   creator: {
     id: string;
     name: string | null;
+    storeName: string | null;
     email: string;
   };
   _count: {
@@ -118,6 +120,7 @@ export interface CloseAuctionResult {
     winner: {
       id: string;
       name: string | null;
+      storeName: string | null;
       email: string;
     };
     currencyCode: string;
@@ -140,7 +143,7 @@ export async function getAuctionById(
     where: { id: auctionId },
     include: {
       creator: {
-        select: { id: true, name: true, email: true },
+        select: { id: true, name: true, storeName: true, email: true },
       },
       _count: {
         select: {
@@ -162,7 +165,7 @@ export async function getAuctionForDetailPage(
     where: { id: auctionId },
     include: {
       creator: {
-        select: { id: true, name: true, email: true },
+        select: { id: true, name: true, storeName: true, email: true },
       },
       _count: {
         select: {
@@ -374,7 +377,7 @@ export async function createAuction(
     },
     include: {
       creator: {
-        select: { id: true, name: true, email: true },
+        select: { id: true, name: true, storeName: true, email: true },
       },
       _count: {
         select: {
@@ -534,7 +537,7 @@ export async function closeAuction(
             },
           },
           user: {
-            select: { id: true, name: true, email: true },
+            select: { id: true, name: true, storeName: true, email: true },
           },
         },
       },
@@ -755,7 +758,7 @@ export async function getAuctionResultsData(
     include: {
       currency: true,
       creator: {
-        select: { id: true, name: true, email: true },
+        select: { id: true, name: true, storeName: true, email: true },
       },
       images: {
         orderBy: { order: "asc" },
@@ -776,7 +779,7 @@ export async function getAuctionResultsData(
             },
           },
           user: {
-            select: { id: true, name: true, email: true },
+            select: { id: true, name: true, storeName: true, email: true },
           },
         },
       },
@@ -908,7 +911,7 @@ export async function getPublicAuctionData(
     where: { id: auctionId },
     include: {
       creator: {
-        select: { name: true },
+        select: { name: true, storeName: true },
       },
       _count: {
         select: {
@@ -936,7 +939,7 @@ export async function getPublicAuctionData(
     endDate: auction.endDate?.toISOString() || null,
     timeZone: auction.timeZone,
     joinMode: auction.joinMode,
-    creatorName: auction.creator.name,
+    creatorName: auction.creator.storeName || auction.creator.name,
     _count: auction._count,
   };
 }

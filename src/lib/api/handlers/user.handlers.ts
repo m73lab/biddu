@@ -12,6 +12,14 @@ import { isValidRut } from "@/utils/rut";
 
 export const updateProfileSchema = z.object({
   name: z.string().min(1, "Name is required").max(100),
+  storeName: z
+    .string()
+    .max(100)
+    .nullish()
+    .transform((s) => {
+      const trimmed = (s ?? "").trim();
+      return trimmed.length > 0 ? trimmed : null;
+    }),
   phone: z
     .string()
     .max(20)

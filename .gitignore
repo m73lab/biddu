@@ -63,3 +63,6 @@ caddy/self.key
 
 # @vercel/og harfbuzz wasm (runtime, viene de node_modules en Docker)
 /hb.wasm
+
+# Brag/suite (sin seguimiento, contenido local)
+/brag-output/
